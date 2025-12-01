@@ -8,21 +8,24 @@ var k8s = builder.AddKubernetesEnvironment("k8s");
 var database = builder.AddContainer(ContainerDefinitions.Database, "postgres:18")
     .WithEnvironment("POSTGRES_PASSWORD", "SecretP@ssw0rd")
     .WithVolume(target: "/var/lib/postgresql")
-    .WithEndpoint(5432, 5432);
+    .WithEndpoint(5432, 5432)
+    .PublishAsKubernetesService(c => c.IsExcludedFromPublish());
 
 builder.AddContainer(ContainerDefinitions.PgAdmin, "dpage/pgadmin4:9")
     .WithEnvironment("PGADMIN_DEFAULT_EMAIL", "test@test.nl")
     .WithEnvironment("PGADMIN_DEFAULT_PASSWORD", "Secret1234")
     .WithVolume(target: "/var/lib/pgadmin")
-    .WithEndpoint("http", e => {
+    .WithEndpoint("http", e =>
+    {
         e.Port = 9080;
         e.TargetPort = 80;
         e.Protocol = ProtocolType.Tcp;
         e.UriScheme = "http";
     })
     .WithUrlForEndpoint("http", c => c.DisplayText = "PgAdminInsecure")
-    .WithParentRelationship(database)  
-    .WaitFor(database);
+    .WithParentRelationship(database)
+    .WaitFor(database)
+    .PublishAsKubernetesService(c => c.IsExcludedFromPublish());
 
 var api = builder.AddProject<Projects.Api>(ProjectDefinitions.Api)
     .WithUrlForEndpoint("http", c => c.DisplayText = "ApiInsecure")
