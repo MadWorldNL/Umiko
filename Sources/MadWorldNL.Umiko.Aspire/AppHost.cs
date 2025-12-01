@@ -3,6 +3,8 @@ using MadWorldNL.Umiko;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var k8s = builder.AddKubernetesEnvironment("k8s");
+
 var database = builder.AddContainer(ContainerDefinitions.Database, "postgres:18")
     .WithEnvironment("POSTGRES_PASSWORD", "SecretP@ssw0rd")
     .WithVolume(target: "/var/lib/postgresql")
