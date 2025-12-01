@@ -19,6 +19,7 @@ builder.AddContainer(ContainerDefinitions.PgAdmin, "dpage/pgadmin4:9")
         e.UriScheme = "http";
     })
     .WithUrlForEndpoint("http", c => c.DisplayText = "PgAdminInsecure")
+    .WithParentRelationship(database)  
     .WaitFor(database);
 
 var api = builder.AddProject<Projects.Api>(ProjectDefinitions.Api)
