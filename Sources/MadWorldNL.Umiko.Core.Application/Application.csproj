@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\MadWorldNL.Umiko.Core.Domain\Domain.csproj" />
+  </ItemGroup>
+</Project>

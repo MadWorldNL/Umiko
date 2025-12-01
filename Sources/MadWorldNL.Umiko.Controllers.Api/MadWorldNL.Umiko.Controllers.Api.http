@@ -1,0 +1,6 @@
+@MadWorldNL.Umiko.Controllers.Api_HostAddress = http://localhost:5115
+
+GET {{MadWorldNL.Umiko.Controllers.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

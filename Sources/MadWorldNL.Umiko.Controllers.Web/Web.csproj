@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Contracts\Contracts.csproj" />
+    </ItemGroup>
+
+</Project>

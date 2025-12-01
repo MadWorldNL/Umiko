@@ -6,6 +6,18 @@
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
-  <Folder Name="/Sources/" />
+  <Folder Name="/Sources/">
+    <Project Path="Sources\MadWorldNL.Umiko.Aspire\Aspire.csproj" />
+  </Folder>
+  <Folder Name="/Sources/Controllers/">
+    <Project Path="Sources\MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
+    <Project Path="Sources\MadWorldNL.Umiko.Controllers.Contracts\Contracts.csproj" />
+    <Project Path="Sources\MadWorldNL.Umiko.Controllers.Web\Web.csproj" />
+  </Folder>
+  <Folder Name="/Sources/Core/">
+    <Project Path="Sources\MadWorldNL.Umiko.Core.Application\Application.csproj" />
+    <Project Path="Sources\MadWorldNL.Umiko.Core.Domain\Domain.csproj" />
+  </Folder>
+  <Folder Name="/Sources/Infrastructure/" />
   <Folder Name="/Tests/" />
 </Solution>

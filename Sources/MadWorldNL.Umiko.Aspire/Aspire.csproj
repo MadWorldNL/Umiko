@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.2"/>
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <UserSecretsId>041a0e25-b8d3-48dc-9817-342b1994f0ec</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.AppHost" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web\Web.csproj" />
+    </ItemGroup>
+
+</Project>
