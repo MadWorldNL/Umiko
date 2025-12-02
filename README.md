@@ -16,9 +16,9 @@ It evokes imagery of calm waves, ocean depth, and gentle marine life. In my proj
 representing curiosity, exploration, and the peaceful nature of the sea.
 
 ## Resource
-[Aspire Kubernetes](https://learn.microsoft.com/en-us/dotnet/aspire/deployment/kubernetes-integration?tabs=dotnet-cli)
+[Aspire Kubernetes](https://learn.microsoft.com/en-us/dotnet/aspire/deployment/kubernetes-integration?tabs=dotnet-cli)\
 [Dotnet Cli](https://learn.microsoft.com/en-us/dotnet/aspire/cli/install)
 
 ## TODO
-[Keycloak](https://aspire.dev/integrations/security/keycloak/)
+[Keycloak](https://aspire.dev/integrations/security/keycloak/)\
 [Kubernetes](https://aspire.dev/integrations/compute/kubernetes/)
