@@ -18,3 +18,7 @@ representing curiosity, exploration, and the peaceful nature of the sea.
 ## Resource
 [Aspire Kubernetes](https://learn.microsoft.com/en-us/dotnet/aspire/deployment/kubernetes-integration?tabs=dotnet-cli)
 [Dotnet Cli](https://learn.microsoft.com/en-us/dotnet/aspire/cli/install)
+
+## TODO
+[Keycloak](https://aspire.dev/integrations/security/keycloak/)
+[Kubernetes](https://aspire.dev/integrations/compute/kubernetes/)
