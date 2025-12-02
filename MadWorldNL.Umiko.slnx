@@ -12,12 +12,15 @@
   <Folder Name="/Sources/Controllers/">
     <Project Path="Sources\MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
     <Project Path="Sources\MadWorldNL.Umiko.Controllers.Contracts\Contracts.csproj" />
-    <Project Path="Sources\MadWorldNL.Umiko.Controllers.Web\Web.csproj" />
+    <Project Path="Sources\MadWorldNL.Umiko.Controllers.Web.Admin\Web.Admin.csproj" />
+    <Project Path="Sources\MadWorldNL.Umiko.Controllers.Web.Clients\Web.Clients.csproj" />
   </Folder>
   <Folder Name="/Sources/Core/">
     <Project Path="Sources\MadWorldNL.Umiko.Core.Application\Application.csproj" />
     <Project Path="Sources\MadWorldNL.Umiko.Core.Domain\Domain.csproj" />
   </Folder>
-  <Folder Name="/Sources/Infrastructure/" />
+  <Folder Name="/Sources/Infrastructure/">
+    <Project Path="Sources\MadWorldNL.Umiko.Infrastructure.Database\Database.csproj" />
+  </Folder>
   <Folder Name="/Tests/" />
 </Solution>

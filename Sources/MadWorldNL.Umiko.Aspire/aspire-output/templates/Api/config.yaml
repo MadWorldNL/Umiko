@@ -1,0 +1,20 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "api-config"
+  labels:
+    app.kubernetes.io/name: "aspire"
+    app.kubernetes.io/component: "Api"
+    app.kubernetes.io/instance: "{{.Release.Name}}"
+data:
+  ASPNETCORE_URLS: "{{ .Values.config.Api.ASPNETCORE_URLS }}"
+  OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "{{ .Values.config.Api.OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES }}"
+  OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "{{ .Values.config.Api.OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES }}"
+  OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "{{ .Values.config.Api.OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY }}"
+  ASPNETCORE_FORWARDEDHEADERS_ENABLED: "{{ .Values.config.Api.ASPNETCORE_FORWARDEDHEADERS_ENABLED }}"
+  HTTP_PORTS: "{{ .Values.config.Api.HTTP_PORTS }}"
+  UMIKODB_HOST: "{{ .Values.config.Api.UMIKODB_HOST }}"
+  UMIKODB_PORT: "{{ .Values.config.Api.UMIKODB_PORT }}"
+  UMIKODB_JDBCCONNECTIONSTRING: "{{ .Values.config.Api.UMIKODB_JDBCCONNECTIONSTRING }}"
+  UMIKODB_DATABASE: "{{ .Values.config.Api.UMIKODB_DATABASE }}"

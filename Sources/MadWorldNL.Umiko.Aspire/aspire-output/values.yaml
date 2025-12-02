@@ -1,0 +1,32 @@
+parameters:
+  Api:
+    port_http: "8080"
+    port_https: "8080"
+    Api_image: "Api:latest"
+  Web:
+    port_http: "8080"
+    port_https: "8080"
+    Web_image: "Web:latest"
+secrets:
+  Database:
+    POSTGRES_PASSWORD: ""
+config:
+  Database:
+    POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+    POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+  Api:
+    ASPNETCORE_URLS: "http://+:$8080"
+    OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+    OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+    OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+    ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+    UMIKODB_HOST: "database-service"
+    UMIKODB_PORT: "5432"
+    UMIKODB_JDBCCONNECTIONSTRING: "jdbc:postgresql://database-service:5432/umikodb"
+    UMIKODB_DATABASE: "umikodb"
+  Web:
+    ASPNETCORE_URLS: "http://+:$8080"
+    OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+    OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+    OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+    ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"

@@ -15,7 +15,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
-      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web\Web.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web.Admin\Web.Admin.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web.Clients\Web.Clients.csproj" />
     </ItemGroup>
 
 </Project>

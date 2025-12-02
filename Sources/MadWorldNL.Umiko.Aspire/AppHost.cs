@@ -15,7 +15,7 @@ var postgres = builder.AddPostgres(ContainerDefinitions.Database, username, pass
     .WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5050))
     .WithChildRelationship(username)
     .WithChildRelationship(password);
-    
+
 var umikoDb = postgres.AddDatabase("umikodb");
 
 var api = builder.AddProject<Projects.Api>(ProjectDefinitions.Api)
@@ -25,7 +25,13 @@ var api = builder.AddProject<Projects.Api>(ProjectDefinitions.Api)
     .WithReference(umikoDb)
     .WaitFor(umikoDb);
 
-builder.AddProject<Projects.Web>(ProjectDefinitions.Web)
+builder.AddProject<Projects.Web_Admin>(ProjectDefinitions.WebAdmin)
+    .WithUrlForEndpoint("http", c => c.DisplayText = "WebInsecure")
+    .WithUrlForEndpoint("https", c => c.DisplayText = "WebSecure")
+    .WithExternalHttpEndpoints()
+    .WaitFor(api);
+
+builder.AddProject<Projects.Web_Clients>(ProjectDefinitions.WebClients)
     .WithUrlForEndpoint("http", c => c.DisplayText = "WebInsecure")
     .WithUrlForEndpoint("https", c => c.DisplayText = "WebSecure")
     .WithExternalHttpEndpoints()
