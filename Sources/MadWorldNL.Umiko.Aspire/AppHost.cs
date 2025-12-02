@@ -9,10 +9,12 @@ var password = builder.AddParameter("db-password", secret: true);
 
 var postgres = builder.AddPostgres(ContainerDefinitions.Database, username, password)
     .WithVolume(
-            name: "DbData",
-            target: "/PostgreSQL/Data",
-            isReadOnly: false)
-    .WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5050));
+        name: "DbData",
+        target: "/PostgreSQL/Data",
+        isReadOnly: false)
+    .WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5050))
+    .WithChildRelationship(username)
+    .WithChildRelationship(password);
     
 var umikoDb = postgres.AddDatabase("umikodb");
 
