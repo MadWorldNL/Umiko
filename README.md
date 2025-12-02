@@ -8,7 +8,7 @@ projects I’m currently working on.
 Run `dotnet tool install --global Aspire.Cli --version 13.0.1`
 
 ## Kubernetes
-Run `aspire publish -o k8s-artifacts`
+Run `aspire publish -o Artifacts/Kubernetes`
 
 ## About the name
 Umiko (海子) is a Japanese name meaning “child of the sea,” making it a fitting and whimsical choice for a sea turtle. 

@@ -1,37 +1,27 @@
-using System.Net.Sockets;
 using MadWorldNL.Umiko;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var k8s = builder.AddKubernetesEnvironment("k8s");
+_ = builder.AddKubernetesEnvironment("k8s");
 
-var database = builder.AddContainer(ContainerDefinitions.Database, "postgres:18")
-    .WithEnvironment("POSTGRES_PASSWORD", "SecretP@ssw0rd")
-    .WithVolume(target: "/var/lib/postgresql")
-    .WithEndpoint(5432, 5432)
-    .PublishAsKubernetesService(c => c.IsExcludedFromPublish());
+var username = builder.AddParameter("username", secret: true);
+var password = builder.AddParameter("password", secret: true);
 
-builder.AddContainer(ContainerDefinitions.PgAdmin, "dpage/pgadmin4:9")
-    .WithEnvironment("PGADMIN_DEFAULT_EMAIL", "test@test.nl")
-    .WithEnvironment("PGADMIN_DEFAULT_PASSWORD", "Secret1234")
-    .WithVolume(target: "/var/lib/pgadmin")
-    .WithEndpoint("http", e =>
-    {
-        e.Port = 9080;
-        e.TargetPort = 80;
-        e.Protocol = ProtocolType.Tcp;
-        e.UriScheme = "http";
-    })
-    .WithUrlForEndpoint("http", c => c.DisplayText = "PgAdminInsecure")
-    .WithParentRelationship(database)
-    .WaitFor(database)
-    .PublishAsKubernetesService(c => c.IsExcludedFromPublish());
+var postgres = builder.AddPostgres(ContainerDefinitions.Database, username, password)
+    .WithVolume(
+            name: "DbData",
+            target: "/PostgreSQL/Data",
+            isReadOnly: false)
+    .WithPgAdmin(pgAdmin => pgAdmin.WithHostPort(5050));
+    
+var umikoDb = postgres.AddDatabase("umikodb");
 
 var api = builder.AddProject<Projects.Api>(ProjectDefinitions.Api)
     .WithUrlForEndpoint("http", c => c.DisplayText = "ApiInsecure")
     .WithUrlForEndpoint("https", c => c.DisplayText = "ApiSecure")
     .WithExternalHttpEndpoints()
-    .WaitFor(database);
+    .WithReference(umikoDb)
+    .WaitFor(umikoDb);
 
 builder.AddProject<Projects.Web>(ProjectDefinitions.Web)
     .WithUrlForEndpoint("http", c => c.DisplayText = "WebInsecure")
