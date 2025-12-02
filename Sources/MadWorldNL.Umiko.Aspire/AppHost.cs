@@ -4,8 +4,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 _ = builder.AddKubernetesEnvironment("k8s");
 
-var username = builder.AddParameter("username", secret: true);
-var password = builder.AddParameter("password", secret: true);
+var username = builder.AddParameter("db-username", secret: true);
+var password = builder.AddParameter("db-password", secret: true);
 
 var postgres = builder.AddPostgres(ContainerDefinitions.Database, username, password)
     .WithVolume(
