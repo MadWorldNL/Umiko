@@ -16,6 +16,7 @@ It evokes imagery of calm waves, ocean depth, and gentle marine life. In my proj
 representing curiosity, exploration, and the peaceful nature of the sea.
 
 ## Resource
+[Aspire](https://aspire.dev/docs/)\
 [Aspire Kubernetes](https://learn.microsoft.com/en-us/dotnet/aspire/deployment/kubernetes-integration?tabs=dotnet-cli)\
 [Dotnet Cli](https://learn.microsoft.com/en-us/dotnet/aspire/cli/install)
 
