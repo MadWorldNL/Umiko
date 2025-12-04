@@ -1,6 +1,7 @@
 using JasperFx;
 using JasperFx.CodeGeneration;
 using MadWorldNL.Umiko.Endpoints.DebugTools;
+using MadWorldNL.Umiko.Events;
 using Marten;
 using Scalar.AspNetCore;
 
@@ -26,7 +27,9 @@ builder.Services.CritterStackDefaults(x =>
     
     x.Development.GeneratedCodeMode = TypeLoadMode.Static;
     x.Development.ResourceAutoCreate = AutoCreate.CreateOrUpdate;
-});;
+});
+
+builder.Services.AddScoped<IEventsContext, EventsContext>();
 
 var app = builder.Build();
 

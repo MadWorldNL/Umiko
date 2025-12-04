@@ -11,6 +11,8 @@ public class CurriculumVitae : RootAggregate
     private CurriculumVitae()
     {
         Id = new UniqueId(Guid.NewGuid());
+        
+        Raise(new NewCurriculumVitaeEvent(Id));
     }
 
     public static CurriculumVitae New()

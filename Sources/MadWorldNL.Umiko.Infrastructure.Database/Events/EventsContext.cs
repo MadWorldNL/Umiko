@@ -25,8 +25,9 @@ public class EventsContext(IDocumentSession session) : IEventsContext
 
             return rootAggregate;
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            _ = exception;
             return Option<TRootAggregate>.None;
         }
     }
@@ -43,6 +44,8 @@ public class EventsContext(IDocumentSession session) : IEventsContext
         {
             session.Events.Append(aggregate.AggregateId, aggregate.DomainEvents.ToArray<object>());
         }
+        
+        await session.SaveChangesAsync();
 
         aggregate.ClearDomainEvents();
     }

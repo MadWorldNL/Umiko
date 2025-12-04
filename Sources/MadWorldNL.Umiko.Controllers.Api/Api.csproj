@@ -10,6 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Contracts\Contracts.csproj" />
       <ProjectReference Include="..\MadWorldNL.Umiko.Core.Application\Application.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Infrastructure.Database\Database.csproj" />
     </ItemGroup>
 
 </Project>
