@@ -1,4 +1,7 @@
+using JasperFx;
+using JasperFx.CodeGeneration;
 using MadWorldNL.Umiko.Endpoints.DebugTools;
+using Marten;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +9,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+var connectionString = builder.Configuration.GetConnectionString("umikodb");
+
+// Build a StoreOptions object yourself
+var options = new StoreOptions();
+options.Connection(connectionString!);
+options.Events.DatabaseSchemaName = "events";
+
+builder.Services.AddMarten(options);
+    
+builder.Services.CritterStackDefaults(x =>
+{
+    x.Production.GeneratedCodeMode = TypeLoadMode.Static;
+    x.Production.ResourceAutoCreate = AutoCreate.None;
+    
+    x.Development.GeneratedCodeMode = TypeLoadMode.Static;
+    x.Development.ResourceAutoCreate = AutoCreate.CreateOrUpdate;
+});;
 
 var app = builder.Build();
 
