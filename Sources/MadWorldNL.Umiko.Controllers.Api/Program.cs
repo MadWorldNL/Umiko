@@ -1,5 +1,6 @@
 using JasperFx;
 using JasperFx.CodeGeneration;
+using MadWorldNL.Umiko.CurriculaVitae;
 using MadWorldNL.Umiko.Endpoints.DebugTools;
 using MadWorldNL.Umiko.Events;
 using Marten;
@@ -17,18 +18,22 @@ var connectionString = builder.Configuration.GetConnectionString("umikodb");
 var options = new StoreOptions();
 options.Connection(connectionString!);
 options.Events.DatabaseSchemaName = "events";
+options.Events.AddEventType<NewCurriculumVitaeEvent>();
 
-builder.Services.AddMarten(options);
+builder.Services
+    .AddMarten(options)
+    .ApplyAllDatabaseChangesOnStartup();
     
 builder.Services.CritterStackDefaults(x =>
 {
     x.Production.GeneratedCodeMode = TypeLoadMode.Static;
     x.Production.ResourceAutoCreate = AutoCreate.None;
     
-    x.Development.GeneratedCodeMode = TypeLoadMode.Static;
+    x.Development.GeneratedCodeMode = TypeLoadMode.Dynamic;
     x.Development.ResourceAutoCreate = AutoCreate.CreateOrUpdate;
 });
 
+//TODO: Cleanup
 builder.Services.AddScoped<IEventsContext, EventsContext>();
 
 var app = builder.Build();

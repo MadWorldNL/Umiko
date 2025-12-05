@@ -13,7 +13,7 @@ public class EventsContext(IDocumentSession session) : IEventsContext
 
         try
         {
-            var resolvedEvents = await session.Events.FetchStreamAsync($"{rootAggregate.AggregateType}-{id}");
+            var resolvedEvents = await session.Events.FetchStreamAsync(id);
 
             foreach (var resolvedEvent in resolvedEvents)
             {
@@ -34,17 +34,18 @@ public class EventsContext(IDocumentSession session) : IEventsContext
 
     public async Task Store<TRootAggregate>(TRootAggregate aggregate) where TRootAggregate : RootAggregate
     {
-        var state = await session.Events.FetchStreamStateAsync(aggregate.AggregateId);
+        var state = await session.Events.FetchStreamStateAsync(aggregate.Id.Value);
 
         if (state is null)
         {
-            session.Events.StartStream<TRootAggregate>(aggregate.AggregateId, aggregate.DomainEvents.ToArray<object>());
+            session.Events.StartStream<TRootAggregate>(aggregate.Id.Value,
+                aggregate.DomainEvents.ToArray<object>());
         }
         else
         {
-            session.Events.Append(aggregate.AggregateId, aggregate.DomainEvents.ToArray<object>());
+            session.Events.Append(aggregate.Id.Value, aggregate.DomainEvents.ToArray<object>());
         }
-        
+
         await session.SaveChangesAsync();
 
         aggregate.ClearDomainEvents();

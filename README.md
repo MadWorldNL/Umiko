@@ -21,6 +21,7 @@ representing curiosity, exploration, and the peaceful nature of the sea.
 [Dotnet Cli](https://learn.microsoft.com/en-us/dotnet/aspire/cli/install)
 
 ## TODO
-[Keycloak](https://aspire.dev/integrations/security/keycloak/)\
-[Kubernetes](https://aspire.dev/integrations/compute/kubernetes/)\
-[Reqnroll](https://reqnroll.net/)
+* [Keycloak](https://aspire.dev/integrations/security/keycloak/)
+* [Kubernetes](https://aspire.dev/integrations/compute/kubernetes/)
+* [Reqnroll](https://reqnroll.net/)
+* MartenDb – Add generated code for static events without generating dynamic code
