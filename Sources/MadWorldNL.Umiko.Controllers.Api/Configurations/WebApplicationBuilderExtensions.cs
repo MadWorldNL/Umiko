@@ -13,6 +13,7 @@ public static class WebApplicationBuilderExtensions
         public void AddApplication()
         {
             builder.Services.AddScoped<CreateCurriculumVitaeUseCase>();
+            builder.Services.AddScoped<LoadCurriculumVitaeUseCase>();
         }
 
         public void AddDatabase()

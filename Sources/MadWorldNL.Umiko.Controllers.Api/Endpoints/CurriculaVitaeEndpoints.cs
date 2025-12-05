@@ -16,5 +16,13 @@ public static class CurriculaVitaeEndpoints
 
             return new ObjectChangedResponse(id.Value);
         });
+
+        curriculumVitaeBuilder.MapGet("/{id:guid}", async (Guid id, [FromServices] LoadCurriculumVitaeUseCase useCase) =>
+        {
+            var curriculumVitae = await useCase.Load(id);
+            return curriculumVitae.Match(
+                cv => Results.Ok(new GetCurriculumVitaeResponse(cv.Id.Value)), 
+                () => Results.NotFound());
+        });
     }
 }

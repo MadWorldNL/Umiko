@@ -14,6 +14,11 @@ public class EventsContext(IDocumentSession session) : IEventsContext
         {
             var resolvedEvents = await session.Events.FetchStreamAsync(id);
 
+            if (resolvedEvents.Count == 0)
+            {
+                return Option<TRootAggregate>.None;
+            }
+            
             foreach (var resolvedEvent in resolvedEvents)
             {
                 if (resolvedEvent.Data is IDomainEvent domainEvent)

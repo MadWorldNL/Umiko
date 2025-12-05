@@ -1,7 +1,4 @@
 using System.Collections;
-using MadWorldNL.Umiko.CurriculaVitae;
-using MadWorldNL.Umiko.Events;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MadWorldNL.Umiko.Endpoints.DebugTools;
 
@@ -31,14 +28,6 @@ public static class DebugToolsEndpoints
             {
                 EnvironmentVariables = environmentVariables
             };
-        });
-
-        debugBuilder.MapGet("CV/{id}", async ([FromRoute] Guid id, [FromServices] IEventsContext eventsContext) =>
-        {
-            var cv = await eventsContext.GetById<CurriculumVitae>(id);
-            return cv.Match(
-                Results.Ok, 
-                () => Results.NotFound());
         });
     }
 }

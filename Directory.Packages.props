@@ -3,6 +3,7 @@
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.0.1" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.0.1-preview.1.25575.3" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.0.1" />
+    <PackageVersion Include="JetBrains.Annotations" Version="2025.2.4" />
     <PackageVersion Include="LanguageExt.Core" Version="4.4.9" />
     <PackageVersion Include="Marten" Version="8.16.1" />
     <PackageVersion Include="Marten.AspNetCore" Version="8.16.1" />
