@@ -33,15 +33,6 @@ public static class DebugToolsEndpoints
             };
         });
 
-        debugBuilder.MapPost("CV", async ([FromServices] IEventsContext eventsContext) =>
-        {
-            var cv = CurriculumVitae.New();
-
-            await eventsContext.Store(cv);
-            
-            return cv.Id.Value;
-        });
-
         debugBuilder.MapGet("CV/{id}", async ([FromRoute] Guid id, [FromServices] IEventsContext eventsContext) =>
         {
             var cv = await eventsContext.GetById<CurriculumVitae>(id);
