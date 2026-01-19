@@ -1,4 +1,14 @@
 <Solution>
   <Folder Name="/Core/" />
+  <Folder Name="/Core/Application/" />
+  <Folder Name="/Core/Controllers/">
+    <Project Path="MadWorldNL.Umiko.Controllers.Web.Administrators/MadWorldNL.Umiko.Controllers.Web.Administrators.csproj" />
+    <Project Path="MadWorldNL.Umiko.Controllers.Web.Users/MadWorldNL.Umiko.Controllers.Web.Users.csproj" />
+  </Folder>
+  <Folder Name="/Core/Infrastructures/" />
+  <Folder Name="/Solution/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
   <Folder Name="/Tests/" />
 </Solution>
