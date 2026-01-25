@@ -1,0 +1,14 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.1.0">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <UserSecretsId>de64ac2f-5abf-4474-b90b-388656637a04</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web.Administrators\Web.Administrators.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web.Users\Web.Users.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -4,4 +4,8 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MadWorldNL.Umiko.Application.Functions\Functions.csproj" />
+    </ItemGroup>
+
 </Project>
