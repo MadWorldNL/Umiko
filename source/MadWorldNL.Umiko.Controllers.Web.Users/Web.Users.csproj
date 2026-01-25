@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+        <RootNamespace>MadWorldNL.Umiko.Web</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

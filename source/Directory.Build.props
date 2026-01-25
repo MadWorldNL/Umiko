@@ -11,7 +11,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-    <!--    <RootNamespace>MadWorldNL.Umiko</RootNamespace> -->
+        <RootNamespace>MadWorldNL.Umiko</RootNamespace>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
 </Project>

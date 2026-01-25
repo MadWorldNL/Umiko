@@ -2,8 +2,9 @@
   <Folder Name="/Core/" />
   <Folder Name="/Core/Application/" />
   <Folder Name="/Core/Controllers/">
-    <Project Path="MadWorldNL.Umiko.Controllers.Web.Administrators/MadWorldNL.Umiko.Controllers.Web.Administrators.csproj" />
-    <Project Path="MadWorldNL.Umiko.Controllers.Web.Users/MadWorldNL.Umiko.Controllers.Web.Users.csproj" />
+    <Project Path="MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
+    <Project Path="MadWorldNL.Umiko.Controllers.Web.Administrators\Web.Administrators.csproj" />
+    <Project Path="MadWorldNL.Umiko.Controllers.Web.Users\Web.Users.csproj" />
   </Folder>
   <Folder Name="/Core/Infrastructures/" />
   <Folder Name="/Solution/">
