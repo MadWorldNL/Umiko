@@ -1,3 +1,39 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+    line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff;
+    margin: 0 0 16px 0;
+}
+
+h1 { font-size: 32px; font-weight: 700; }
+h2 { font-size: 24px; font-weight: 600; }
+h3 { font-size: 20px; font-weight: 600; }
+
+p {
+    margin: 0 0 16px 0;
+    color: #a0a0a0;
+}
+
+a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }
@@ -52,14 +88,14 @@
 
     .loading-progress circle {
         fill: none;
-        stroke: #e0e0e0;
+        stroke: #333333;
         stroke-width: 0.6rem;
         transform-origin: 50% 50%;
         transform: rotate(-90deg);
     }
 
         .loading-progress circle:last-child {
-            stroke: #1b6ec2;
+            stroke: #ffffff;
             stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
             transition: stroke-dasharray 0.05s ease-in-out;
         }
@@ -68,6 +104,7 @@
     position: absolute;
     text-align: center;
     font-weight: bold;
+    color: #888888;
     inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
 }
 

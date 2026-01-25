@@ -1,3 +1,27 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-@Body
+<div class="layout">
+    <header class="topbar">
+        <div class="topbar-brand">
+            <span class="logo">Umiko</span>
+            <span class="logo-subtitle">Admin</span>
+        </div>
+        <nav class="topbar-nav">
+            <NavLink class="nav-btn" href="" Match="NavLinkMatch.All">
+                Dashboard
+            </NavLink>
+            <NavLink class="nav-btn" href="users">
+                Users
+            </NavLink>
+            <NavLink class="nav-btn" href="settings">
+                Settings
+            </NavLink>
+        </nav>
+        <div class="topbar-actions">
+            <span class="user-info">Administrator</span>
+        </div>
+    </header>
+    <main class="content">
+        @Body
+    </main>
+</div>
