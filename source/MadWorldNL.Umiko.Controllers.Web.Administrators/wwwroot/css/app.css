@@ -124,3 +124,42 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* NavLink styled as buttons */
+.nav-item,
+.nav-item:link,
+.nav-item:visited {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #f0f0f0;
+    background-color: #1f2937;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Hover and focus states */
+.nav-item:hover,
+.nav-item:focus {
+    background-color: #374151;
+    color: #ffffff;
+    outline: none;
+}
+
+/* Active nav item */
+.nav-item.active,
+.nav-item.active:link,
+.nav-item.active:visited {
+    background-color: #2563eb; /* blue button for active */
+    color: #ffffff;
+}
+
+/* Active + hover */
+.nav-item.active:hover,
+.nav-item.active:focus {
+    background-color: #1d4ed8;
+    color: #ffffff;
+}
