@@ -8,6 +8,7 @@
   </Folder>
   <Folder Name="/Core/Controllers/">
     <Project Path="MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
+    <Project Path="MadWorldNL.Umiko.Controllers.Bus\Bus.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.Web.Administrators\Web.Administrators.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.Web.Users\Web.Users.csproj" />
   </Folder>
