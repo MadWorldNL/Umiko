@@ -2,9 +2,7 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder.AddPostgres("Postgres");
-var postgresDb = postgres.AddDatabase("PostgresDb");
-
+var postgresDb = CreateDatabaseResource();
 var rabbitmq = CreateMessagingResource();
 
 var api = builder.AddProject<Api>("Api")
@@ -34,6 +32,17 @@ builder.AddProject<Web_Users>("Web-Users")
 builder.Build().Run();
 
 return;
+
+IResourceBuilder<PostgresDatabaseResource> CreateDatabaseResource()
+{
+    var username = builder.AddParameter("Database-Username", secret: true);
+    var password = builder.AddParameter("Database-Password", secret: true);
+
+    var postgres = builder.AddPostgres("Postgres", username, password)
+        .WithPgAdmin();
+
+    return postgres.AddDatabase("PostgresDb");
+}
 
 IResourceBuilder<RabbitMQServerResource> CreateMessagingResource()
 {
