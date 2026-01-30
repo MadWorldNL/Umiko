@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -6,8 +5,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var postgresDb = CreateDatabaseResource();
 
 var keycloak = builder.AddKeycloak("keycloak")
-    .WithDataVolume()
-    .WithOtlpExporter();
+    .WithDataVolume();
 
 var rabbitmq = CreateMessagingResource();
 

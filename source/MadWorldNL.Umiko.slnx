@@ -22,6 +22,9 @@
     <File Path="..\LICENSE" />
     <File Path="..\README.md" />
   </Folder>
+  <Folder Name="/_Repository/documentation/">
+    <File Path="..\documentation\ubuntu-dev-environment.md" />
+  </Folder>
   <Folder Name="/_Solution/">
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
