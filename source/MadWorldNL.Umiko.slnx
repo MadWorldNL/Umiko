@@ -19,11 +19,17 @@
   <Folder Name="/Tests/" />
   <Folder Name="/_Repository/">
     <File Path="..\CLAUDE.md" />
+    <File Path="..\CODE_OF_CONDUCT.md" />
     <File Path="..\LICENSE" />
     <File Path="..\README.md" />
   </Folder>
   <Folder Name="/_Repository/documentation/">
     <File Path="..\documentation\ubuntu-dev-environment.md" />
+  </Folder>
+  <Folder Name="/_Repository/github/">
+    <File Path="..\.github\ISSUE_TEMPLATE\bug_report.md" />
+    <File Path="..\.github\ISSUE_TEMPLATE\feature_request.md" />
+    <File Path="..\.github\pull_request_template.md" />
   </Folder>
   <Folder Name="/_Solution/">
     <File Path="Directory.Build.props" />
