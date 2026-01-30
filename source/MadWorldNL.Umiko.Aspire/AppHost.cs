@@ -1,33 +1,49 @@
+using System.Runtime.CompilerServices;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
 var postgresDb = CreateDatabaseResource();
+
+var keycloak = builder.AddKeycloak("keycloak")
+    .WithDataVolume()
+    .WithOtlpExporter();
+
 var rabbitmq = CreateMessagingResource();
 
 var api = builder.AddProject<Api>("Api")
+    .WaitFor(keycloak)
     .WaitFor(postgresDb)
     .WaitFor(rabbitmq)
+    .WithReference(keycloak)
     .WithReference(postgresDb)
     .WithReference(rabbitmq);
 
 var bus = builder.AddProject<Bus>("Bus")
+    .WaitFor(keycloak)
     .WaitFor(postgresDb)
     .WaitFor(rabbitmq)
+    .WithReference(keycloak)
     .WithReference(postgresDb)
     .WithReference(rabbitmq);
 
 builder.AddProject<Web_Administrators>("Web-Administrators")
+    .WithExternalHttpEndpoints()
     .WaitFor(api)
-    .WithReference(api)
     .WaitFor(bus)
-    .WithReference(bus);
+    .WaitFor(keycloak)
+    .WithReference(api)
+    .WithReference(bus)
+    .WithReference(keycloak);
 
 builder.AddProject<Web_Users>("Web-Users")
+    .WithExternalHttpEndpoints()
     .WaitFor(api)
-    .WithReference(api)
     .WaitFor(bus)
-    .WithReference(bus);
+    .WaitFor(keycloak)
+    .WithReference(api)
+    .WithReference(bus)
+    .WithReference(keycloak);
 
 builder.Build().Run();
 
@@ -38,10 +54,13 @@ IResourceBuilder<PostgresDatabaseResource> CreateDatabaseResource()
     var username = builder.AddParameter("Database-Username", secret: true);
     var password = builder.AddParameter("Database-Password", secret: true);
 
-    var postgres = builder.AddPostgres("Postgres", username, password)
+    var postgresServer = builder
+        .AddPostgres("Postgres", username, password)
+        .WithDataVolume(isReadOnly: false)
         .WithPgAdmin();
 
-    return postgres.AddDatabase("PostgresDb");
+    var postgresDatabase = postgresServer.AddDatabase("PostgresDb");
+    return postgresDatabase;
 }
 
 IResourceBuilder<RabbitMQServerResource> CreateMessagingResource()
