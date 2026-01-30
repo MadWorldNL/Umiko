@@ -23,6 +23,7 @@
     <File Path="..\CONTRIBUTING.md" />
     <File Path="..\LICENSE" />
     <File Path="..\README.md" />
+    <File Path="..\SECURITY.md" />
   </Folder>
   <Folder Name="/_Repository/documentation/">
     <File Path="..\documentation\ubuntu-dev-environment.md" />
