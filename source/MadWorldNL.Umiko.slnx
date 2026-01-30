@@ -12,7 +12,10 @@
     <Project Path="MadWorldNL.Umiko.Controllers.Web.Administrators\Web.Administrators.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.Web.Users\Web.Users.csproj" />
   </Folder>
-  <Folder Name="/Core/Infrastructures/" />
+  <Folder Name="/Core/Infrastructures/">
+    <Project Path="MadWorldNL.Umiko.Infrastructures.Postgresql\Postgresql.csproj" />
+    <Project Path="MadWorldNL.Umiko.Infrastructures.RabbitMQ\RabbitMQ.csproj" />
+  </Folder>
   <Folder Name="/Solution/">
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />

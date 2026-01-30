@@ -3,5 +3,11 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\MadWorldNL.Umiko.Application.Functions\Functions.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Infrastructures.Postgresql\Postgresql.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Infrastructures.RabbitMQ\RabbitMQ.csproj" />
+    </ItemGroup>
 
 </Project>
