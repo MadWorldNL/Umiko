@@ -16,9 +16,14 @@
     <Project Path="MadWorldNL.Umiko.Infrastructures.Postgresql\Postgresql.csproj" />
     <Project Path="MadWorldNL.Umiko.Infrastructures.RabbitMQ\RabbitMQ.csproj" />
   </Folder>
-  <Folder Name="/Solution/">
+  <Folder Name="/Tests/" />
+  <Folder Name="/_Repository/">
+    <File Path="..\CLAUDE.md" />
+    <File Path="..\LICENSE" />
+    <File Path="..\README.md" />
+  </Folder>
+  <Folder Name="/_Solution/">
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
-  <Folder Name="/Tests/" />
 </Solution>

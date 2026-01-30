@@ -13,6 +13,7 @@ dotnet run --project source/MadWorldNL.Umiko.Aspire
 
 # Run individual projects
 dotnet run --project source/MadWorldNL.Umiko.Controllers.Api
+dotnet run --project source/MadWorldNL.Umiko.Controllers.Bus
 dotnet run --project source/MadWorldNL.Umiko.Controllers.Web.Administrators
 dotnet run --project source/MadWorldNL.Umiko.Controllers.Web.Users
 ```
@@ -26,19 +27,36 @@ Umiko is a .NET 10.0 distributed web application using Microsoft Aspire for orch
 ```
 Aspire Host (Orchestrator)
 ├── Controllers.Api (REST API)
-│   └── Application.Functions (Business Logic)
-│       └── Application.Domain (Entities)
+│   ├── Application.Functions (Business Logic)
+│   │   └── Application.Domain (Entities)
+│   ├── Infrastructures.Postgresql
+│   │   └── Application.Domain
+│   └── Infrastructures.RabbitMQ
+│       └── Application.Domain
+├── Controllers.Bus (Message Consumer)
+│   ├── Application.Functions
+│   ├── Infrastructures.Postgresql
+│   └── Infrastructures.RabbitMQ
 ├── Controllers.Web.Administrators (Blazor WASM - Admin Portal)
 └── Controllers.Web.Users (Blazor WASM - User Portal)
 ```
 
+### Backing Services
+
+- **PostgreSQL**: Relational database with pgAdmin, credentials managed via Aspire secret parameters
+- **RabbitMQ**: Message broker with management plugin, credentials managed via Aspire secret parameters
+- **Keycloak**: Identity and access management server with OpenTelemetry export
+
 ### Layer Responsibilities
 
-- **Aspire Host**: Orchestrates and runs all services together for local development
+- **Aspire Host**: Orchestrates all services and infrastructure for local development
 - **Controllers.Api**: REST API with OpenAPI support, handles HTTP requests
+- **Controllers.Bus**: Background message processing service, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
-- **Application.Functions**: Business logic layer, shared by API
+- **Application.Functions**: Business logic layer, shared by API and Bus
 - **Application.Domain**: Domain entities and business rules
+- **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain
+- **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain
 
 ### Key Configuration
 
