@@ -7,6 +7,7 @@
     <Project Path="MadWorldNL.Umiko.Application.Functions\Functions.csproj" />
   </Folder>
   <Folder Name="/Core/Controllers/">
+    <Project Path="MadWorldNL.Umiko.Controllers.Api.Contracts\Api.Contracts.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.Bus\Bus.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.Web.Administrators\Web.Administrators.csproj" />

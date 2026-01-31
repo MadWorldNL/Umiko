@@ -54,6 +54,7 @@ Aspire Host (Orchestrator)
 
 - **Aspire Host**: Orchestrates all services and infrastructure for local development
 - **Controllers.Api**: REST API with OpenAPI support and OpenTelemetry instrumentation, handles HTTP requests
+- **Controllers.Api.Contracts**: API contract definitions (DTOs/request-response models)
 - **Controllers.Bus**: Background message processing service with OpenTelemetry instrumentation, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
 - **Application.Functions**: Business logic layer, shared by API and Bus
@@ -88,9 +89,9 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 
 The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) (xUnit) to enforce dependency rules:
 - **Domain** cannot depend on any other project
-- **Infrastructure** (Postgresql, RabbitMQ) cannot depend on Functions or Controllers
+- **Infrastructure** (Postgresql, RabbitMQ) cannot depend on Functions, Api Contracts, or Controllers
 
-Each project exposes an `IMarker` interface (e.g. `IDomainMarker`, `IApiMarker`) used by tests to reference assemblies. Test classes inherit from `BaseArchitectureTests`, which loads all assemblies and defines layer providers.
+Each project exposes an `IMarker` interface (e.g. `IDomainMarker`, `IApiMarker`, `IApiContractsMarker`) used by tests to reference assemblies. Test classes inherit from `BaseArchitectureTests`, which loads all assemblies and defines layer providers.
 
 ### CI/CD
 

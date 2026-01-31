@@ -17,6 +17,7 @@
         <ProjectReference Include="..\MadWorldNL.Umiko.Application.Functions\Functions.csproj" />
         <ProjectReference Include="..\MadWorldNL.Umiko.Infrastructures.Postgresql\Postgresql.csproj" />
         <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api\Api.csproj" />
+        <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api.Contracts\Api.Contracts.csproj" />
         <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Bus\Bus.csproj" />
         <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web.Administrators\Web.Administrators.csproj" />
         <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Web.Users\Web.Users.csproj" />

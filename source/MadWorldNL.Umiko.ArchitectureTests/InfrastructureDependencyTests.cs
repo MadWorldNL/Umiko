@@ -12,6 +12,7 @@ public class InfrastructureDependencyTests : BaseArchitectureTests
         IArchRule rule = Types().That().Are(PostgresqlLayer).Should()
             .NotDependOnAny(FunctionsLayer)
             .AndShould().NotDependOnAny(ApiLayer)
+            .AndShould().NotDependOnAny(ApiContractsLayer)
             .AndShould().NotDependOnAny(BusLayer)
             .AndShould().NotDependOnAny(WebAdministratorsLayer)
             .AndShould().NotDependOnAny(WebUsersLayer);
@@ -25,6 +26,7 @@ public class InfrastructureDependencyTests : BaseArchitectureTests
         IArchRule rule = Types().That().Are(RabbitMqLayer).Should()
             .NotDependOnAny(FunctionsLayer)
             .AndShould().NotDependOnAny(ApiLayer)
+            .AndShould().NotDependOnAny(ApiContractsLayer)
             .AndShould().NotDependOnAny(BusLayer)
             .AndShould().NotDependOnAny(WebAdministratorsLayer)
             .AndShould().NotDependOnAny(WebUsersLayer);

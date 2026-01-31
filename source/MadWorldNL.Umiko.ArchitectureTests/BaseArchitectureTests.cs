@@ -14,6 +14,7 @@ public abstract class BaseArchitectureTests
             .LoadAssembly(typeof(IPostgresqlMarker).Assembly)
             .LoadAssembly(typeof(IRabbitMqMarker).Assembly)
             .LoadAssembly(typeof(IApiMarker).Assembly)
+            .LoadAssembly(typeof(IApiContractsMarker).Assembly)
             .LoadAssembly(typeof(IBusMarker).Assembly)
             .LoadAssembly(typeof(IWebAdministratorsMarker).Assembly)
             .LoadAssembly(typeof(IWebUsersMarker).Assembly)
@@ -33,6 +34,9 @@ public abstract class BaseArchitectureTests
 
     protected readonly IObjectProvider<IType> ApiLayer =
         Types().That().ResideInAssembly(typeof(IApiMarker).Assembly).As("Api Layer");
+
+    protected readonly IObjectProvider<IType> ApiContractsLayer =
+        Types().That().ResideInAssembly(typeof(IApiContractsMarker).Assembly).As("Api Contracts Layer");
 
     protected readonly IObjectProvider<IType> BusLayer =
         Types().That().ResideInAssembly(typeof(IBusMarker).Assembly).As("Bus Layer");

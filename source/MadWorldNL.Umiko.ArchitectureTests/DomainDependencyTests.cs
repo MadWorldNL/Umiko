@@ -14,6 +14,7 @@ public class DomainDependencyTests : BaseArchitectureTests
             .AndShould().NotDependOnAny(PostgresqlLayer)
             .AndShould().NotDependOnAny(RabbitMqLayer)
             .AndShould().NotDependOnAny(ApiLayer)
+            .AndShould().NotDependOnAny(ApiContractsLayer)
             .AndShould().NotDependOnAny(BusLayer)
             .AndShould().NotDependOnAny(WebAdministratorsLayer)
             .AndShould().NotDependOnAny(WebUsersLayer);
