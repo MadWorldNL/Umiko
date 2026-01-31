@@ -16,7 +16,9 @@
     <Project Path="MadWorldNL.Umiko.Infrastructures.Postgresql\Postgresql.csproj" />
     <Project Path="MadWorldNL.Umiko.Infrastructures.RabbitMQ\RabbitMQ.csproj" />
   </Folder>
-  <Folder Name="/Tests/" />
+  <Folder Name="/Tests/">
+    <Project Path="MadWorldNL.Umiko.ArchitectureTests\ArchitectureTests.csproj" />
+  </Folder>
   <Folder Name="/_Repository/">
     <File Path="..\CLAUDE.md" />
     <File Path="..\CODE_OF_CONDUCT.md" />
@@ -32,6 +34,11 @@
     <File Path="..\.github\ISSUE_TEMPLATE\bug_report.md" />
     <File Path="..\.github\ISSUE_TEMPLATE\feature_request.md" />
     <File Path="..\.github\pull_request_template.md" />
+  </Folder>
+  <Folder Name="/_Repository/github/workflows/">
+    <File Path="..\.github\workflows\build.yml" />
+    <File Path="..\.github\workflows\claude-code-review.yml" />
+    <File Path="..\.github\workflows\claude.yml" />
   </Folder>
   <Folder Name="/_Solution/">
     <File Path="Directory.Build.props" />

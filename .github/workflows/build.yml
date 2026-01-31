@@ -1,4 +1,4 @@
-name: Build
+name: Build 
 
 on:
   push:
@@ -23,3 +23,6 @@ jobs:
 
       - name: Build
         run: dotnet build source/MadWorldNL.Umiko.slnx --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test source/MadWorldNL.Umiko.slnx --no-build --configuration Release
