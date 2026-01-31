@@ -10,4 +10,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api.Contracts\Api.Contracts.csproj" />
+    </ItemGroup>
+
 </Project>
