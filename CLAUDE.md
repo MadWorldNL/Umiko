@@ -8,6 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build entire solution
 dotnet build source/MadWorldNL.Umiko.slnx
 
+# Run tests
+dotnet test source/MadWorldNL.Umiko.slnx
+
 # Run the full application (starts all services via Aspire)
 dotnet run --project source/MadWorldNL.Umiko.Aspire
 
@@ -80,6 +83,19 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 - ASP.NET Core and Kestrel metrics
 - ASP.NET Core and HTTP client tracing
 - OTLP export when `OTEL_EXPORTER_OTLP_ENDPOINT` is configured
+
+### Architecture Tests
+
+The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) (xUnit) to enforce dependency rules:
+- **Domain** cannot depend on any other project
+- **Infrastructure** (Postgresql, RabbitMQ) cannot depend on Functions or Controllers
+
+Each project exposes an `IMarker` interface (e.g. `IDomainMarker`, `IApiMarker`) used by tests to reference assemblies. Test classes inherit from `BaseArchitectureTests`, which loads all assemblies and defines layer providers.
+
+### CI/CD
+
+GitHub Actions workflow (`.github/workflows/build.yml`) runs on push/PR to `main`:
+- Restores, builds (Release), and tests the solution
 
 ### Community Files
 
