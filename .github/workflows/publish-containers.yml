@@ -72,14 +72,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.PACKAGE_TOKEN }}
 
-      - name: Determine version
-        id: version
-        run: echo "tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - name: Determine version and image
+        id: meta
+        run: |
+          echo "tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ matrix.image }}"
+          echo "image=${IMAGE,,}" >> "$GITHUB_OUTPUT"
 
       - name: Create and push multi-arch manifest
         env:
-          IMAGE: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ matrix.image }}
-          VERSION: ${{ steps.version.outputs.tag }}
+          IMAGE: ${{ steps.meta.outputs.image }}
+          VERSION: ${{ steps.meta.outputs.tag }}
         run: |
           docker manifest create ${IMAGE}:${VERSION} \
             ${IMAGE}:${VERSION}-x64 \
