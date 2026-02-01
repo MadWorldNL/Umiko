@@ -40,6 +40,7 @@
     <File Path="..\.github\workflows\build.yml" />
     <File Path="..\.github\workflows\claude-code-review.yml" />
     <File Path="..\.github\workflows\claude.yml" />
+    <File Path="..\.github\workflows\publish-containers.yml" />
   </Folder>
   <Folder Name="/_Solution/">
     <File Path="Directory.Build.props" />
