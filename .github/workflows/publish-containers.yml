@@ -18,11 +18,12 @@ jobs:
     strategy:
       matrix:
         arch: [x64, arm64]
+        image: [api, bus]
         include:
-          - project: source/MadWorldNL.Umiko.Controllers.Api/Api.csproj
-            image: api
-          - project: source/MadWorldNL.Umiko.Controllers.Bus/Bus.csproj
-            image: bus
+          - image: api
+            project: source/MadWorldNL.Umiko.Controllers.Api/Api.csproj
+          - image: bus
+            project: source/MadWorldNL.Umiko.Controllers.Bus/Bus.csproj
 
     steps:
       - uses: actions/checkout@v4
