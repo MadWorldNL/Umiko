@@ -11,13 +11,24 @@ Umiko (海子) is Japanese for "child of the sea" — because like the ocean, th
 
 ## Getting Started
 ### Install Guide
-*TODO*
+
+#### Prerequisites
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [Docker](https://docs.docker.com/get-docker/)
+
+#### Running the application
+
+Start all services via the Aspire orchestrator:
+
+```bash
+dotnet run --project source/MadWorldNL.Umiko.Aspire
+```
+
+This will spin up the API, message bus, web portals, and all backing services (PostgreSQL, RabbitMQ, Keycloak) automatically.
 
 ### Usage Guide
 *TODO*
 
 ## License
 MIT © Oscar Veldman
-
-
-
