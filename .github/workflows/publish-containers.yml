@@ -53,6 +53,56 @@ jobs:
             -p:ContainerRepository=${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ matrix.image }} \
             -p:ContainerImageTags='"${{ steps.version.outputs.tag }}-${{ matrix.arch }};latest-${{ matrix.arch }}"'
 
+  publish-web:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        image: [web-administrators, web-users]
+        include:
+          - image: web-administrators
+            dockerfile: source/MadWorldNL.Umiko.Controllers.Web.Administrators/Dockerfile
+          - image: web-users
+            dockerfile: source/MadWorldNL.Umiko.Controllers.Web.Users/Dockerfile
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.PACKAGE_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Determine version and image
+        id: meta
+        run: |
+          echo "tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ matrix.image }}"
+          echo "image=${IMAGE,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push multi-arch image
+        uses: docker/build-push-action@v6
+        with:
+          context: source
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.image }}:latest
+
   manifest:
     runs-on: ubuntu-latest
     needs: publish
