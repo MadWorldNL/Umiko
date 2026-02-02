@@ -71,7 +71,9 @@ Aspire Host (Orchestrator)
 ### Development URLs (when running individual projects)
 
 - API: `https://localhost:7115` or `http://localhost:5106`
+- Bus: `https://localhost:7109` or `http://localhost:5130`
 - Admin Portal: `https://localhost:7209` or `http://localhost:5214`
+- User Portal: `https://localhost:7292` or `http://localhost:5293`
 
 ### Solution File
 
@@ -93,10 +95,18 @@ The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUn
 
 Each project exposes an `IMarker` interface (e.g. `IDomainMarker`, `IApiMarker`, `IApiContractsMarker`) used by tests to reference assemblies. Test classes inherit from `BaseArchitectureTests`, which loads all assemblies and defines layer providers.
 
+### Containerization
+
+The web projects (`Controllers.Web.Administrators` and `Controllers.Web.Users`) include Dockerfiles that build the Blazor WASM apps and serve them via Nginx.
+
 ### CI/CD
 
-GitHub Actions workflow (`.github/workflows/build.yml`) runs on push/PR to `main`:
-- Restores, builds (Release), and tests the solution
+GitHub Actions workflows in `.github/workflows/`:
+
+- **`build.yml`**: Runs on push/PR to `main` — restores, builds (Release), and tests the solution
+- **`publish-containers.yml`**: Triggered on git tags (`v*`) — publishes multi-arch container images (x64/arm64) for Api, Bus, Web.Administrators, and Web.Users to GitHub Container Registry
+- **`claude-code-review.yml`**: Automated code review on pull requests using Claude Code
+- **`claude.yml`**: Responds to `@claude` mentions in comments, PR reviews, and issues
 
 ### Community Files
 
