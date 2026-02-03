@@ -32,6 +32,7 @@ Aspire Host (Orchestrator)
 ├── Controllers.Api (REST API)
 │   ├── Application.Functions (Business Logic)
 │   │   └── Application.Domain (Entities)
+│   │       └── Application.Frameworks (DDD Building Blocks)
 │   ├── Infrastructures.Postgresql
 │   │   └── Application.Domain
 │   └── Infrastructures.RabbitMQ
@@ -58,7 +59,8 @@ Aspire Host (Orchestrator)
 - **Controllers.Bus**: Background message processing service with OpenTelemetry instrumentation, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
 - **Application.Functions**: Business logic layer, shared by API and Bus
-- **Application.Domain**: Domain entities and business rules
+- **Application.Frameworks**: DDD building blocks (Entity, AggregateRoot, ValueObject, IDomainEvent) — no dependencies, foundational layer
+- **Application.Domain**: Domain entities and business rules, depends on Frameworks
 - **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain
 - **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain
 
@@ -90,7 +92,7 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 ### Architecture Tests
 
 The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) (xUnit) to enforce dependency rules:
-- **Domain** cannot depend on any other project
+- **Domain** can only depend on Frameworks
 - **Infrastructure** (Postgresql, RabbitMQ) cannot depend on Functions, Api Contracts, or Controllers
 
 Each project exposes an `IMarker` interface (e.g. `IDomainMarker`, `IApiMarker`, `IApiContractsMarker`) used by tests to reference assemblies. Test classes inherit from `BaseArchitectureTests`, which loads all assemblies and defines layer providers.
