@@ -7,7 +7,11 @@ A hobby project powered by Claude Code AI, focused on experimenting with new tec
 Umiko (海子) is Japanese for "child of the sea" — because like the ocean, this project is vast, full of surprises, and occasionally makes waves.
 
 ## Features
-*TODO*
+
+No features have been implemented yet. The following functionality is planned:
+
+### Planned
+- **CV (Curriculum Vitae)** — Administrators can create, edit, and view CVs through the admin portal. Users can view CVs through the user portal.
 
 ## Getting Started
 ### Install Guide
