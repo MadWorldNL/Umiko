@@ -34,7 +34,8 @@ builder.AddProject<Web_Administrators>("Web-Administrators")
     .WaitFor(keycloak)
     .WithReference(api)
     .WithReference(bus)
-    .WithReference(keycloak);
+    .WithReference(keycloak)
+    .WithHttpHealthCheck("/health.txt");
 
 builder.AddProject<Web_Users>("Web-Users")
     .WithExternalHttpEndpoints()
@@ -43,7 +44,8 @@ builder.AddProject<Web_Users>("Web-Users")
     .WaitFor(keycloak)
     .WithReference(api)
     .WithReference(bus)
-    .WithReference(keycloak);
+    .WithReference(keycloak)
+    .WithHttpHealthCheck("/health.txt");
 
 builder.Build().Run();
 
