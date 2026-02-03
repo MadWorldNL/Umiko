@@ -32,7 +32,33 @@ dotnet run --project source/MadWorldNL.Umiko.Aspire
 This will spin up the API, message bus, web portals, and all backing services (PostgreSQL, RabbitMQ, Keycloak) automatically.
 
 ### Usage Guide
-*TODO*
+
+Once the Aspire orchestrator is running, the following services are available:
+
+| Service | URL |
+|---------|-----|
+| Aspire Dashboard | `https://localhost:17105` |
+| API | `https://localhost:7115` |
+| Bus | `https://localhost:7109` |
+| Admin Portal | `https://localhost:7209` |
+| User Portal | `https://localhost:7292` |
+
+#### Backing Services
+
+Aspire automatically starts and configures the following backing services:
+
+- **PostgreSQL** — Relational database with pgAdmin for management
+- **RabbitMQ** — Message broker with management plugin enabled
+- **Keycloak** — Identity and access management server
+
+Credentials for these services are managed via Aspire secret parameters and pre-configured for local development.
+
+#### API Documentation
+
+Interactive API documentation is available in development mode via Scalar:
+
+- API: `https://localhost:7115/scalar/v1`
+- Bus: `https://localhost:7109/scalar/v1`
 
 ## License
 MIT © Oscar Veldman
