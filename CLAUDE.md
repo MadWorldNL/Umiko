@@ -89,6 +89,17 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 - ASP.NET Core and HTTP client tracing
 - OTLP export when `OTEL_EXPORTER_OTLP_ENDPOINT` is configured
 
+### Health Checks
+
+- **API & Bus**: Use the built-in ASP.NET Core health checks middleware (`builder.Services.AddHealthChecks()` + `app.MapHealthChecks("/health")`), exposed at `/health`
+- **Web projects**: Serve a static `wwwroot/health.txt` file at `/health.txt`, plus a `/health` Blazor page using `EmptyLayout`
+- **Aspire**: All four services have `.WithHttpHealthCheck()` configured in `AppHost.cs` — API and Bus use `/health`, web apps use `/health.txt`
+- Backing services (PostgreSQL, RabbitMQ, Keycloak) have automatic health checks provided by their Aspire hosting packages
+
+### API Documentation
+
+Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
+
 ### Architecture Tests
 
 The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) (xUnit) to enforce dependency rules:
