@@ -7,7 +7,7 @@ namespace MadWorldNL.Umiko;
 public class DomainDependencyTests : BaseArchitectureTests
 {
     [Fact]
-    public void Domain_ShouldNotDependOnOtherProjects()
+    public void Domain_ShouldOnlyDependOnFrameworks()
     {
         IArchRule rule = Types().That().Are(DomainLayer).Should()
             .NotDependOnAny(FunctionsLayer)

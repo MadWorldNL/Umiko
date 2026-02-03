@@ -1,5 +1,6 @@
 using ArchUnitNET.Domain;
 using ArchUnitNET.Loader;
+using MadWorldNL.Umiko.DDD;
 using MadWorldNL.Umiko.Web;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
@@ -9,6 +10,7 @@ public abstract class BaseArchitectureTests
 {
     protected static readonly Architecture Architecture =
         new ArchLoader()
+            .LoadAssembly(typeof(IFrameworksMarker).Assembly)
             .LoadAssembly(typeof(IDomainMarker).Assembly)
             .LoadAssembly(typeof(IFunctionsMarker).Assembly)
             .LoadAssembly(typeof(IPostgresqlMarker).Assembly)
@@ -19,6 +21,9 @@ public abstract class BaseArchitectureTests
             .LoadAssembly(typeof(IWebAdministratorsMarker).Assembly)
             .LoadAssembly(typeof(IWebUsersMarker).Assembly)
             .Build();
+
+    protected readonly IObjectProvider<IType> FrameworksLayer =
+        Types().That().ResideInAssembly(typeof(IFrameworksMarker).Assembly).As("Frameworks Layer");
 
     protected readonly IObjectProvider<IType> DomainLayer =
         Types().That().ResideInAssembly(typeof(IDomainMarker).Assembly).As("Domain Layer");

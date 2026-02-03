@@ -1,1 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\MadWorldNL.Umiko.Application.Frameworks\Frameworks.csproj" />
+    </ItemGroup>
+
+</Project>

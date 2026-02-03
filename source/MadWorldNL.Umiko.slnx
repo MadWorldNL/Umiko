@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/Core/Application/">
     <Project Path="MadWorldNL.Umiko.Application.Domain\Domain.csproj" />
+    <Project Path="MadWorldNL.Umiko.Application.Frameworks\Frameworks.csproj" />
     <Project Path="MadWorldNL.Umiko.Application.Functions\Functions.csproj" />
   </Folder>
   <Folder Name="/Core/Controllers/">
