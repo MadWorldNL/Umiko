@@ -15,7 +15,8 @@ var api = builder.AddProject<Api>("Api")
     .WaitFor(rabbitmq)
     .WithReference(keycloak)
     .WithReference(postgresDb)
-    .WithReference(rabbitmq);
+    .WithReference(rabbitmq)
+    .WithHttpHealthCheck("/health");
 
 var bus = builder.AddProject<Bus>("Bus")
     .WaitFor(keycloak)
@@ -23,7 +24,8 @@ var bus = builder.AddProject<Bus>("Bus")
     .WaitFor(rabbitmq)
     .WithReference(keycloak)
     .WithReference(postgresDb)
-    .WithReference(rabbitmq);
+    .WithReference(rabbitmq)
+    .WithHttpHealthCheck("/health");
 
 builder.AddProject<Web_Administrators>("Web-Administrators")
     .WithExternalHttpEndpoints()
