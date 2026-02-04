@@ -1,3 +1,4 @@
+[![Build & Test Application](https://github.com/MadWorldNL/Umiko/actions/workflows/build.yml/badge.svg)](https://github.com/MadWorldNL/Umiko/actions/workflows/build.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MadWorldNL_Umiko&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MadWorldNL_Umiko)
 
 # Umiko
