@@ -43,5 +43,6 @@ jobs:
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"MadWorldNL_Umiko" /o:"madworldnl" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
+          dotnet restore source/MadWorldNL.Umiko.slnx
+          dotnet build source/MadWorldNL.Umiko.slnx --no-restore
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
