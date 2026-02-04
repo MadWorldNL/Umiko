@@ -26,8 +26,8 @@ jobs:
 
       - name: Pull Docker images
         run: |
-          docker pull postgres:17.6 &
-          docker pull rabbitmq:4.2 &
+          docker pull postgres:latest &
+          docker pull rabbitmq:latest &
           wait
 
       - name: Build
