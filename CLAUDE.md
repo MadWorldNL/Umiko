@@ -116,8 +116,9 @@ The web projects (`Controllers.Web.Administrators` and `Controllers.Web.Users`) 
 
 GitHub Actions workflows in `.github/workflows/`:
 
-- **`build.yml`**: Runs on push/PR to `main` — installs dev certificates (linux-dev-certs), restores, builds (Release), and tests the solution
+- **`build.yml`** (Build & Test Application): Runs on push/PR to `main` — installs dev certificates (linux-dev-certs), restores, builds (Release), and tests the solution
 - **`publish-containers.yml`**: Triggered on git tags (`v*`) — publishes multi-arch container images (x64/arm64) for Api, Bus, Web.Administrators, and Web.Users to GitHub Container Registry
+- **`sonarqube.yml`** (SonarQube): Runs on push/PR to `main` — builds and analyzes code with SonarQube Cloud on Windows runner
 - **`claude-code-review.yml`**: Automated code review on pull requests using Claude Code
 - **`claude.yml`**: Responds to `@claude` mentions in comments, PR reviews, and issues
 
