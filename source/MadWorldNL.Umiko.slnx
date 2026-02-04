@@ -20,6 +20,10 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="MadWorldNL.Umiko.ArchitectureTests\ArchitectureTests.csproj" />
+    <Project Path="MadWorldNL.Umiko.Aspire.Tests\Aspire.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Tests/Controllers/">
+    <Project Path="MadWorldNL.Umiko.Controllers.IntegrationTests\IntegrationTests.csproj" />
   </Folder>
   <Folder Name="/_Repository/">
     <File Path="..\CLAUDE.md" />
