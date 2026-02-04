@@ -21,14 +21,17 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore source/MadWorldNL.Umiko.slnx
+      - name: Install Aspire CLI
+        run: dotnet tool install -g aspire.cli --prerelease
 
       - name: Pull Docker images
         run: |
           docker pull postgres:latest &
           docker pull rabbitmq:latest &
           wait
+
+      - name: Restore dependencies
+        run: dotnet restore source/MadWorldNL.Umiko.slnx
 
       - name: Build
         run: dotnet build source/MadWorldNL.Umiko.slnx --no-restore --configuration Release
