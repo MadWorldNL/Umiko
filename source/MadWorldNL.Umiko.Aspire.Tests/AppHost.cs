@@ -15,11 +15,4 @@ var api = builder.AddProject<Api>("Api")
     .WithReference(rabbitmq)
     .WithHttpHealthCheck("/health");
 
-var bus = builder.AddProject<Bus>("Bus")
-    .WaitFor(postgresDb)
-    .WaitFor(rabbitmq)
-    .WithReference(postgresDb)
-    .WithReference(rabbitmq)
-    .WithHttpHealthCheck("/health");
-
 builder.Build().Run();

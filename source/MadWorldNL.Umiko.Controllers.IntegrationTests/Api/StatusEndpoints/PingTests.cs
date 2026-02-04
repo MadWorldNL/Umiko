@@ -29,8 +29,8 @@ public class PingTests
         await app.StartAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
     
         // Act
-        using var httpClient = app.CreateHttpClient("api");
-        await app.ResourceNotifications.WaitForResourceHealthyAsync("api", cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
+        using var httpClient = app.CreateHttpClient("Api");
+        await app.ResourceNotifications.WaitForResourceHealthyAsync("Api", cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
         using var response = await httpClient.GetAsync("/Status/Ping", cancellationToken);
     
         // Assert
