@@ -21,6 +21,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Install dev certificates
+        run: |
+          dotnet tool update -g linux-dev-certs
+          dotnet linux-dev-certs install
+          dotnet dev-certs https --clean
+          dotnet dev-certs https --trust
+
       - name: Restore dependencies
         run: dotnet restore source/MadWorldNL.Umiko.slnx
 
