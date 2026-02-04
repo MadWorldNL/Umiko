@@ -1,4 +1,4 @@
-name: Build
+name: Build & Test Application
 permissions:
   contents: read
   pull-requests: write
