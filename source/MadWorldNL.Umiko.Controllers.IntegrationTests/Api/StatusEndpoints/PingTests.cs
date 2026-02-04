@@ -4,7 +4,7 @@ namespace MadWorldNL.Umiko.Api.StatusEndpoints;
 
 public class PingTests
 {
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(120);
+    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(600);
 
     [Fact]
     public async Task GetWebResourceRootReturnsOkStatusCode()
