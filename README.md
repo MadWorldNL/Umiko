@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MadWorldNL_Umiko&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MadWorldNL_Umiko)
+
 # Umiko
 
 A hobby project powered by Claude Code AI, focused on experimenting with new tech, smart ideas, and fun side-quests. Learning by building and enjoying the process.
