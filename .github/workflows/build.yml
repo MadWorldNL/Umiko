@@ -24,6 +24,12 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore source/MadWorldNL.Umiko.slnx
 
+      - name: Pull Docker images
+        run: |
+          docker pull postgres:latest &
+          docker pull rabbitmq:latest &
+          wait
+
       - name: Build
         run: dotnet build source/MadWorldNL.Umiko.slnx --no-restore --configuration Release
 
