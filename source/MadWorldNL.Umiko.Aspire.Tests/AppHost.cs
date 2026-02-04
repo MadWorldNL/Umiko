@@ -22,20 +22,4 @@ var bus = builder.AddProject<Bus>("Bus")
     .WithReference(rabbitmq)
     .WithHttpHealthCheck("/health");
 
-builder.AddProject<Web_Administrators>("Web-Administrators")
-    .WithExternalHttpEndpoints()
-    .WaitFor(api)
-    .WaitFor(bus)
-    .WithReference(api)
-    .WithReference(bus)
-    .WithHttpHealthCheck("/health.txt");
-
-builder.AddProject<Web_Users>("Web-Users")
-    .WithExternalHttpEndpoints()
-    .WaitFor(api)
-    .WaitFor(bus)
-    .WithReference(api)
-    .WithReference(bus)
-    .WithHttpHealthCheck("/health.txt");
-
 builder.Build().Run();
