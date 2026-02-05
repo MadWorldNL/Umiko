@@ -52,7 +52,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"MadWorldNL_Umiko" /o:"madworldnl" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths=TestResults/*/coverage.opencover.xml /d:sonar.coverage.exclusions="**Test*.cs"
+          dotnet-sonarscanner begin /k:"MadWorldNL_Umiko" /o:"madworldnl" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths=TestResults/coverage.opencover.xml /d:sonar.coverage.exclusions="**Test*.cs"
           dotnet restore source/MadWorldNL.Umiko.slnx
           dotnet build source/MadWorldNL.Umiko.slnx --no-restore
           coverlet source/MadWorldNL.Umiko.Controllers.IntegrationTests/bin/Debug/net10.0/IntegrationTests.dll \
