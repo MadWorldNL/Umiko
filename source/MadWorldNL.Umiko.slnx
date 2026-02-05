@@ -34,7 +34,11 @@
     <File Path="..\SECURITY.md" />
   </Folder>
   <Folder Name="/_Repository/documentation/">
+    <File Path="..\documentation\database.md" />
+    <File Path="..\documentation\kubernetes.md" />
+    <File Path="..\documentation\setup-server.md" />
     <File Path="..\documentation\ubuntu-dev-environment.md" />
+    <File Path="..\documentation\versions.md" />
   </Folder>
   <Folder Name="/_Repository/github/">
     <File Path="..\.github\ISSUE_TEMPLATE\bug_report.md" />
