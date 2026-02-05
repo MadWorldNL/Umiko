@@ -39,9 +39,6 @@ jobs:
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: |
           dotnet tool install --global dotnet-sonarscanner
-      - name: Install Coverlet global tool
-        run: |
-          dotnet tool install --global coverlet.console
       - name: Install dev certificates
         run: |
           dotnet tool update -g linux-dev-certs
@@ -52,19 +49,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"MadWorldNL_Umiko" /o:"madworldnl" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths=TestResults/coverage.opencover.xml /d:sonar.coverage.exclusions="**Test*.cs"
+          dotnet-sonarscanner begin /k:"MadWorldNL_Umiko" /o:"madworldnl" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths=TestResults/*/coverage.opencover.xml /d:sonar.coverage.exclusions="**Test*.cs"
           dotnet restore source/MadWorldNL.Umiko.slnx
           dotnet build source/MadWorldNL.Umiko.slnx --no-restore
-          coverlet source/MadWorldNL.Umiko.Controllers.IntegrationTests/bin/Debug/net10.0/IntegrationTests.dll \
-            --target "dotnet" \
-            --targetargs "test source/MadWorldNL.Umiko.slnx --no-build --no-restore --blame-hang-timeout 5min" \
-            --include "[Api]*" \
-            --include "[Bus]*" \
-            --include "[Functions]*" \
-            --include "[Domain]*" \
-            --include "[Frameworks]*" \
-            --include "[Postgresql]*" \
-            --include "[RabbitMQ]*" \
-            --format opencover \
-            --output TestResults/coverage.opencover.xml
+          dotnet test source/MadWorldNL.Umiko.slnx --no-build --no-restore --blame-hang-timeout 5min --collect:"XPlat Code Coverage" --results-directory TestResults/ -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover;
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
