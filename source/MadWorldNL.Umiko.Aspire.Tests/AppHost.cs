@@ -38,4 +38,4 @@ builder.AddProject<Web_Users>("Web-Users")
     .WithReference(bus)
     .WithHttpHealthCheck("/health.txt");
 
-builder.Build().Run();
+await builder.Build().RunAsync();

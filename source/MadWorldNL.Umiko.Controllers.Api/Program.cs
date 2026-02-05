@@ -25,4 +25,4 @@ app.UseHttpsRedirection();
 app.MapHealthChecks("/health");
 app.AddStatusEndpoints();
 
-app.Run();
+await app.RunAsync();

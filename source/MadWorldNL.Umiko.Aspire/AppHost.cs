@@ -47,7 +47,7 @@ builder.AddProject<Web_Users>("Web-Users")
     .WithReference(keycloak)
     .WithHttpHealthCheck("/health.txt");
 
-builder.Build().Run();
+await builder.Build().RunAsync();
 
 return;
 
