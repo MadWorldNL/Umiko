@@ -1,4 +1,4 @@
-namespace MadWorldNL.Umiko.Api.StatusEndpoints;
+namespace MadWorldNL.Umiko.Bus.StatusEndpoints;
 
 [Collection(AspireCollection.Name)]
 public class PingTests(AspireFixture fixture)
@@ -10,9 +10,9 @@ public class PingTests(AspireFixture fixture)
     {
         // Arrange
         var cancellationToken = CancellationToken.None;
-        using var httpClient = fixture.App.CreateHttpClient("Api");
+        using var httpClient = fixture.App.CreateHttpClient("Bus");
         await fixture.App.ResourceNotifications
-            .WaitForResourceHealthyAsync("Api", cancellationToken)
+            .WaitForResourceHealthyAsync("Bus", cancellationToken)
             .WaitAsync(DefaultTimeout, cancellationToken);
 
         // Act

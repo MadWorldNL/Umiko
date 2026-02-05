@@ -1,0 +1,6 @@
+global using System.Net;
+global using Microsoft.Extensions.DependencyInjection;
+global using Aspire.Hosting.ApplicationModel;
+global using Aspire.Hosting.Testing;
+global using MadWorldNL.Umiko.Fixtures;
+global using Xunit;
