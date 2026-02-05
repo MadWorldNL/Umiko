@@ -100,6 +100,14 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 
 Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
 
+### Integration Tests
+
+The `Controllers.IntegrationTests` project uses Aspire.Hosting.Testing to run integration tests against the full distributed application. Key patterns:
+
+- **Shared fixture**: `AspireFixture` implements `IAsyncLifetime` to start the Aspire app once and share it across all tests in the `"Aspire"` collection
+- **Collection attribute**: Test classes use `[Collection(AspireCollection.Name)]` to share the fixture
+- **Global usings**: Defined in `GlobalUsings.cs` (not in csproj)
+
 ### Architecture Tests
 
 The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) (xUnit) to enforce dependency rules:
