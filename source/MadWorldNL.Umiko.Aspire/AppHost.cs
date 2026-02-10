@@ -61,7 +61,7 @@ IResourceBuilder<PostgresDatabaseResource> CreateDatabaseResource()
         .WithDataVolume(isReadOnly: false)
         .WithPgAdmin();
 
-    var postgresDatabase = postgresServer.AddDatabase("PostgresDb");
+    var postgresDatabase = postgresServer.AddDatabase("UmikoDb");
     return postgresDatabase;
 }
 

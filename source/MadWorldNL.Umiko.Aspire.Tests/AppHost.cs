@@ -4,7 +4,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var postgresDb = builder
     .AddPostgres("Postgres")
-    .AddDatabase("PostgresDb");
+    .AddDatabase("UmikoDb");
 
 var rabbitmq = builder.AddRabbitMQ("Messaging");
 
