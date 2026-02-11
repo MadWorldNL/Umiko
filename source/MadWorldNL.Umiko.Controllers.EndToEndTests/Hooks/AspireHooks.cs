@@ -6,8 +6,9 @@ namespace MadWorldNL.Umiko.Hooks;
 [Binding]
 public class AspireHooks
 {
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(600);
-
+    public const float DefaultTimeoutMilliseconds = 600_000;
+    public static readonly TimeSpan DefaultTimeout = TimeSpan.FromMilliseconds(DefaultTimeoutMilliseconds);
+    
     private static DistributedApplication? _app;
     private static IPlaywright? _playwright;
     private static IBrowser? _browser;

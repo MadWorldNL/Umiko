@@ -4,8 +4,6 @@ namespace MadWorldNL.Umiko.StepDefinitions.WebAdministrators;
 [Scope(Feature = "Web Administrators Health")]
 public class HealthSteps
 {
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
-
     private IBrowserContext? _context;
     private IPage? _page;
     private IResponse? _response;
@@ -33,21 +31,21 @@ public class HealthSteps
         var cancellationToken = CancellationToken.None;
         await AspireHooks.App.ResourceNotifications
             .WaitForResourceHealthyAsync(serviceName, cancellationToken)
-            .WaitAsync(DefaultTimeout, cancellationToken);
+            .WaitAsync(AspireHooks.DefaultTimeout, cancellationToken);
     }
 
     [When("I navigate to the health page on {word}")]
     public async Task WhenINavigateToTheHealthPageOn(string serviceName)
     {
         var endpoint = AspireHooks.App.GetEndpoint(serviceName, "https");
-        _response = await _page!.GotoAsync($"{endpoint}health");
+        _response = await _page!.GotoAsync($"{endpoint}health", new PageGotoOptions { Timeout = AspireHooks.DefaultTimeoutMilliseconds });
     }
 
     [When("I navigate to the home page on {word}")]
     public async Task WhenINavigateToTheHomePageOn(string serviceName)
     {
         var endpoint = AspireHooks.App.GetEndpoint(serviceName, "https");
-        _response = await _page!.GotoAsync(endpoint.ToString());
+        _response = await _page!.GotoAsync(endpoint.ToString(), new PageGotoOptions { Timeout = AspireHooks.DefaultTimeoutMilliseconds });
     }
 
     [When("I navigate to the home page on {word} and wait for it to load")]
@@ -63,8 +61,8 @@ public class HealthSteps
             }
         };
 
-        await _page.GotoAsync(endpoint.ToString());
-        await _page.WaitForSelectorAsync("h1");
+        await _page.GotoAsync(endpoint.ToString(), new PageGotoOptions { Timeout = AspireHooks.DefaultTimeoutMilliseconds });
+        await _page.WaitForSelectorAsync("h1", new PageWaitForSelectorOptions { Timeout = AspireHooks.DefaultTimeoutMilliseconds });
     }
 
     [Then("the page should return status code {int}")]
@@ -83,7 +81,7 @@ public class HealthSteps
     [Then("the heading should be {string}")]
     public async Task ThenTheHeadingShouldBe(string expectedHeading)
     {
-        var heading = await _page!.Locator("h1").TextContentAsync();
+        var heading = await _page!.Locator("h1", new PageLocatorOptions()).TextContentAsync(new LocatorTextContentOptions() { Timeout = AspireHooks.DefaultTimeoutMilliseconds });
         Assert.Equal(expectedHeading, heading);
     }
 }
