@@ -1,25 +1,19 @@
 using Aspire.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace MadWorldNL.Umiko.Fixtures;
+namespace MadWorldNL.Umiko.Hooks;
 
-public class AspireFixture : IAsyncLifetime
+[Binding]
+public class AspireHooks
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(600);
 
-    private DistributedApplication? _app;
-    private IPlaywright? _playwright;
-    private IBrowser? _browser;
+    private static DistributedApplication? _app;
 
-    public DistributedApplication App => _app ?? throw new InvalidOperationException("Aspire app not initialized");
-    public IBrowser Browser => _browser ?? throw new InvalidOperationException("Browser not initialized");
+    public static DistributedApplication App => _app ?? throw new InvalidOperationException("Aspire app not initialized");
 
-    public Task<IBrowserContext> NewContextAsync() => Browser.NewContextAsync(new BrowserNewContextOptions
-    {
-        IgnoreHTTPSErrors = true
-    });
-
-    public async Task InitializeAsync()
+    [BeforeTestRun]
+    public static async Task BeforeTestRun()
     {
         var cancellationToken = CancellationToken.None;
 
@@ -37,23 +31,11 @@ public class AspireFixture : IAsyncLifetime
 
         _app = await appHost.BuildAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
         await _app.StartAsync(cancellationToken).WaitAsync(DefaultTimeout, cancellationToken);
-
-        _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = true
-        });
     }
 
-    public async Task DisposeAsync()
+    [AfterTestRun]
+    public static async Task AfterTestRun()
     {
-        if (_browser is not null)
-        {
-            await _browser.DisposeAsync();
-        }
-
-        _playwright?.Dispose();
-
         if (_app is not null)
         {
             await _app.DisposeAsync();
