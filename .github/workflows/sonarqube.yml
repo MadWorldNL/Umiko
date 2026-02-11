@@ -40,6 +40,7 @@ jobs:
         run: |
           dotnet tool install --global dotnet-sonarscanner
       - name: Install dev certificates
+        continue-on-error: true
         env:
           WSL_INTEROP: ""
         run: |
