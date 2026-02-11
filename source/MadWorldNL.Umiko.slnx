@@ -23,6 +23,7 @@
     <Project Path="MadWorldNL.Umiko.Aspire.Tests\Aspire.Tests.csproj" />
   </Folder>
   <Folder Name="/Tests/Controllers/">
+    <Project Path="MadWorldNL.Umiko.Controllers.EndToEndTests\EndToEndTests.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.IntegrationTests\IntegrationTests.csproj" />
   </Folder>
   <Folder Name="/_Repository/">

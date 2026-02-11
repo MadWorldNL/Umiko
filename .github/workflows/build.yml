@@ -28,6 +28,12 @@ jobs:
           dotnet dev-certs https --clean
           dotnet dev-certs https --trust
 
+      - name: Install Playwright browsers
+        working-directory: source/MadWorldNL.Umiko.Controllers.EndToEndTests
+        run: |
+          dotnet tool install --global Microsoft.Playwright.CLI
+          playwright install chromium
+
       - name: Restore dependencies
         run: dotnet restore source/MadWorldNL.Umiko.slnx
 
