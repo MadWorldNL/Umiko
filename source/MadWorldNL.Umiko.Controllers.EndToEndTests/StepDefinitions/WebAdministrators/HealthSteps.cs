@@ -37,21 +37,21 @@ public class HealthSteps
     [When("I navigate to the health page on {word}")]
     public async Task WhenINavigateToTheHealthPageOn(string serviceName)
     {
-        var endpoint = AspireHooks.App.GetEndpoint(serviceName, "https");
+        var endpoint = AspireHooks.App.GetEndpoint(serviceName, "http");
         _response = await _page!.GotoAsync($"{endpoint}health", new PageGotoOptions { Timeout = AspireHooks.DefaultTimeoutMilliseconds });
     }
 
     [When("I navigate to the home page on {word}")]
     public async Task WhenINavigateToTheHomePageOn(string serviceName)
     {
-        var endpoint = AspireHooks.App.GetEndpoint(serviceName, "https");
+        var endpoint = AspireHooks.App.GetEndpoint(serviceName, "http");
         _response = await _page!.GotoAsync(endpoint.ToString(), new PageGotoOptions { Timeout = AspireHooks.DefaultTimeoutMilliseconds });
     }
 
     [When("I navigate to the home page on {word} and wait for it to load")]
     public async Task WhenINavigateToTheHomePageOnAndWaitForItToLoad(string serviceName)
     {
-        var endpoint = AspireHooks.App.GetEndpoint(serviceName, "https");
+        var endpoint = AspireHooks.App.GetEndpoint(serviceName, "http");
 
         _page!.Console += (_, msg) =>
         {
