@@ -18,15 +18,12 @@ RUN dotnet publish MadWorldNL.Umiko.Controllers.Web.Users/Web.Users.csproj \
     -c Release \
     -o /app/publish
 
-FROM nginx:alpine AS final
+FROM nginxinc/nginx-unprivileged:alpine AS final
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
-
-# Copy custom nginx config
-COPY MadWorldNL.Umiko.Controllers.Web.Users/DockerConfigs/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx config (runs as non-root user)
+COPY --chown=nginx:nginx MadWorldNL.Umiko.Controllers.Web.Users/DockerConfigs/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy published Blazor WASM output to nginx
-COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
+COPY --chown=nginx:nginx --from=build /app/publish/wwwroot /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080
