@@ -64,4 +64,4 @@ Interactive API documentation is available in development mode via Scalar:
 - Bus: `https://localhost:7109/scalar/v1`
 
 ## License
-MIT © Oscar Veldman
+MIT © Oscar Veldman 
