@@ -1,3 +1,4 @@
+# docker build --file MadWorldNL.Umiko.Controllers.Web.Users/Dockerfile -t temp-web-users .
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
@@ -21,9 +22,9 @@ RUN dotnet publish MadWorldNL.Umiko.Controllers.Web.Users/Web.Users.csproj \
 FROM nginxinc/nginx-unprivileged:alpine AS final
 
 # Copy custom nginx config (runs as non-root user)
-COPY --chown=nginx:nginx MadWorldNL.Umiko.Controllers.Web.Users/DockerConfigs/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --chown=root:root --chmod=755 MadWorldNL.Umiko.Controllers.Web.Users/DockerConfigs/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy published Blazor WASM output to nginx
-COPY --chown=nginx:nginx --from=build /app/publish/wwwroot /usr/share/nginx/html
+COPY --chown=root:root --chmod=755 --from=build /app/publish/wwwroot /usr/share/nginx/html
 
 EXPOSE 8080
