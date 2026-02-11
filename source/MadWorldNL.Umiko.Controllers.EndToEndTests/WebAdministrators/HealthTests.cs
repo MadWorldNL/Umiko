@@ -15,7 +15,7 @@ public class HealthTests(AspireFixture fixture)
             .WaitAsync(DefaultTimeout, cancellationToken);
 
         var endpoint = fixture.App.GetEndpoint("Web-Administrators", "https");
-        await using var context = await fixture.Browser.NewContextAsync();
+        await using var context = await fixture.NewContextAsync();
         var page = await context.NewPageAsync();
 
         // Act
@@ -36,7 +36,7 @@ public class HealthTests(AspireFixture fixture)
             .WaitAsync(DefaultTimeout, cancellationToken);
 
         var endpoint = fixture.App.GetEndpoint("Web-Administrators", "https");
-        await using var context = await fixture.Browser.NewContextAsync();
+        await using var context = await fixture.NewContextAsync();
         var page = await context.NewPageAsync();
 
         // Act

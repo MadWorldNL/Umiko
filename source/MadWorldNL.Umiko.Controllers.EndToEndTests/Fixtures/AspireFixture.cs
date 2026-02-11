@@ -14,6 +14,11 @@ public class AspireFixture : IAsyncLifetime
     public DistributedApplication App => _app ?? throw new InvalidOperationException("Aspire app not initialized");
     public IBrowser Browser => _browser ?? throw new InvalidOperationException("Browser not initialized");
 
+    public Task<IBrowserContext> NewContextAsync() => Browser.NewContextAsync(new BrowserNewContextOptions
+    {
+        IgnoreHTTPSErrors = true
+    });
+
     public async Task InitializeAsync()
     {
         var cancellationToken = CancellationToken.None;
