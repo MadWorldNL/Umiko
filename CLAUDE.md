@@ -108,6 +108,14 @@ The `Controllers.IntegrationTests` project uses Aspire.Hosting.Testing to run in
 - **Collection attribute**: Test classes use `[Collection(AspireCollection.Name)]` to share the fixture
 - **Global usings**: Defined in `GlobalUsings.cs` (not in csproj)
 
+### End-to-End Tests
+
+The `Controllers.EndToEndTests` project uses Playwright with Aspire.Hosting.Testing for browser-based E2E tests. Key patterns:
+
+- **Shared fixture**: `AspireFixture` starts the Aspire app and Playwright browser, shared across all tests in the `"Aspire"` collection
+- **HTTPS certificate handling**: Browser contexts are created via `fixture.NewContextAsync()` which sets `IgnoreHTTPSErrors = true` — required because Chromium doesn't trust the ASP.NET Core dev certificate
+- **CI setup**: The `build.yml` workflow installs Playwright browsers via `playwright install chromium`
+
 ### Architecture Tests
 
 The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) (xUnit) to enforce dependency rules:
