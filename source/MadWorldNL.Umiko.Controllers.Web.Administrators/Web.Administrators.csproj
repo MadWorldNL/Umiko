@@ -14,4 +14,8 @@
       <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api.Contracts\Api.Contracts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\images\icons\" />
+    </ItemGroup>
+
 </Project>

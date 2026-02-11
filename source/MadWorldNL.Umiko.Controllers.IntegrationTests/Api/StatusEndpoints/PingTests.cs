@@ -6,7 +6,7 @@ public class PingTests(AspireFixture fixture)
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 
     [Fact]
-    public async Task GetWebResourceRootReturnsOkStatusCode()
+    public async Task Ping_WhenCalled_ReturnsOkStatusCode()
     {
         // Arrange
         var cancellationToken = CancellationToken.None;
