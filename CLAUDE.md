@@ -100,29 +100,37 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 
 Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
 
+### Test AppHost (Aspire.Tests)
+
+The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
+
 ### Integration Tests
 
-The `Controllers.IntegrationTests` project uses Aspire.Hosting.Testing to run integration tests against the full distributed application. Key patterns:
+The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosting.Testing to run integration tests against the full distributed application. Key patterns:
 
-- **Shared fixture**: `AspireFixture` implements `IAsyncLifetime` to start the Aspire app once and share it across all tests in the `"Aspire"` collection
-- **Collection attribute**: Test classes use `[Collection(AspireCollection.Name)]` to share the fixture
+- **Reqnroll + xUnit**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes
+- **Feature files**: Located in `Features/` (e.g. `Features/Api/StatusEndpoints/Ping.feature`)
+- **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/Api/StatusEndpoints/PingSteps.cs`)
+- **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run, replacing the old AspireFixture/AspireCollection pattern
 - **Global usings**: Defined in `GlobalUsings.cs` (not in csproj)
 
 ### End-to-End Tests
 
-The `Controllers.EndToEndTests` project uses Playwright with Aspire.Hosting.Testing for browser-based E2E tests. Key patterns:
+The `Controllers.EndToEndTests` project uses Playwright with Reqnroll (BDD) and Aspire.Hosting.Testing for browser-based E2E tests. Key patterns:
 
-- **Shared fixture**: `AspireFixture` starts the Aspire app and Playwright browser, shared across all tests in the `"Aspire"` collection
-- **HTTPS certificate handling**: Browser contexts are created via `fixture.NewContextAsync()` which sets `IgnoreHTTPSErrors = true` — required because Chromium doesn't trust the ASP.NET Core dev certificate
+- **Reqnroll + Playwright**: Tests are Gherkin feature files with step definitions that drive Playwright browser interactions
+- **Feature files**: Located in `Features/` (e.g. `Features/WebAdministrators/Health.feature`, `Features/WebUsers/Health.feature`)
+- **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/WebAdministrators/HealthSteps.cs`)
+- **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start the Aspire app and Playwright browser once per test run. Creates browser contexts with `IgnoreHTTPSErrors = true` (required because Chromium doesn't trust the ASP.NET Core dev certificate)
 - **CI setup**: The `build.yml` workflow installs Playwright browsers via `playwright install chromium`
 
 ### Architecture Tests
 
-The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) (xUnit) to enforce dependency rules:
+The `ArchitectureTests` project uses [ArchUnitNET](https://github.com/TNG/ArchUnitNET) with Reqnroll (BDD) to enforce dependency rules:
 - **Domain** can only depend on Frameworks
 - **Infrastructure** (Postgresql, RabbitMQ) cannot depend on Functions, Api Contracts, or Controllers
 
-Each project exposes an `IMarker` interface (e.g. `IDomainMarker`, `IApiMarker`, `IApiContractsMarker`) used by tests to reference assemblies. Test classes inherit from `BaseArchitectureTests`, which loads all assemblies and defines layer providers.
+Tests are written as Gherkin feature files (`Features/DomainDependencies.feature`, `Features/InfrastructureDependencies.feature`) with step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes. Each project exposes an `IMarker` interface (e.g. `IDomainMarker`, `IApiMarker`, `IApiContractsMarker`) used by tests to reference assemblies. Step definition classes inherit from `BaseArchitectureTests`, which loads all assemblies and defines layer providers.
 
 ### Containerization
 
