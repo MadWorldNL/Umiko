@@ -14,36 +14,39 @@ Make sure you have the following installed:
 * [helm](https://helm.sh/docs/intro/install/) – Kubernetes package manager.
 
 ### Kubernetes Dashboard
-Enable the Kubernetes Dashboard by running:
-```bash
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+Enable the Kubernetes Dashboard by installing [Headlamp](https://headlamp.dev/docs/latest/installation/desktop/):
+
+#### Windows
+
+Using **winget**:
+```shell
+winget install headlamp
 ```
 
-Apply the admin-user configuration (found at [dashboard-admin-user.yaml](../deployment/development/dashboard-admin-user.yml)) to create a ServiceAccount with admin privileges:
-```bash
-kubectl apply -f dashboard-admin-user.yml
+Using **Chocolatey**:
+```shell
+choco install headlamp
 ```
 
-Generate a login token for accessing the dashboard and copy to your clipboard:
-```bash
-kubectl -n kubernetes-dashboard create token admin-user --duration=12h
-```
-First, find the name of the dashboard pod:
-```bash
-kubectl get pods --all-namespaces
-```
-You can inspect the dashboard pod details using:
-```bash
-kubectl describe pod kubernetes-xxxxxxxxxx-xxxxx -n kubernetes-dashboard
-```
-This is useful for debugging or verifying that the pod is running correctly.
+Or download the `.exe` installer directly from the [latest release](https://github.com/kubernetes-sigs/headlamp/releases/latest).
 
-Then forward port 8443 to your local machine (replace the pod name as needed):
-```bash
-kubectl port-forward kubernetes-dashboard-xxxxxxxxxx-xxxxx 8443:8443 -n kubernetes-dashboard
+#### macOS
+
+Using **Homebrew** (recommended):
+```shell
+brew install --cask --no-quarantine headlamp
 ```
 
-Now open your browser and visit: https://localhost:8443/. Ignore any browser warnings about self-signed certificates and proceed.
+Or download the `.dmg` file from the [latest release](https://github.com/kubernetes-sigs/headlamp/releases/latest).
+
+If macOS blocks the app from running, open a terminal and run:
+```shell
+xattr -dr com.apple.quarantine /Applications/Headlamp.app
+```
+After this, running the app should work.
+
+#### Open the Dashboard
+Launch Headlamp and select your local Docker Desktop Kubernetes cluster. The dashboard gives you a visual overview of your cluster resources, workloads, and namespaces.
 
 ## Production
 ### Install on production
