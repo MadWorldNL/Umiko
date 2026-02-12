@@ -18,6 +18,9 @@
     <Project Path="MadWorldNL.Umiko.Infrastructures.Postgresql\Postgresql.csproj" />
     <Project Path="MadWorldNL.Umiko.Infrastructures.RabbitMQ\RabbitMQ.csproj" />
   </Folder>
+  <Folder Name="/Deployment/">
+    <Project Path="../deployment/Deployment.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="MadWorldNL.Umiko.ArchitectureTests\ArchitectureTests.csproj" />
     <Project Path="MadWorldNL.Umiko.Aspire.Tests\Aspire.Tests.csproj" />
