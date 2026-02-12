@@ -1,1 +1,4 @@
 namespace: umiko-production
+
+webUsers:
+  tag: 0.1.0

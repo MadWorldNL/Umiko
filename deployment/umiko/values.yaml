@@ -1,0 +1,5 @@
+webUsers:
+  name: web-users
+  image: ghcr.io/madworldnl/umiko/web-users
+  containerPort: 8080
+  servicePort: 80

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.webUsers.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.webUsers.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.webUsers.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.webUsers.name }}
+    spec:
+      containers:
+        - name: {{ .Values.webUsers.name }}
+          image: {{ .Values.webUsers.image }}:{{ .Values.webUsers.tag }}
+          ports:
+            - containerPort: {{ .Values.webUsers.containerPort }}
+          livenessProbe:
+            httpGet:
+              path: /health.txt
+              port: {{ .Values.webUsers.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health.txt
+              port: {{ .Values.webUsers.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.webUsers.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.webUsers.name }}
+spec:
+  selector:
+    app: {{ .Values.webUsers.name }}
+  ports:
+    - port: {{ .Values.webUsers.servicePort }}
+      targetPort: {{ .Values.webUsers.containerPort }}
+      protocol: TCP
