@@ -48,6 +48,19 @@ After this, running the app should work.
 #### Open the Dashboard
 Launch Headlamp and select your local Docker Desktop Kubernetes cluster. The dashboard gives you a visual overview of your cluster resources, workloads, and namespaces.
 
+### Deploy to Development
+Navigate to the folder `deployment/umiko` and execute the commands below.
+
+#### Install
+```shell
+helm install -f values.yaml -f values-development.yaml umiko .
+```
+
+#### Upgrade
+```shell
+helm upgrade -f values.yaml -f values-development.yaml umiko .
+```
+
 ## Production
 ### Install on production
 #### Step 1: Install MicroK8s
@@ -93,9 +106,9 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisione
 ```
 
 #### Step 4 - Install Cluster
-Navigate to the folder `deployment/MadTransfer` and execute this command:
+Navigate to the folder `deployment/umiko` and execute this command:
 ```shell
-microk8s helm install -f environments/values-production.yaml mad-transfer .
+microk8s helm install -f values.yaml -f values-production.yaml umiko .
 ```
 
 #### Step 5 - Status of Cluster
