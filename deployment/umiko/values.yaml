@@ -3,3 +3,9 @@ webUsers:
   image: ghcr.io/madworldnl/umiko/web-users
   containerPort: 8080
   servicePort: 80
+
+webAdministrators:
+  name: web-administrators
+  image: ghcr.io/madworldnl/umiko/web-administrators
+  containerPort: 8080
+  servicePort: 80

@@ -2,3 +2,6 @@ namespace: umiko-development
 
 webUsers:
   tag: 0.1.0
+
+webAdministrators:
+  tag: 0.1.0
