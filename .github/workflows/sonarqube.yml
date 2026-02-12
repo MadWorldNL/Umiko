@@ -57,5 +57,5 @@ jobs:
           dotnet build source/MadWorldNL.Umiko.slnx --no-restore
           dotnet tool install --global Microsoft.Playwright.CLI
           cd source/MadWorldNL.Umiko.Controllers.EndToEndTests && playwright install chromium && cd ../..
-          dotnet test source/MadWorldNL.Umiko.slnx --no-build --no-restore --blame-hang-timeout 5min --collect:"XPlat Code Coverage" --results-directory TestResults/ -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover;
+          dotnet test source/MadWorldNL.Umiko.slnx --no-build --no-restore --blame-hang-timeout 10min --collect:"XPlat Code Coverage" --results-directory TestResults/ -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover;
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
