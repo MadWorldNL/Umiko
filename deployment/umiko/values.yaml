@@ -1,3 +1,15 @@
+api:
+  name: api
+  image: ghcr.io/madworldnl/umiko/api
+  containerPort: 8080
+  servicePort: 80
+
+bus:
+  name: bus
+  image: ghcr.io/madworldnl/umiko/bus
+  containerPort: 8080
+  servicePort: 80
+
 webUsers:
   name: web-users
   image: ghcr.io/madworldnl/umiko/web-users

@@ -1,5 +1,11 @@
 namespace: umiko-development
 
+api:
+  tag: 0.1.0
+
+bus:
+  tag: 0.1.0
+
 webUsers:
   tag: 0.1.0
 

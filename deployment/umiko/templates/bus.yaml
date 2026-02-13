@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.bus.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.bus.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.bus.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.bus.name }}
+    spec:
+      containers:
+        - name: {{ .Values.bus.name }}
+          image: {{ .Values.bus.image }}:{{ .Values.bus.tag }}
+          ports:
+            - containerPort: {{ .Values.bus.containerPort }}
+          env:
+            - name: ConnectionStrings__UmikoDb
+              value: "Host={{ .Values.postgres.name }};Port={{ .Values.postgres.containerPort }};Database={{ .Values.postgres.database }};Username={{ .Values.postgres.username }};Password={{ .Values.postgres.password }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.bus.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.bus.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.bus.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.bus.name }}
+spec:
+  selector:
+    app: {{ .Values.bus.name }}
+  ports:
+    - port: {{ .Values.bus.servicePort }}
+      targetPort: {{ .Values.bus.containerPort }}
+      protocol: TCP
