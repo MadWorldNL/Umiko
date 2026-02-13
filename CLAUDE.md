@@ -136,6 +136,25 @@ Tests are written as Gherkin feature files (`Features/DomainDependencies.feature
 
 The web projects (`Controllers.Web.Administrators` and `Controllers.Web.Users`) include Dockerfiles that build the Blazor WASM apps and serve them via Nginx.
 
+### Helm Chart (Kubernetes Deployment)
+
+The Helm chart is located at `deployment/umiko/` and deploys all application services to Kubernetes.
+
+**Templates** (`deployment/umiko/templates/`):
+- `namespace.yaml`: Creates the target namespace
+- `postgres.yaml`: PostgreSQL StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
+- `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` env var composed from postgres values
+- `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` env var composed from postgres values
+- `web-administrators.yaml`: Admin portal Deployment and ClusterIP Service
+- `web-users.yaml`: User portal Deployment and ClusterIP Service
+
+**Values files**:
+- `values.yaml`: Base defaults (image names, ports)
+- `values-development.yaml`: Development overrides (namespace `umiko-development`, image tags, postgres password)
+- `values-production.yaml`: Production overrides (namespace `umiko-production`, image tags, postgres password)
+
+**Health checks**: API and Bus use `/health`, web apps use `/health.txt`
+
 ### CI/CD
 
 GitHub Actions workflows in `.github/workflows/`:
