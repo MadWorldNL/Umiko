@@ -9,3 +9,14 @@ webAdministrators:
   image: ghcr.io/madworldnl/umiko/web-administrators
   containerPort: 8080
   servicePort: 80
+
+postgres:
+  name: postgres
+  image: postgres
+  tag: 17
+  containerPort: 5432
+  servicePort: 5432
+  database: UmikoDb
+  username: umiko
+  password: changeme
+  storageSize: 1Gi

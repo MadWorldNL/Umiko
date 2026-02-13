@@ -5,3 +5,6 @@ webUsers:
 
 webAdministrators:
   tag: 0.1.0
+
+postgres:
+  password: development-password
