@@ -143,15 +143,25 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 **Templates** (`deployment/umiko/templates/`):
 - `namespace.yaml`: Creates the target namespace
 - `postgres.yaml`: PostgreSQL StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
+- `rabbitmq.yaml`: RabbitMQ StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
 - `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` env var composed from postgres values
 - `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` env var composed from postgres values
 - `web-administrators.yaml`: Admin portal Deployment and ClusterIP Service
 - `web-users.yaml`: User portal Deployment and ClusterIP Service
+- `ingress.yaml`: Traefik Ingress with subdomain-based routing and TLS
+
+**Ingress routing** (subdomain-based via Traefik):
+- `<domain>` → web-users
+- `admin.<domain>` → web-administrators
+- `api.<domain>` → api
+- `bus.<domain>` → bus
 
 **Values files**:
-- `values.yaml`: Base defaults (image names, ports)
-- `values-development.yaml`: Development overrides (namespace `umiko-development`, image tags, postgres password)
-- `values-production.yaml`: Production overrides (namespace `umiko-production`, image tags, postgres password)
+- `values.yaml`: Base defaults (image names, ports, ingress class/domain/TLS secret)
+- `values-development.yaml`: Development overrides (namespace `umiko-development`, image tags, domain `umiko.dev`)
+- `values-production.yaml`: Production overrides (namespace `umiko-production`, image tags, domain `umiko.example.com`)
+
+**TLS**: Uses mkcert for locally-trusted certificates. The TLS secret name is configured via `ingress.tlsSecret` in values.
 
 **Health checks**: API and Bus use `/health`, web apps use `/health.txt`
 
