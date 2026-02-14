@@ -117,21 +117,16 @@ sudo microk8s helm install traefik traefik/traefik -n traefik --create-namespace
 ### Usage on production
 #### Step 1 - Download source code
 ```shell
-git clone https://github.com/MadWorldNL/MadTransfer
+git clone https://github.com/MadWorldNL/Umiko
 ```
 
-#### Step 2 - Install Storage
-```shell
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
-```
-
-#### Step 3 - Install Cluster
+#### Step 2 - Install Cluster
 Navigate to the folder `deployment/umiko` and execute this command:
 ```shell
 microk8s helm install -f values.yaml -f values-production.yaml umiko .
 ```
 
-#### Step 4 - Status of Cluster
+#### Step 3 - Status of Cluster
 Convenient tools for debugging Kubernetes:
 ```shell
 microk8s dashboard-proxy --address 0.0.0.0
