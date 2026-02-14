@@ -71,6 +71,7 @@ postgres:
 ingress:
   className: traefik
   domain: umiko.local
+  tlsSecret: umiko-tls
 
 rabbitmq:
   name: rabbitmq

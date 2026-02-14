@@ -7,6 +7,13 @@ metadata:
     kubernetes.io/ingress.class: "traefik"
 spec:
   ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - secretName: {{ .Values.ingress.tlsSecret }}
+      hosts:
+        - {{ .Values.ingress.domain }}
+        - api.{{ .Values.ingress.domain }}
+        - bus.{{ .Values.ingress.domain }}
+        - admin.{{ .Values.ingress.domain }}
   rules:
     - host: api.{{ .Values.ingress.domain }}
       http:

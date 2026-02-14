@@ -54,6 +54,18 @@ Install Traefik as the ingress controller:
 helm repo add traefik https://traefik.github.io/charts
 helm repo update
 helm install traefik traefik/traefik -n traefik --create-namespace
+helm upgrade traefik traefik/traefik -n traefik --set-json 'providers.kubernetesIngress.namespaces=["umiko-development"]'
+```
+
+### Setup TLS with mkcert
+Install [mkcert](https://github.com/FiloSottile/mkcert) and create locally-trusted certificates:
+```shell
+mkcert -install
+mkcert umiko.dev "*.umiko.dev"
+kubectl create secret tls umiko-tls \
+  --cert=umiko.dev+1.pem \
+  --key=umiko.dev+1-key.pem \
+  -n umiko-development
 ```
 
 ### Deploy to Development

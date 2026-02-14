@@ -1,1 +1,33 @@
-TODO: Create notes
+Umiko has been deployed to namespace: {{ .Values.namespace }}
+
+=== Application URLs ===
+
+  User Portal:  https://{{ .Values.ingress.domain }}
+  Admin Portal: https://admin.{{ .Values.ingress.domain }}
+  API:          https://api.{{ .Values.ingress.domain }}
+  Bus:          https://bus.{{ .Values.ingress.domain }}
+
+=== Health Checks ===
+
+  API:          https://api.{{ .Values.ingress.domain }}/health
+  Bus:          https://bus.{{ .Values.ingress.domain }}/health
+  User Portal:  https://{{ .Values.ingress.domain }}/health.txt
+  Admin Portal: https://admin.{{ .Values.ingress.domain }}/health.txt
+
+=== Backing Services ===
+
+  PostgreSQL:   {{ .Values.postgres.name }}.{{ .Values.namespace }}:{{ .Values.postgres.servicePort }}
+  RabbitMQ:     {{ .Values.rabbitmq.name }}.{{ .Values.namespace }}:{{ .Values.rabbitmq.servicePort }}
+  RabbitMQ Mgmt: kubectl port-forward -n {{ .Values.namespace }} svc/{{ .Values.rabbitmq.name }} {{ .Values.rabbitmq.managementPort }}:{{ .Values.rabbitmq.managementServicePort }}
+
+=== TLS ===
+
+Make sure the TLS secret "{{ .Values.ingress.tlsSecret }}" exists in the {{ .Values.namespace }} namespace.
+To create it using mkcert:
+
+  mkcert -install
+  mkcert {{ .Values.ingress.domain }} "*.{{ .Values.ingress.domain }}"
+  kubectl create secret tls {{ .Values.ingress.tlsSecret }} \
+    --cert={{ .Values.ingress.domain }}+1.pem \
+    --key={{ .Values.ingress.domain }}+1-key.pem \
+    -n {{ .Values.namespace }}
