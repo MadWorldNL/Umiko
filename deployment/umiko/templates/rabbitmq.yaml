@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.rabbitmq.name }}
+type: Opaque
+stringData:
+  RABBITMQ_DEFAULT_USER: {{ .Values.rabbitmq.username }}
+  RABBITMQ_DEFAULT_PASS: {{ .Values.rabbitmq.password }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.rabbitmq.name }}
+spec:
+  serviceName: {{ .Values.rabbitmq.name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.rabbitmq.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.rabbitmq.name }}
+    spec:
+      containers:
+        - name: {{ .Values.rabbitmq.name }}
+          image: {{ .Values.rabbitmq.image }}:{{ .Values.rabbitmq.tag }}
+          ports:
+            - containerPort: {{ .Values.rabbitmq.containerPort }}
+            - containerPort: {{ .Values.rabbitmq.managementPort }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.rabbitmq.name }}
+          livenessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - check_port_connectivity
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - check_port_connectivity
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - name: rabbitmq-data
+              mountPath: /var/lib/rabbitmq
+  volumeClaimTemplates:
+    - metadata:
+        name: rabbitmq-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.rabbitmq.storageSize }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.rabbitmq.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.rabbitmq.name }}
+spec:
+  selector:
+    app: {{ .Values.rabbitmq.name }}
+  ports:
+    - name: amqp
+      port: {{ .Values.rabbitmq.servicePort }}
+      targetPort: {{ .Values.rabbitmq.containerPort }}
+      protocol: TCP
+    - name: management
+      port: {{ .Values.rabbitmq.managementServicePort }}
+      targetPort: {{ .Values.rabbitmq.managementPort }}
+      protocol: TCP

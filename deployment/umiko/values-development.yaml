@@ -14,3 +14,6 @@ webAdministrators:
 
 postgres:
   password: development-password
+
+rabbitmq:
+  password: development-password

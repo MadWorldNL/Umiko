@@ -32,3 +32,15 @@ postgres:
   username: umiko
   password: changeme
   storageSize: 1Gi
+
+rabbitmq:
+  name: rabbitmq
+  image: rabbitmq
+  tag: 4-management
+  containerPort: 5672
+  managementPort: 15672
+  servicePort: 5672
+  managementServicePort: 15672
+  username: umiko
+  password: changeme
+  storageSize: 1Gi
