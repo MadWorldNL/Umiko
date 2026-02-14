@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: umiko-ingress
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: api.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.api.name }}
+                port:
+                  number: {{ .Values.api.servicePort }}
+    - host: bus.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.bus.name }}
+                port:
+                  number: {{ .Values.bus.servicePort }}
+    - host: admin.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.webAdministrators.name }}
+                port:
+                  number: {{ .Values.webAdministrators.servicePort }}
+    - host: {{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.webUsers.name }}
+                port:
+                  number: {{ .Values.webUsers.servicePort }}

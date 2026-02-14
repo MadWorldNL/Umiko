@@ -48,6 +48,14 @@ After this, running the app should work.
 #### Open the Dashboard
 Launch Headlamp and select your local Docker Desktop Kubernetes cluster. The dashboard gives you a visual overview of your cluster resources, workloads, and namespaces.
 
+### Install Traefik
+Install Traefik as the ingress controller:
+```shell
+helm repo add traefik https://traefik.github.io/charts
+helm repo update
+helm install traefik traefik/traefik -n traefik --create-namespace
+```
+
 ### Deploy to Development
 Navigate to the folder `deployment/umiko` and execute the commands below.
 
@@ -76,7 +84,6 @@ Required:
 sudo microk8s enable dns
 sudo microk8s enable helm
 sudo microk8s enable dashboard
-sudo microk8s enable ingress
 sudo microk8s enable cert-manager
 sudo microk8s enable hostpath-storage
 ```
@@ -85,6 +92,14 @@ Optional:
 ```shell
 sudo microk8s enable metrics-server
 sudo microk8s enable prometheus
+```
+
+#### Step 3: Install Traefik
+Install Traefik as the ingress controller:
+```shell
+sudo microk8s helm repo add traefik https://traefik.github.io/charts
+sudo microk8s helm repo update
+sudo microk8s helm install traefik traefik/traefik -n traefik --create-namespace
 ```
 
 ### Usage on production

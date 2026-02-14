@@ -12,6 +12,9 @@ webUsers:
 webAdministrators:
   tag: 0.1.0
 
+ingress:
+  domain: umiko.example.com
+
 postgres:
   password: changeme
 

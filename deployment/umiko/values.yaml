@@ -68,6 +68,10 @@ postgres:
       cpu: "1"
       memory: 512Mi
 
+ingress:
+  className: traefik
+  domain: umiko.local
+
 rabbitmq:
   name: rabbitmq
   image: rabbitmq
@@ -82,7 +86,7 @@ rabbitmq:
   resources:
     requests:
       cpu: 250m
-      memory: 256Mi
+      memory: 512Mi
     limits:
       cpu: "1"
-      memory: 512Mi
+      memory: 1Gi
