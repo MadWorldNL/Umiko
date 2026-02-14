@@ -51,6 +51,7 @@ spec:
                 - check_port_connectivity
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 5
           readinessProbe:
             exec:
               command:
@@ -58,6 +59,7 @@ spec:
                 - check_port_connectivity
             initialDelaySeconds: 15
             periodSeconds: 10
+            timeoutSeconds: 5
           volumeMounts:
             - name: rabbitmq-data
               mountPath: /var/lib/rabbitmq
