@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ .Values.bus.name }}
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Values.bus.name }}
           image: {{ .Values.bus.image }}:{{ .Values.bus.tag }}

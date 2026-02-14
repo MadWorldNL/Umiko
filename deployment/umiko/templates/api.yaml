@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ .Values.api.name }}
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Values.api.name }}
           image: {{ .Values.api.image }}:{{ .Values.api.tag }}

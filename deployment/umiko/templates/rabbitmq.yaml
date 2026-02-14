@@ -28,6 +28,7 @@ spec:
       labels:
         app: {{ .Values.rabbitmq.name }}
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Values.rabbitmq.name }}
           image: {{ .Values.rabbitmq.image }}:{{ .Values.rabbitmq.tag }}

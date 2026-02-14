@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ .Values.webAdministrators.name }}
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Values.webAdministrators.name }}
           image: {{ .Values.webAdministrators.image }}:{{ .Values.webAdministrators.tag }}
