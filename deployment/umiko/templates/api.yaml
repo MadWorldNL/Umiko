@@ -20,6 +20,13 @@ spec:
           image: {{ .Values.api.image }}:{{ .Values.api.tag }}
           ports:
             - containerPort: {{ .Values.api.containerPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.api.resources.requests.cpu }}
+              memory: {{ .Values.api.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.api.resources.limits.cpu }}
+              memory: {{ .Values.api.resources.limits.memory }}
           env:
             - name: ConnectionStrings__UmikoDb
               value: "Host={{ .Values.postgres.name }};Port={{ .Values.postgres.containerPort }};Database={{ .Values.postgres.database }};Username={{ .Values.postgres.username }};Password={{ .Values.postgres.password }}"

@@ -34,6 +34,13 @@ spec:
           ports:
             - containerPort: {{ .Values.rabbitmq.containerPort }}
             - containerPort: {{ .Values.rabbitmq.managementPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.rabbitmq.resources.requests.cpu }}
+              memory: {{ .Values.rabbitmq.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.rabbitmq.resources.limits.cpu }}
+              memory: {{ .Values.rabbitmq.resources.limits.memory }}
           envFrom:
             - secretRef:
                 name: {{ .Values.rabbitmq.name }}

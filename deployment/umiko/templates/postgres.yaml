@@ -34,6 +34,13 @@ spec:
           image: {{ .Values.postgres.image }}:{{ .Values.postgres.tag }}
           ports:
             - containerPort: {{ .Values.postgres.containerPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.postgres.resources.requests.cpu }}
+              memory: {{ .Values.postgres.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.postgres.resources.limits.cpu }}
+              memory: {{ .Values.postgres.resources.limits.memory }}
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.name }}

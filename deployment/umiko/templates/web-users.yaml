@@ -20,6 +20,13 @@ spec:
           image: {{ .Values.webUsers.image }}:{{ .Values.webUsers.tag }}
           ports:
             - containerPort: {{ .Values.webUsers.containerPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.webUsers.resources.requests.cpu }}
+              memory: {{ .Values.webUsers.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.webUsers.resources.limits.cpu }}
+              memory: {{ .Values.webUsers.resources.limits.memory }}
           livenessProbe:
             httpGet:
               path: /health.txt

@@ -3,24 +3,52 @@ api:
   image: ghcr.io/madworldnl/umiko/api
   containerPort: 8080
   servicePort: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
 
 bus:
   name: bus
   image: ghcr.io/madworldnl/umiko/bus
   containerPort: 8080
   servicePort: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
 
 webUsers:
   name: web-users
   image: ghcr.io/madworldnl/umiko/web-users
   containerPort: 8080
   servicePort: 80
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
 
 webAdministrators:
   name: web-administrators
   image: ghcr.io/madworldnl/umiko/web-administrators
   containerPort: 8080
   servicePort: 80
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
 
 postgres:
   name: postgres
@@ -32,6 +60,13 @@ postgres:
   username: umiko
   password: changeme
   storageSize: 1Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
 
 rabbitmq:
   name: rabbitmq
@@ -44,3 +79,10 @@ rabbitmq:
   username: umiko
   password: changeme
   storageSize: 1Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
