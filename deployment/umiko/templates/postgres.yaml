@@ -42,6 +42,7 @@ spec:
             limits:
               cpu: {{ .Values.postgres.resources.limits.cpu }}
               memory: {{ .Values.postgres.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.postgres.resources.limits "ephemeral-storage" }}
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.name }}

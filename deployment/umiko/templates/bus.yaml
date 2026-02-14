@@ -28,6 +28,7 @@ spec:
             limits:
               cpu: {{ .Values.bus.resources.limits.cpu }}
               memory: {{ .Values.bus.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.bus.resources.limits "ephemeral-storage" }}
           env:
             - name: ConnectionStrings__UmikoDb
               value: "Host={{ .Values.postgres.name }};Port={{ .Values.postgres.containerPort }};Database={{ .Values.postgres.database }};Username={{ .Values.postgres.username }};Password={{ .Values.postgres.password }}"

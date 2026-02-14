@@ -42,6 +42,7 @@ spec:
             limits:
               cpu: {{ .Values.rabbitmq.resources.limits.cpu }}
               memory: {{ .Values.rabbitmq.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.rabbitmq.resources.limits "ephemeral-storage" }}
           envFrom:
             - secretRef:
                 name: {{ .Values.rabbitmq.name }}

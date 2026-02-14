@@ -28,6 +28,7 @@ spec:
             limits:
               cpu: {{ .Values.webUsers.resources.limits.cpu }}
               memory: {{ .Values.webUsers.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.webUsers.resources.limits "ephemeral-storage" }}
           livenessProbe:
             httpGet:
               path: /health.txt
