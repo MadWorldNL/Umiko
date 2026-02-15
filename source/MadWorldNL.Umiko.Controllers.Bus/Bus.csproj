@@ -11,6 +11,7 @@
     </ItemGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api.Contracts\Api.Contracts.csproj" />
       <ProjectReference Include="..\MadWorldNL.Umiko.Application.Functions\Functions.csproj" />
       <ProjectReference Include="..\MadWorldNL.Umiko.Infrastructures.Postgresql\Postgresql.csproj" />
       <ProjectReference Include="..\MadWorldNL.Umiko.Infrastructures.RabbitMQ\RabbitMQ.csproj" />
