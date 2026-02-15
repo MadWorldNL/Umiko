@@ -14,6 +14,7 @@ webAdministrators:
 
 ingress:
   domain: umiko.example.com
+  certResolver: letsencrypt
 
 postgres:
   password: changeme
