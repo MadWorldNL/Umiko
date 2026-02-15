@@ -4,9 +4,11 @@ permissions:
   pull-requests: read
 
 on:
-  workflow_run:
-    workflows: ["Build & Test Application"]
-    types: [completed]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 jobs:
   build:
     name: Build and analyze
