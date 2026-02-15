@@ -16,6 +16,9 @@ ingress:
   domain: umiko.example.com
   certResolver: letsencrypt
 
+clusterIssuer:
+  enabled: true
+
 postgres:
   password: changeme
 
