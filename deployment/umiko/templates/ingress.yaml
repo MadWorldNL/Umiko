@@ -5,15 +5,13 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: "traefik"
-    {{- if .Values.ingress.certResolver }}
-    traefik.ingress.kubernetes.io/router.tls.certresolver: {{ .Values.ingress.certResolver | quote }}
+    {{- if .Values.clusterIssuer.enabled }}
+    cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer.name | quote }}
     {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
-    - {{- if not .Values.ingress.certResolver }}
-      secretName: {{ .Values.ingress.tlsSecret }}
-      {{- end }}
+    - secretName: {{ .Values.ingress.tlsSecret }}
       hosts:
         - {{ .Values.ingress.domain }}
         - api.{{ .Values.ingress.domain }}
