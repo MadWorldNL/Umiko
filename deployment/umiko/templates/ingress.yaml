@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: "traefik"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
     {{- if .Values.clusterIssuer.enabled }}
     cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer.name | quote }}
     {{- end }}

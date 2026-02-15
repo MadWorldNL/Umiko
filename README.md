@@ -38,13 +38,13 @@ This will spin up the API, message bus, web portals, and all backing services (P
 
 Once the Aspire orchestrator is running, the following services are available:
 
-| Service | URL |
-|---------|-----|
-| Aspire Dashboard | `https://localhost:17105` |
-| API | `https://localhost:7115` |
-| Bus | `https://localhost:7109` |
-| Admin Portal | `https://localhost:7209` |
-| User Portal | `https://localhost:7292` |
+| Service           | Development URL           | Production URL                  |
+|-------------------|---------------------------|---------------------------------| 
+| Aspire Dashboard  | `https://localhost:17105` | `None`                          |
+| API               | `https://localhost:7115`  | `https://api.oscarveldman.eu`   |
+| Bus               | `https://localhost:7109`  | `https://bus.oscarveldman.eu`   |
+| Admin Portal      | `https://localhost:7209`  | `https://admin.oscarveldman.eu` | 
+| User Portal       | `https://localhost:7292`  | `https://www.oscarveldman.eu`   |
 
 #### Backing Services
 
