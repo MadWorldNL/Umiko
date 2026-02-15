@@ -111,6 +111,9 @@ Install Traefik as the ingress controller:
 sudo microk8s helm repo add traefik https://traefik.github.io/charts
 sudo microk8s helm repo update
 sudo microk8s helm install traefik traefik/traefik -n traefik --create-namespace
+sudo microk8s helm upgrade traefik traefik/traefik -n traefik \
+  --set ports.web.hostPort=80 \
+  --set ports.websecure.hostPort=443
 ```
 
 ### Usage on production

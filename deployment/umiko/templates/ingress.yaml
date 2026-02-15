@@ -14,6 +14,7 @@ spec:
     - secretName: {{ .Values.ingress.tlsSecret }}
       hosts:
         - {{ .Values.ingress.domain }}
+        - www.{{ .Values.ingress.domain }}
         - api.{{ .Values.ingress.domain }}
         - bus.{{ .Values.ingress.domain }}
         - admin.{{ .Values.ingress.domain }}
@@ -48,6 +49,16 @@ spec:
                 name: {{ .Values.webAdministrators.name }}
                 port:
                   number: {{ .Values.webAdministrators.servicePort }}
+    - host: www.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.webUsers.name }}
+                port:
+                  number: {{ .Values.webUsers.servicePort }}
     - host: {{ .Values.ingress.domain }}
       http:
         paths:
