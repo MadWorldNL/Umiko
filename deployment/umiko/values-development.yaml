@@ -1,16 +1,16 @@
 namespace: umiko-development
 
 api:
-  tag: 0.1.0
+  tag: 0.1.1
 
 bus:
-  tag: 0.1.0
+  tag: 0.1.1
 
 webUsers:
-  tag: 0.1.0
+  tag: 0.1.1
 
 webAdministrators:
-  tag: 0.1.0
+  tag: 0.1.1
 
 ingress:
   domain: umiko.dev

@@ -95,7 +95,6 @@ Required:
 ```shell
 sudo microk8s enable dns
 sudo microk8s enable helm
-sudo microk8s enable dashboard
 sudo microk8s enable cert-manager
 sudo microk8s enable hostpath-storage
 ```
@@ -126,10 +125,26 @@ Navigate to the folder `deployment/umiko` and execute this command:
 microk8s helm install -f values.yaml -f values-production.yaml umiko .
 ```
 
-#### Step 3 - Status of Cluster
-Convenient tools for debugging Kubernetes:
+#### Step 3 - Install Headlamp
+Install [Headlamp](https://headlamp.dev/) as the Kubernetes dashboard:
 ```shell
-microk8s dashboard-proxy --address 0.0.0.0
+sudo microk8s helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
+sudo microk8s helm repo update
+sudo microk8s helm install my-headlamp headlamp/headlamp --namespace kube-system
+```
+
+#### Step 4 - Create Headlamp Token
+Create a token for logging in to Headlamp:
+```shell
+sudo microk8s kubectl create token my-headlamp --namespace kube-system
+```
+
+#### Step 5 - Access Headlamp
+Forward the Headlamp port to access the dashboard:
+```shell
+export POD_NAME=$(sudo microk8s kubectl get pods --namespace kube-system -l "app.kubernetes.io/name=headlamp,app.kubernetes.io/instance=my-headlamp" -o jsonpath="{.items[0].metadata.name}")
+export CONTAINER_PORT=$(sudo microk8s kubectl get pod --namespace kube-system $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+sudo microk8s kubectl --namespace kube-system port-forward --address 0.0.0.0 $POD_NAME 10443:$CONTAINER_PORT
 ```
 
 ### Reference
