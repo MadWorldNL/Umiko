@@ -58,7 +58,6 @@ ingress:
   className: traefik
   domain: umiko.local
   tlsSecret: umiko-tls
-  certResolver: ""
 
 clusterIssuer:
   enabled: false

@@ -6,12 +6,12 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   acme:
-    email:  {{ .Values.certification.email }}
+    email:  {{ .Values.clusterIssuer.email }}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: lets-encrypt-prod
     solvers:
       - http01:
           ingress:
-            class: public
+            class: traefik
 {{ end }}
