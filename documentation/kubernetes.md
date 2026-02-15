@@ -113,7 +113,14 @@ sudo microk8s helm repo update
 sudo microk8s helm install traefik traefik/traefik -n traefik --create-namespace
 sudo microk8s helm upgrade traefik traefik/traefik -n traefik \
   --set ports.web.hostPort=80 \
-  --set ports.websecure.hostPort=443
+  --set ports.websecure.hostPort=443 \
+  --set "additionalArguments={--entrypoints.web.http.redirections.entryPoint.to=:443,--entrypoints.web.http.redirections.entryPoint.scheme=https}" \
+  --set deployment.strategy.type=Recreate
+```
+
+If the new Traefik pod is stuck in `Pending` after an upgrade, the old pod may still be holding ports 80/443. Delete it manually:
+```shell
+sudo microk8s kubectl delete pod <old-traefik-pod-name> -n traefik
 ```
 
 ### Usage on production
