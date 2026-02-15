@@ -15,6 +15,10 @@ webAdministrators:
 ingress:
   domain: umiko.dev
   certResolver: ""
+  
+clusterIssuer:
+  enabled: false
+  email: "info@umiko.dev"
 
 postgres:
   password: development-password

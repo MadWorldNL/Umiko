@@ -122,7 +122,7 @@ git clone https://github.com/MadWorldNL/Umiko
 #### Step 2 - Install Cluster
 Navigate to the folder `deployment/umiko` and execute this command:
 ```shell
-microk8s helm install -f values.yaml -f values-production.yaml umiko .
+microk8s helm install -f values.yaml -f values-production.yaml -f values-secrets.yaml umiko .
 ```
 
 #### Step 3 - Install Headlamp

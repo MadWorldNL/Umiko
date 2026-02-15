@@ -54,6 +54,17 @@ webAdministrators:
       memory: 128Mi
       ephemeral-storage: 512Mi
 
+ingress:
+  className: traefik
+  domain: umiko.local
+  tlsSecret: umiko-tls
+  certResolver: ""
+
+clusterIssuer:
+  enabled: false
+  name: "lets-encrypt-umiko"
+  email: "info@umiko.local"
+  
 postgres:
   name: postgres
   image: postgres
@@ -72,12 +83,6 @@ postgres:
       cpu: "1"
       memory: 512Mi
       ephemeral-storage: 1Gi
-
-ingress:
-  className: traefik
-  domain: umiko.local
-  tlsSecret: umiko-tls
-  certResolver: ""
 
 rabbitmq:
   name: rabbitmq
