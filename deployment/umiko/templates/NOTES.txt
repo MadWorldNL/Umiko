@@ -21,11 +21,10 @@ Umiko has been deployed to namespace: {{ .Values.namespace }}
   RabbitMQ Mgmt: kubectl port-forward -n {{ .Values.namespace }} svc/{{ .Values.rabbitmq.name }} {{ .Values.rabbitmq.managementPort }}:{{ .Values.rabbitmq.managementServicePort }}
 
 === TLS ===
-{{- if .Values.ingress.certResolver }}
+{{- if .Values.clusterIssuer.enabled }}
 
-TLS certificates are managed automatically by Traefik using cert resolver "{{ .Values.ingress.certResolver }}".
-Make sure Traefik is configured with a certificate resolver named "{{ .Values.ingress.certResolver }}"
-(e.g. via Traefik Helm values: additionalArguments with --certificatesresolvers.{{ .Values.ingress.certResolver }}.acme.*).
+TLS certificates are managed automatically by cert-manager using ClusterIssuer "{{ .Values.clusterIssuer.name }}".
+Make sure cert-manager is installed and Traefik is listening on port 80 for HTTP-01 challenges.
 {{- else }}
 
 Make sure the TLS secret "{{ .Values.ingress.tlsSecret }}" exists in the {{ .Values.namespace }} namespace.
