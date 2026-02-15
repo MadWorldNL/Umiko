@@ -50,6 +50,7 @@
     <File Path="..\.github\pull_request_template.md" />
   </Folder>
   <Folder Name="/_Repository/github/workflows/">
+    <File Path="..\.github\workflows\ci-pipeline.yml" />
     <File Path="..\.github\workflows\claude-code-review.yml" />
     <File Path="..\.github\workflows\claude.yml" />
     <File Path="..\.github\workflows\publish-containers.yml" />

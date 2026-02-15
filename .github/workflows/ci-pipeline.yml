@@ -1,4 +1,4 @@
-name: SonarQube
+name: CI Pipeline
 permissions:
   contents: read
   pull-requests: read
