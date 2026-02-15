@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ .Values.webAdministrators.name }}
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Values.webAdministrators.name }}
           image: {{ .Values.webAdministrators.image }}:{{ .Values.webAdministrators.tag }}
@@ -27,6 +28,7 @@ spec:
             limits:
               cpu: {{ .Values.webAdministrators.resources.limits.cpu }}
               memory: {{ .Values.webAdministrators.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.webAdministrators.resources.limits "ephemeral-storage" }}
           livenessProbe:
             httpGet:
               path: /health.txt
