@@ -54,15 +54,16 @@ webAdministrators:
       memory: 128Mi
       ephemeral-storage: 512Mi
 
-clusterIssuer:
-  enabled: false
-  name: "lets-encrypt-umiko"
-
 ingress:
   className: traefik
   domain: umiko.local
   tlsSecret: umiko-tls
   certResolver: ""
+
+clusterIssuer:
+  enabled: false
+  name: "lets-encrypt-umiko"
+  email: "info@umiko.local"
   
 postgres:
   name: postgres

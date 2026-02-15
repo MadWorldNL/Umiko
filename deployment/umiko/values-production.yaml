@@ -18,6 +18,7 @@ ingress:
 
 clusterIssuer:
   enabled: true
+  email: "info@umiko.example.com"
 
 postgres:
   password: changeme
