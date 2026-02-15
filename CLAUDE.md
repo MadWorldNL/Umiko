@@ -149,6 +149,7 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `web-administrators.yaml`: Admin portal Deployment and ClusterIP Service
 - `web-users.yaml`: User portal Deployment and ClusterIP Service
 - `ingress.yaml`: Traefik Ingress with subdomain-based routing and TLS
+- `cluster-issuer.yaml`: Optional Let's Encrypt ClusterIssuer for cert-manager (enabled via `clusterIssuer.enabled`)
 
 **Ingress routing** (subdomain-based via Traefik):
 - `<domain>` → web-users
@@ -161,7 +162,10 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `values-development.yaml`: Development overrides (namespace `umiko-development`, image tags, domain `umiko.dev`)
 - `values-production.yaml`: Production overrides (namespace `umiko-production`, image tags, domain `umiko.example.com`)
 
-**TLS**: Uses mkcert for locally-trusted certificates. The TLS secret name is configured via `ingress.tlsSecret` in values.
+**TLS**:
+- **Development**: Uses mkcert for locally-trusted certificates
+- **Production**: Uses cert-manager with a Let's Encrypt ClusterIssuer (HTTP-01 solver via Traefik)
+- The TLS secret name is configured via `ingress.tlsSecret` in values
 
 **Health checks**: API and Bus use `/health`, web apps use `/health.txt`
 
