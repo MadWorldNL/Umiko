@@ -26,12 +26,11 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseRateLimiter();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
-app.UseRateLimiter();
-app.UseHttpsRedirection();
 
 app.MapHealthChecks("/health").DisableRateLimiting();
 app.AddStatusEndpoints();

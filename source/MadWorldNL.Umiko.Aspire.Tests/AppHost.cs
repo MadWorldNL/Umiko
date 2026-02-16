@@ -13,6 +13,7 @@ var api = builder.AddProject<Api>("Api")
     .WaitFor(rabbitmq)
     .WithReference(postgresDb)
     .WithReference(rabbitmq)
+    .WithEnvironment("RateLimiter__PermitLimit", "5")
     .WithHttpHealthCheck("/health");
 
 var bus = builder.AddProject<Bus>("Bus")
@@ -20,6 +21,7 @@ var bus = builder.AddProject<Bus>("Bus")
     .WaitFor(rabbitmq)
     .WithReference(postgresDb)
     .WithReference(rabbitmq)
+    .WithEnvironment("RateLimiter__PermitLimit", "5")
     .WithHttpHealthCheck("/health");
 
 builder.AddProject<Web_Administrators>("Web-Administrators")

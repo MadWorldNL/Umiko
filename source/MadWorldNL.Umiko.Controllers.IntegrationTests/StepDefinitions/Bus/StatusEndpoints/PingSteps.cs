@@ -6,6 +6,8 @@ public class PingSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 
+    private readonly string _forwardedIp = AspireHooks.GenerateRandomIp();
+    
     private HttpResponseMessage? _response;
 
     [Given("the {word} service is healthy")]
@@ -20,7 +22,7 @@ public class PingSteps
     [When("I send a GET request to {string} on the {word} service")]
     public async Task WhenISendAGetRequestToOnTheService(string path, string serviceName)
     {
-        using var httpClient = AspireHooks.App.CreateHttpClient(serviceName);
+        using var httpClient = AspireHooks.CreateHttpClient(serviceName, _forwardedIp);
         _response = await httpClient.GetAsync(path, CancellationToken.None);
     }
 
