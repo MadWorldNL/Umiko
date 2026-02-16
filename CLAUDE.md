@@ -96,13 +96,23 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 - **Aspire**: All four services have `.WithHttpHealthCheck()` configured in `AppHost.cs` — API and Bus use `/health`, web apps use `/health.txt`
 - Backing services (PostgreSQL, RabbitMQ, Keycloak) have automatic health checks provided by their Aspire hosting packages
 
+### Rate Limiting
+
+Both `Controllers.Api` and `Controllers.Bus` use ASP.NET Core rate limiting middleware configured via `Configurations/RateLimiterExtensions.cs`:
+- **Strategy**: Fixed window rate limiter, partitioned by client IP
+- **Default limit**: 100 requests per minute per IP (configurable via `RateLimiter:PermitLimit`)
+- **Partition key**: Reads `X-Forwarded-For` header first (for reverse proxy support), falls back to `RemoteIpAddress`
+- **Health check exclusion**: `/health` endpoint has rate limiting disabled via `.DisableRateLimiting()`
+- **Middleware order**: `UseRateLimiter()` runs before `UseForwardedHeaders()` so it can read the raw `X-Forwarded-For` header before the forwarded headers middleware consumes it
+- **Rejection**: Returns HTTP 429 Too Many Requests
+
 ### API Documentation
 
 Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
 
 ### Test AppHost (Aspire.Tests)
 
-The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
+The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. It overrides `RateLimiter__PermitLimit` to `5` (instead of production default 100) for faster rate limiter integration tests. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
 
 ### Integration Tests
 
@@ -111,7 +121,8 @@ The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosti
 - **Reqnroll + xUnit**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes
 - **Feature files**: Located in `Features/` (e.g. `Features/Api/StatusEndpoints/Ping.feature`)
 - **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/Api/StatusEndpoints/PingSteps.cs`)
-- **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run, replacing the old AspireFixture/AspireCollection pattern
+- **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run. Provides `CreateHttpClient(serviceName, ipAddress)` (with resilience handler) and `CreateRawHttpClient(serviceName, ipAddress)` (plain HttpClient, used by rate limiter tests to avoid retry on 429). Also provides `GenerateRandomIp()` to create unique IPs for test isolation via `X-Forwarded-For`
+- **Rate limiter test isolation**: Each scenario gets a unique random IP via `AspireHooks.GenerateRandomIp()`, sent as `X-Forwarded-For` header. This ensures each scenario has its own rate limiter partition, isolated from health checks and other tests. Rate limiter tests use `CreateRawHttpClient` (HTTPS endpoint) to avoid both the resilience handler retrying 429s and the HTTP→HTTPS redirect consuming double permits
 - **Global usings**: Defined in `GlobalUsings.cs` (not in csproj)
 
 ### End-to-End Tests
