@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using MadWorldNL.Umiko;
 using MadWorldNL.Umiko.Configurations;
 using MadWorldNL.Umiko.Endpoints;
@@ -12,6 +13,7 @@ builder.AddNpgsqlDbContext<UmikoContext>("UmikoDb");
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
+builder.Services.AddRateLimiterPolicy();
 builder.Services.AddPostgresqlServices();
 builder.Services.AddFunctionsServices();
 
@@ -24,9 +26,14 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+app.UseRateLimiter();
 app.UseHttpsRedirection();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").DisableRateLimiting();
 app.AddStatusEndpoints();
 
 await app.RunAsync();
