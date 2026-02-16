@@ -10,14 +10,21 @@ public static class RateLimiterExtensions
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-                RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            {
+                var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
+                var permitLimit = configuration.GetValue("RateLimiter:PermitLimit", 100);
+
+                return RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: context.Request.Headers["X-Forwarded-For"].FirstOrDefault()
+                        ?? context.Connection.RemoteIpAddress?.ToString()
+                        ?? "unknown",
                     factory: _ => new FixedWindowRateLimiterOptions
                     {
-                        PermitLimit = 100,
+                        PermitLimit = permitLimit,
                         Window = TimeSpan.FromMinutes(1),
                         QueueLimit = 0
-                    }));
+                    });
+            });
         });
 
         return services;
