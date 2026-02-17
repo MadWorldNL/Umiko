@@ -82,13 +82,13 @@ spec:
             httpGet:
               path: /misc/ping
               port: {{ .Values.pgadmin.containerPort }}
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 10
           readinessProbe:
-            httpGet:
+            httpGet:  
               path: /misc/ping
               port: {{ .Values.pgadmin.containerPort }}
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 10
       volumes:
         - name: servers-config
