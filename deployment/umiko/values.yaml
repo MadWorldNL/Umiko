@@ -64,6 +64,23 @@ clusterIssuer:
   name: "lets-encrypt-umiko"
   email: "info@umiko.local"
   
+pgadmin:
+  name: pgadmin
+  image: dpage/pgadmin4
+  tag: "9"
+  containerPort: 80
+  servicePort: 80
+  email: admin@umiko.local
+  password: changeme
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 1Gi
+
 postgres:
   name: postgres
   image: postgres

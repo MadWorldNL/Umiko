@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.pgadmin.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.pgadmin.name }}
+type: Opaque
+stringData:
+  PGADMIN_DEFAULT_EMAIL: {{ .Values.pgadmin.email }}
+  PGADMIN_DEFAULT_PASSWORD: {{ .Values.pgadmin.password }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.pgadmin.name }}-servers
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.pgadmin.name }}
+data:
+  servers.json: |
+    {
+      "Servers": {
+        "1": {
+          "Name": "Umiko PostgreSQL",
+          "Group": "Servers",
+          "Host": "{{ .Values.postgres.name }}",
+          "Port": {{ .Values.postgres.containerPort }},
+          "MaintenanceDB": "{{ .Values.postgres.database }}",
+          "Username": "{{ .Values.postgres.username }}",
+          "SSLMode": "prefer"
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.pgadmin.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.pgadmin.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.pgadmin.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.pgadmin.name }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.pgadmin.name }}
+          image: {{ .Values.pgadmin.image }}:{{ .Values.pgadmin.tag }}
+          ports:
+            - containerPort: {{ .Values.pgadmin.containerPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.pgadmin.resources.requests.cpu }}
+              memory: {{ .Values.pgadmin.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.pgadmin.resources.limits.cpu }}
+              memory: {{ .Values.pgadmin.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.pgadmin.resources.limits "ephemeral-storage" }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.pgadmin.name }}
+          env:
+            - name: PGADMIN_CONFIG_SERVER_MODE
+              value: "True"
+            - name: PGADMIN_SERVER_JSON_FILE
+              value: /pgadmin4/servers.json
+          volumeMounts:
+            - name: servers-config
+              mountPath: /pgadmin4/servers.json
+              subPath: servers.json
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /misc/ping
+              port: {{ .Values.pgadmin.containerPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /misc/ping
+              port: {{ .Values.pgadmin.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: servers-config
+          configMap:
+            name: {{ .Values.pgadmin.name }}-servers
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.pgadmin.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.pgadmin.name }}
+spec:
+  selector:
+    app: {{ .Values.pgadmin.name }}
+  ports:
+    - port: {{ .Values.pgadmin.servicePort }}
+      targetPort: {{ .Values.pgadmin.containerPort }}
+      protocol: TCP
