@@ -6,6 +6,7 @@ Umiko has been deployed to namespace: {{ .Values.namespace }}
   Admin Portal: https://admin.{{ .Values.ingress.domain }}
   API:          https://api.{{ .Values.ingress.domain }}
   Bus:          https://bus.{{ .Values.ingress.domain }}
+  Database:     https://database.{{ .Values.ingress.domain }}
 
 === Health Checks ===
 
