@@ -19,6 +19,10 @@ clusterIssuer:
   enabled: true
   email: "info@umiko.example.com"
 
+pgadmin:
+  email: admin@umiko.example.com
+  password: changeme
+
 postgres:
   password: changeme
 

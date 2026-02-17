@@ -18,6 +18,7 @@ spec:
         - api.{{ .Values.ingress.domain }}
         - bus.{{ .Values.ingress.domain }}
         - admin.{{ .Values.ingress.domain }}
+        - database.{{ .Values.ingress.domain }}
   rules:
     - host: api.{{ .Values.ingress.domain }}
       http:
@@ -39,6 +40,16 @@ spec:
                 name: {{ .Values.bus.name }}
                 port:
                   number: {{ .Values.bus.servicePort }}
+    - host: database.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.pgadmin.name }}
+                port:
+                  number: {{ .Values.pgadmin.servicePort }}
     - host: admin.{{ .Values.ingress.domain }}
       http:
         paths:

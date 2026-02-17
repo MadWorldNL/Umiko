@@ -19,6 +19,10 @@ clusterIssuer:
   enabled: false
   email: "info@umiko.dev"
 
+pgadmin:
+  email: admin@umiko.dev
+  password: development-password
+
 postgres:
   password: development-password
 
