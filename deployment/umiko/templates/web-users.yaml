@@ -25,6 +25,7 @@ spec:
             requests:
               cpu: {{ .Values.webUsers.resources.requests.cpu }}
               memory: {{ .Values.webUsers.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.webUsers.resources.requests "ephemeral-storage" }}
             limits:
               cpu: {{ .Values.webUsers.resources.limits.cpu }}
               memory: {{ .Values.webUsers.resources.limits.memory }}

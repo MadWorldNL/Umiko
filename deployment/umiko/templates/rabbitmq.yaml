@@ -39,6 +39,7 @@ spec:
             requests:
               cpu: {{ .Values.rabbitmq.resources.requests.cpu }}
               memory: {{ .Values.rabbitmq.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.rabbitmq.resources.requests "ephemeral-storage" }}
             limits:
               cpu: {{ .Values.rabbitmq.resources.limits.cpu }}
               memory: {{ .Values.rabbitmq.resources.limits.memory }}

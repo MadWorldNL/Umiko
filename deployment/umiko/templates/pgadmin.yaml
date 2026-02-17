@@ -60,6 +60,7 @@ spec:
             requests:
               cpu: {{ .Values.pgadmin.resources.requests.cpu }}
               memory: {{ .Values.pgadmin.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.pgadmin.resources.requests "ephemeral-storage" }}
             limits:
               cpu: {{ .Values.pgadmin.resources.limits.cpu }}
               memory: {{ .Values.pgadmin.resources.limits.memory }}
