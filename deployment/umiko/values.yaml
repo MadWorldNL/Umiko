@@ -126,3 +126,94 @@ rabbitmq:
       cpu: "1"
       memory: 1Gi
       ephemeral-storage: 1Gi
+
+observability:
+  enabled: false
+  otelCollector:
+    name: otel-collector
+    image: otel/opentelemetry-collector-contrib
+    tag: "0.145.0"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+        ephemeral-storage: 512Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+        ephemeral-storage: 512Mi
+  otelCollectorLogs:
+    name: otel-collector-logs
+    image: otel/opentelemetry-collector-contrib
+    tag: "0.145.0"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+        ephemeral-storage: 512Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+        ephemeral-storage: 512Mi
+  tempo:
+    name: tempo
+    image: grafana/tempo
+    tag: "2.6.1"
+    containerPort: 4318
+    storageSize: 5Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+        ephemeral-storage: 512Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+        ephemeral-storage: 512Mi
+  prometheus:
+    name: prometheus
+    image: prom/prometheus
+    tag: "v3.1.0"
+    containerPort: 9090
+    storageSize: 10Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+        ephemeral-storage: 512Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+        ephemeral-storage: 512Mi
+  loki:
+    name: loki
+    image: grafana/loki
+    tag: "3.3.2"
+    containerPort: 3100
+    storageSize: 5Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+        ephemeral-storage: 512Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+        ephemeral-storage: 512Mi
+  grafana:
+    name: grafana
+    image: grafana/grafana
+    tag: "11.4.0"
+    containerPort: 3000
+    servicePort: 80
+    adminUser: admin
+    adminPassword: changeme
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+        ephemeral-storage: 512Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+        ephemeral-storage: 512Mi

@@ -91,7 +91,7 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 
 ### Health Checks
 
-- **API & Bus**: Use the built-in ASP.NET Core health checks middleware (`builder.Services.AddHealthChecks()` + `app.MapHealthChecks("/health")`), exposed at `/health`
+- **API & Bus**: Use the built-in ASP.NET Core health checks middleware (`builder.Services.AddHealthChecks()` + `app.MapHealthChecks("/health")`), exposed at `/health`. All registered health checks (including the Aspire PostgreSQL check) are excluded via `Predicate = _ => false` to avoid database queries on every health probe — the endpoint returns `Healthy` without executing any checks. Database connectivity is available separately via the `/Status/Database` endpoint.
 - **Web projects**: Serve a static `wwwroot/health.txt` file at `/health.txt`, plus a `/health` Blazor page using `EmptyLayout`
 - **Aspire**: All four services have `.WithHttpHealthCheck()` configured in `AppHost.cs` — API and Bus use `/health`, web apps use `/health.txt`
 - Backing services (PostgreSQL, RabbitMQ, Keycloak) have automatic health checks provided by their Aspire hosting packages
@@ -155,23 +155,30 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `namespace.yaml`: Creates the target namespace
 - `postgres.yaml`: PostgreSQL StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
 - `rabbitmq.yaml`: RabbitMQ StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
-- `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` env var composed from postgres values
-- `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` env var composed from postgres values
+- `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
+- `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
 - `web-administrators.yaml`: Admin portal Deployment and ClusterIP Service
 - `web-users.yaml`: User portal Deployment and ClusterIP Service
-- `ingress.yaml`: Traefik Ingress with subdomain-based routing and TLS
+- `ingress.yaml`: Traefik Ingress with subdomain-based routing and TLS, conditional Grafana route
 - `cluster-issuer.yaml`: Optional Let's Encrypt ClusterIssuer for cert-manager (enabled via `clusterIssuer.enabled`)
+- `otel-collector.yaml`: OpenTelemetry Collector Deployment (OTLP receiver, k8s_cluster metrics, k8s_events), DaemonSet for pod log collection via filelog receiver, ServiceAccount + RBAC (gated by `observability.enabled`)
+- `prometheus.yaml`: Prometheus StatefulSet with remote write receiver (gated by `observability.enabled`)
+- `tempo.yaml`: Grafana Tempo StatefulSet for trace storage (gated by `observability.enabled`)
+- `loki.yaml`: Grafana Loki StatefulSet for log storage with OTLP ingestion (gated by `observability.enabled`)
+- `grafana.yaml`: Grafana Deployment with auto-provisioned datasources for Prometheus, Tempo, and Loki (gated by `observability.enabled`)
 
 **Ingress routing** (subdomain-based via Traefik):
 - `<domain>` → web-users
 - `admin.<domain>` → web-administrators
 - `api.<domain>` → api
 - `bus.<domain>` → bus
+- `grafana.<domain>` → grafana (when `observability.enabled`)
 
 **Values files**:
-- `values.yaml`: Base defaults (image names, ports, ingress class/domain/TLS secret)
-- `values-development.yaml`: Development overrides (namespace `umiko-development`, image tags, domain `umiko.dev`)
-- `values-production.yaml`: Production overrides (namespace `umiko-production`, image tags, domain `umiko.example.com`)
+- `values.yaml`: Base defaults (image names, ports, ingress class/domain/TLS secret, observability component configs)
+- `values-development.yaml`: Development overrides (namespace `umiko-development`, `appTag`, domain `umiko.dev`, observability enabled)
+- `values-production.yaml`: Production overrides (namespace `umiko-production`, `appTag`, domain `umiko.example.com`, observability enabled with larger storage)
+- **`appTag`**: Single image tag used by all four application services (api, bus, web-users, web-administrators), set in environment values files
 
 **TLS**:
 - **Development**: Uses mkcert for locally-trusted certificates
@@ -179,6 +186,27 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - The TLS secret name is configured via `ingress.tlsSecret` in values
 
 **Health checks**: API and Bus use `/health`, web apps use `/health.txt`
+
+### Observability Stack (Helm)
+
+Gated behind `observability.enabled` (default `false`). When enabled, deploys a full OpenTelemetry-based observability stack:
+
+| Component | Kind | Purpose |
+|-----------|------|---------|
+| OTel Collector | Deployment | Receives OTLP from API/Bus, collects k8s_cluster metrics and k8s_events, routes to backends |
+| OTel Collector Logs | DaemonSet | Collects container stdout/stderr logs from `/var/log/pods` via filelog receiver |
+| Prometheus | StatefulSet | Metrics storage (receives via remote write) |
+| Tempo | StatefulSet | Trace storage (receives via OTLP HTTP) |
+| Loki | StatefulSet | Log storage (receives via OTLP HTTP) |
+| Grafana | Deployment | Visualization UI with auto-provisioned datasources |
+
+**Data flow**:
+- API/Bus → OTLP/gRPC:4317 → OTel Collector → Tempo (traces), Prometheus (metrics), Loki (logs)
+- All pods → stdout/stderr → node filesystem → OTel Collector Logs DaemonSet → Loki
+- Kubernetes → k8s_cluster receiver → Prometheus (pod/node metrics)
+- Kubernetes → k8s_events receiver → Loki (cluster events)
+
+**RBAC**: The OTel Collector uses a ServiceAccount with ClusterRole permissions to read pods, nodes, deployments, statefulsets, events, resourcequotas, and horizontalpodautoscalers.
 
 ### CI/CD
 

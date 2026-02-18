@@ -1,0 +1,119 @@
+{{- if .Values.observability.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.observability.loki.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.loki.name }}
+data:
+  loki.yaml: |
+    target: all
+    auth_enabled: false
+    server:
+      http_listen_port: 3100
+    common:
+      path_prefix: /loki
+      storage:
+        filesystem:
+          chunks_directory: /loki/chunks
+          rules_directory: /loki/rules
+      replication_factor: 1
+      ring:
+        instance_addr: 127.0.0.1
+        kvstore:
+          store: inmemory
+    limits_config:
+      allow_structured_metadata: true
+    schema_config:
+      configs:
+        - from: "2024-01-01"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.observability.loki.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.loki.name }}
+spec:
+  serviceName: {{ .Values.observability.loki.name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.observability.loki.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.observability.loki.name }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.observability.loki.name }}
+          image: {{ .Values.observability.loki.image }}:{{ .Values.observability.loki.tag }}
+          args:
+            - -config.file=/etc/loki/loki.yaml
+          ports:
+            - containerPort: {{ .Values.observability.loki.containerPort }}
+              name: http
+          resources:
+            requests:
+              cpu: {{ .Values.observability.loki.resources.requests.cpu }}
+              memory: {{ .Values.observability.loki.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.observability.loki.resources.requests "ephemeral-storage" }}
+            limits:
+              cpu: {{ .Values.observability.loki.resources.limits.cpu }}
+              memory: {{ .Values.observability.loki.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.observability.loki.resources.limits "ephemeral-storage" }}
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.observability.loki.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.observability.loki.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki
+            - name: loki-data
+              mountPath: /loki
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.observability.loki.name }}-config
+  volumeClaimTemplates:
+    - metadata:
+        name: loki-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.observability.loki.storageSize }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.observability.loki.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.loki.name }}
+spec:
+  selector:
+    app: {{ .Values.observability.loki.name }}
+  ports:
+    - port: {{ .Values.observability.loki.containerPort }}
+      targetPort: {{ .Values.observability.loki.containerPort }}
+      protocol: TCP
+{{- end }}
