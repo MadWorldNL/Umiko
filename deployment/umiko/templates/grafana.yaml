@@ -36,6 +36,38 @@ data:
         access: proxy
         url: http://{{ .Values.observability.loki.name }}:{{ .Values.observability.loki.containerPort }}
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.observability.grafana.name }}-dashboard-provisioning
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.grafana.name }}
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: default
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards
+          foldersFromFilesStructure: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.observability.grafana.name }}-dashboards
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.grafana.name }}
+data:
+  {{- range $path, $bytes := .Files.Glob "dashboards/*.json" }}
+  {{ base $path }}: |-
+    {{ $.Files.Get $path | nindent 4 }}
+  {{- end }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -87,10 +119,20 @@ spec:
           volumeMounts:
             - name: datasources
               mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboard-provisioning
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboards
+              mountPath: /var/lib/grafana/dashboards
       volumes:
         - name: datasources
           configMap:
             name: {{ .Values.observability.grafana.name }}-datasources
+        - name: dashboard-provisioning
+          configMap:
+            name: {{ .Values.observability.grafana.name }}-dashboard-provisioning
+        - name: dashboards
+          configMap:
+            name: {{ .Values.observability.grafana.name }}-dashboards
 ---
 apiVersion: v1
 kind: Service
