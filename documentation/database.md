@@ -1,6 +1,6 @@
 # Database
 ## Migrations
-This guide outlines how to manage database migrations using Entity Framework Core in a .NET environment.
+This guide outlines how to manage database migrations using Entity Framework Core in the Umiko project.
 
 ### Pre-requisites
 Ensure you have the dotnet-ef tool installed globally:
@@ -11,52 +11,42 @@ If the tool is already installed, update it to the latest version:
 ```bash
 dotnet tool update --global dotnet-ef
 ```
-Additionally, ensure the following NuGet package is installed in your startup project:
-```bash
-dotnet add package Microsoft.EntityFrameworkCore.Design
-```
 
 ### Migrations
+All commands should be run from the `source/MadWorldNL.Umiko.Controllers.Api` directory (the startup project).
+
 #### Create Migration
-If your migrations are stored in a separate project (e.g., MadWorldNL.MadTransfer.Infrastructures.Databases):
 ```bash
-dotnet ef migrations add InitialCreate --context MadTransferContext --project ../MadWorldNL.MadTransfer.Infrastructures.Databases -o ../MadWorldNL.MadTransfer.Infrastructures.Databases/Migrations
+dotnet ef migrations add <MigrationName> --context UmikoContext --project ../MadWorldNL.Umiko.Infrastructures.Postgresql -o ../MadWorldNL.Umiko.Infrastructures.Postgresql/Migrations
 ```
 
 #### Apply Migration
-
 To apply the created migration to the database:
 ```bash
-dotnet ef database update --context MadTransferContext --project ../MadWorldNL.MadTransfer.Infrastructures.Databases
+dotnet ef database update --context UmikoContext --project ../MadWorldNL.Umiko.Infrastructures.Postgresql
 ```
 
 #### Rollback
 ##### Listing All Migrations
 To view all migrations:
 ```bash
-dotnet ef migrations list --context MadTransferContext --project ../MadWorldNL.MadTransfer.Infrastructures.Databases
-```
-
-Sample Output:
-```bash
-20230201120000_InitialCreate
-20230202130000_AddNewTable
+dotnet ef migrations list --context UmikoContext --project ../MadWorldNL.Umiko.Infrastructures.Postgresql
 ```
 
 ##### Rolling Back to a Specific Migration
 To rollback to a specific migration (e.g., InitialCreate):
 ```bash
-dotnet ef database update InitialCreate --context MadTransferContext --project ../MadWorldNL.MadTransfer.Infrastructures.Databases
+dotnet ef database update InitialCreate --context UmikoContext --project ../MadWorldNL.Umiko.Infrastructures.Postgresql
 ```
 
 ##### Rolling Back All Migrations
 To revert the database to its initial state (no migrations applied):
 ```bash
-dotnet ef database update 0 --context MadTransferContext --project ../MadWorldNL.MadTransfer.Infrastructures.Databases
+dotnet ef database update 0 --context UmikoContext --project ../MadWorldNL.Umiko.Infrastructures.Postgresql
 ```
 
 #### Removing the Last Migration
 If you need to remove the last migration (without applying it to the database):
 ```bash
-dotnet ef migrations remove --context MadTransferContext --project ../MadWorldNL.MadTransfer.Infrastructure.Databases
+dotnet ef migrations remove --context UmikoContext --project ../MadWorldNL.Umiko.Infrastructures.Postgresql
 ```
