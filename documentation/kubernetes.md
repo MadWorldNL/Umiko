@@ -68,6 +68,23 @@ kubectl create secret tls umiko-tls \
   -n umiko-development
 ```
 
+### Configure Hosts File
+Add the following entries to your hosts file so the local domains resolve to your machine:
+
+**Windows**: `C:\Windows\System32\drivers\etc\hosts`
+**macOS / Linux**: `/etc/hosts`
+
+```
+127.0.0.1       umiko.dev
+127.0.0.1       www.umiko.dev
+127.0.0.1       admin.umiko.dev
+127.0.0.1       api.umiko.dev
+127.0.0.1       bus.umiko.dev
+127.0.0.1       database.umiko.dev
+127.0.0.1       bus-management.umiko.dev
+127.0.0.1       grafana.umiko.dev
+```
+
 ### Deploy to Development
 Navigate to the folder `deployment/umiko` and execute the commands below.
 

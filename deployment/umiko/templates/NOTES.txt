@@ -2,11 +2,15 @@ Umiko has been deployed to namespace: {{ .Values.namespace }}
 
 === Application URLs ===
 
-  User Portal:  https://{{ .Values.ingress.domain }}
-  Admin Portal: https://admin.{{ .Values.ingress.domain }}
-  API:          https://api.{{ .Values.ingress.domain }}
-  Bus:          https://bus.{{ .Values.ingress.domain }}
-  Database:     https://database.{{ .Values.ingress.domain }}
+  User Portal:      https://{{ .Values.ingress.domain }}
+  Admin Portal:     https://admin.{{ .Values.ingress.domain }}
+  API:              https://api.{{ .Values.ingress.domain }}
+  Bus:              https://bus.{{ .Values.ingress.domain }}
+  Database:         https://database.{{ .Values.ingress.domain }}
+  RabbitMQ Mgmt:    https://bus-management.{{ .Values.ingress.domain }}
+{{- if .Values.observability.enabled }}
+  Grafana:          https://grafana.{{ .Values.ingress.domain }}
+{{- end }}
 
 === Health Checks ===
 
@@ -17,9 +21,17 @@ Umiko has been deployed to namespace: {{ .Values.namespace }}
 
 === Backing Services ===
 
-  PostgreSQL:   {{ .Values.postgres.name }}.{{ .Values.namespace }}:{{ .Values.postgres.servicePort }}
-  RabbitMQ:     {{ .Values.rabbitmq.name }}.{{ .Values.namespace }}:{{ .Values.rabbitmq.servicePort }}
-  RabbitMQ Mgmt: kubectl port-forward -n {{ .Values.namespace }} svc/{{ .Values.rabbitmq.name }} {{ .Values.rabbitmq.managementPort }}:{{ .Values.rabbitmq.managementServicePort }}
+  PostgreSQL:     {{ .Values.postgres.name }}.{{ .Values.namespace }}:{{ .Values.postgres.servicePort }}
+  RabbitMQ:       {{ .Values.rabbitmq.name }}.{{ .Values.namespace }}:{{ .Values.rabbitmq.servicePort }}
+{{- if .Values.observability.enabled }}
+
+=== Observability (internal) ===
+
+  OTel Collector: {{ .Values.observability.otelCollector.name }}.{{ .Values.namespace }}:4317 (gRPC) / :4318 (HTTP)
+  Prometheus:     {{ .Values.observability.prometheus.name }}.{{ .Values.namespace }}:{{ .Values.observability.prometheus.containerPort }}
+  Tempo:          {{ .Values.observability.tempo.name }}.{{ .Values.namespace }}:3200
+  Loki:           {{ .Values.observability.loki.name }}.{{ .Values.namespace }}:{{ .Values.observability.loki.containerPort }}
+{{- end }}
 
 === TLS ===
 {{- if .Values.clusterIssuer.enabled }}
