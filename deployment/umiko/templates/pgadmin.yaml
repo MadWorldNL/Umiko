@@ -60,6 +60,7 @@ spec:
             requests:
               cpu: {{ .Values.pgadmin.resources.requests.cpu }}
               memory: {{ .Values.pgadmin.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.pgadmin.resources.requests "ephemeral-storage" }}
             limits:
               cpu: {{ .Values.pgadmin.resources.limits.cpu }}
               memory: {{ .Values.pgadmin.resources.limits.memory }}
@@ -81,13 +82,13 @@ spec:
             httpGet:
               path: /misc/ping
               port: {{ .Values.pgadmin.containerPort }}
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 10
           readinessProbe:
-            httpGet:
+            httpGet:  
               path: /misc/ping
               port: {{ .Values.pgadmin.containerPort }}
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 10
       volumes:
         - name: servers-config

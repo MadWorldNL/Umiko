@@ -18,6 +18,7 @@ spec:
         - api.{{ .Values.ingress.domain }}
         - bus.{{ .Values.ingress.domain }}
         - admin.{{ .Values.ingress.domain }}
+        - bus-management.{{ .Values.ingress.domain }}
         - database.{{ .Values.ingress.domain }}
   rules:
     - host: api.{{ .Values.ingress.domain }}
@@ -40,6 +41,16 @@ spec:
                 name: {{ .Values.bus.name }}
                 port:
                   number: {{ .Values.bus.servicePort }}
+    - host: bus-management.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.rabbitmq.name }}
+                port:
+                  number: {{ .Values.rabbitmq.managementServicePort }}
     - host: database.{{ .Values.ingress.domain }}
       http:
         paths:

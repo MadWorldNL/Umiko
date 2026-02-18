@@ -7,6 +7,7 @@ api:
     requests:
       cpu: 100m
       memory: 128Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 500m
       memory: 256Mi
@@ -21,6 +22,7 @@ bus:
     requests:
       cpu: 100m
       memory: 128Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 500m
       memory: 256Mi
@@ -35,6 +37,7 @@ webUsers:
     requests:
       cpu: 50m
       memory: 64Mi
+      ephemeral-storage: 512Mi
     limits:
       cpu: 200m
       memory: 128Mi
@@ -49,6 +52,7 @@ webAdministrators:
     requests:
       cpu: 50m
       memory: 64Mi
+      ephemeral-storage: 512Mi
     limits:
       cpu: 200m
       memory: 128Mi
@@ -76,6 +80,7 @@ pgadmin:
     requests:
       cpu: 100m
       memory: 256Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 500m
       memory: 512Mi
@@ -95,6 +100,7 @@ postgres:
     requests:
       cpu: 250m
       memory: 256Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: "1"
       memory: 512Mi
@@ -115,6 +121,7 @@ rabbitmq:
     requests:
       cpu: 250m
       memory: 512Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: "1"
       memory: 1Gi
