@@ -1,0 +1,109 @@
+{{- if .Values.observability.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.observability.prometheus.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.prometheus.name }}
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    scrape_configs:
+      - job_name: prometheus
+        static_configs:
+          - targets:
+              - localhost:9090
+      - job_name: otel-collector
+        static_configs:
+          - targets:
+              - {{ .Values.observability.otelCollector.name }}:8888
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.observability.prometheus.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.prometheus.name }}
+spec:
+  serviceName: {{ .Values.observability.prometheus.name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.observability.prometheus.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.observability.prometheus.name }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 65534
+      containers:
+        - name: {{ .Values.observability.prometheus.name }}
+          image: {{ .Values.observability.prometheus.image }}:{{ .Values.observability.prometheus.tag }}
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+            - --web.enable-remote-write-receiver
+          ports:
+            - containerPort: {{ .Values.observability.prometheus.containerPort }}
+              name: http
+          resources:
+            requests:
+              cpu: {{ .Values.observability.prometheus.resources.requests.cpu }}
+              memory: {{ .Values.observability.prometheus.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.observability.prometheus.resources.requests "ephemeral-storage" }}
+            limits:
+              cpu: {{ .Values.observability.prometheus.resources.limits.cpu }}
+              memory: {{ .Values.observability.prometheus.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.observability.prometheus.resources.limits "ephemeral-storage" }}
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: {{ .Values.observability.prometheus.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/healthy
+              port: {{ .Values.observability.prometheus.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: prometheus-data
+              mountPath: /prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.observability.prometheus.name }}-config
+  volumeClaimTemplates:
+    - metadata:
+        name: prometheus-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.observability.prometheus.storageSize }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.observability.prometheus.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.prometheus.name }}
+spec:
+  selector:
+    app: {{ .Values.observability.prometheus.name }}
+  ports:
+    - port: {{ .Values.observability.prometheus.containerPort }}
+      targetPort: {{ .Values.observability.prometheus.containerPort }}
+      protocol: TCP
+{{- end }}

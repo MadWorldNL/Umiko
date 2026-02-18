@@ -33,6 +33,10 @@ spec:
           env:
             - name: ConnectionStrings__UmikoDb
               value: "Host={{ .Values.postgres.name }};Port={{ .Values.postgres.containerPort }};Database={{ .Values.postgres.database }};Username={{ .Values.postgres.username }};Password={{ .Values.postgres.password }}"
+            {{- if .Values.observability.enabled }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://{{ .Values.observability.otelCollector.name }}:4317"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /health

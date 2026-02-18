@@ -1,0 +1,136 @@
+{{- if .Values.observability.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.observability.otelCollector.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.otelCollector.name }}
+data:
+  otel-collector-config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    processors:
+      batch:
+        timeout: 5s
+        send_batch_size: 1024
+    exporters:
+      otlphttp/tempo:
+        endpoint: http://{{ .Values.observability.tempo.name }}:{{ .Values.observability.tempo.containerPort }}
+      otlphttp/loki:
+        endpoint: http://{{ .Values.observability.loki.name }}:{{ .Values.observability.loki.containerPort }}/otlp
+      prometheusremotewrite:
+        endpoint: http://{{ .Values.observability.prometheus.name }}:{{ .Values.observability.prometheus.containerPort }}/api/v1/write
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    service:
+      extensions:
+        - health_check
+      pipelines:
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - otlphttp/tempo
+        metrics:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - prometheusremotewrite
+        logs:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - otlphttp/loki
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.observability.otelCollector.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.otelCollector.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.observability.otelCollector.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.observability.otelCollector.name }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.observability.otelCollector.name }}
+          image: {{ .Values.observability.otelCollector.image }}:{{ .Values.observability.otelCollector.tag }}
+          args:
+            - --config=/etc/otelcol/otel-collector-config.yaml
+          ports:
+            - containerPort: 4317
+              name: otlp-grpc
+            - containerPort: 4318
+              name: otlp-http
+            - containerPort: 13133
+              name: health
+          resources:
+            requests:
+              cpu: {{ .Values.observability.otelCollector.resources.requests.cpu }}
+              memory: {{ .Values.observability.otelCollector.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.observability.otelCollector.resources.requests "ephemeral-storage" }}
+            limits:
+              cpu: {{ .Values.observability.otelCollector.resources.limits.cpu }}
+              memory: {{ .Values.observability.otelCollector.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.observability.otelCollector.resources.limits "ephemeral-storage" }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/otelcol
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.observability.otelCollector.name }}-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.observability.otelCollector.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.otelCollector.name }}
+spec:
+  selector:
+    app: {{ .Values.observability.otelCollector.name }}
+  ports:
+    - port: 4317
+      targetPort: 4317
+      protocol: TCP
+      name: otlp-grpc
+    - port: 4318
+      targetPort: 4318
+      protocol: TCP
+      name: otlp-http
+{{- end }}

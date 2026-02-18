@@ -1,0 +1,109 @@
+{{- if .Values.observability.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.observability.grafana.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.grafana.name }}
+type: Opaque
+stringData:
+  GF_SECURITY_ADMIN_USER: {{ .Values.observability.grafana.adminUser }}
+  GF_SECURITY_ADMIN_PASSWORD: {{ .Values.observability.grafana.adminPassword }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.observability.grafana.name }}-datasources
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.grafana.name }}
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://{{ .Values.observability.prometheus.name }}:{{ .Values.observability.prometheus.containerPort }}
+        isDefault: true
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://{{ .Values.observability.tempo.name }}:3200
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://{{ .Values.observability.loki.name }}:{{ .Values.observability.loki.containerPort }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.observability.grafana.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.grafana.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.observability.grafana.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.observability.grafana.name }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.observability.grafana.name }}
+          image: {{ .Values.observability.grafana.image }}:{{ .Values.observability.grafana.tag }}
+          ports:
+            - containerPort: {{ .Values.observability.grafana.containerPort }}
+              name: http
+          resources:
+            requests:
+              cpu: {{ .Values.observability.grafana.resources.requests.cpu }}
+              memory: {{ .Values.observability.grafana.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.observability.grafana.resources.requests "ephemeral-storage" }}
+            limits:
+              cpu: {{ .Values.observability.grafana.resources.limits.cpu }}
+              memory: {{ .Values.observability.grafana.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.observability.grafana.resources.limits "ephemeral-storage" }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.observability.grafana.name }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: {{ .Values.observability.grafana.containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: {{ .Values.observability.grafana.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+      volumes:
+        - name: datasources
+          configMap:
+            name: {{ .Values.observability.grafana.name }}-datasources
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.observability.grafana.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.grafana.name }}
+spec:
+  selector:
+    app: {{ .Values.observability.grafana.name }}
+  ports:
+    - port: {{ .Values.observability.grafana.servicePort }}
+      targetPort: {{ .Values.observability.grafana.containerPort }}
+      protocol: TCP
+{{- end }}

@@ -28,3 +28,14 @@ postgres:
 
 rabbitmq:
   password: changeme
+
+observability:
+  enabled: true
+  prometheus:
+    storageSize: 50Gi
+  tempo:
+    storageSize: 20Gi
+  loki:
+    storageSize: 20Gi
+  grafana:
+    adminPassword: changeme

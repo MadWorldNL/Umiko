@@ -20,6 +20,9 @@ spec:
         - admin.{{ .Values.ingress.domain }}
         - bus-management.{{ .Values.ingress.domain }}
         - database.{{ .Values.ingress.domain }}
+        {{- if .Values.observability.enabled }}
+        - grafana.{{ .Values.ingress.domain }}
+        {{- end }}
   rules:
     - host: api.{{ .Values.ingress.domain }}
       http:
@@ -61,6 +64,18 @@ spec:
                 name: {{ .Values.pgadmin.name }}
                 port:
                   number: {{ .Values.pgadmin.servicePort }}
+    {{- if .Values.observability.enabled }}
+    - host: grafana.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.observability.grafana.name }}
+                port:
+                  number: {{ .Values.observability.grafana.servicePort }}
+    {{- end }}
     - host: admin.{{ .Values.ingress.domain }}
       http:
         paths:

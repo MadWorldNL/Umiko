@@ -28,3 +28,8 @@ postgres:
 
 rabbitmq:
   password: development-password
+
+observability:
+  enabled: true
+  grafana:
+    adminPassword: development-password
