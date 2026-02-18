@@ -18,7 +18,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: {{ .Values.bus.name }}
-          image: {{ .Values.bus.image }}:{{ .Values.bus.tag }}
+          image: {{ .Values.bus.image }}:{{ .Values.appTag }}
           ports:
             - containerPort: {{ .Values.bus.containerPort }}
           resources:

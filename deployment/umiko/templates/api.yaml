@@ -18,7 +18,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: {{ .Values.api.name }}
-          image: {{ .Values.api.image }}:{{ .Values.api.tag }}
+          image: {{ .Values.api.image }}:{{ .Values.appTag }}
           ports:
             - containerPort: {{ .Values.api.containerPort }}
           resources:

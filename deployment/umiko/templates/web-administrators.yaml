@@ -18,7 +18,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: {{ .Values.webAdministrators.name }}
-          image: {{ .Values.webAdministrators.image }}:{{ .Values.webAdministrators.tag }}
+          image: {{ .Values.webAdministrators.image }}:{{ .Values.appTag }}
           ports:
             - containerPort: {{ .Values.webAdministrators.containerPort }}
           resources:
