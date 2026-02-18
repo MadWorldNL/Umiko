@@ -99,6 +99,9 @@ helm upgrade -f values.yaml -f values-development.yaml umiko .
 ```
 
 ## Production
+
+Before starting, make sure your server is set up according to the [server setup guide](setup-server.md).
+
 ### Install on production
 #### Step 1: Install MicroK8s
 Execute this install command:
@@ -139,6 +142,9 @@ If the new Traefik pod is stuck in `Pending` after an upgrade, the old pod may s
 ```shell
 sudo microk8s kubectl delete pod <old-traefik-pod-name> -n traefik
 ```
+
+### Configure DNS
+Before deploying, make sure DNS A records are configured for your domain. See the [DNS configuration guide](dns.md) for details.
 
 ### Usage on production
 #### Step 1 - Download source code
