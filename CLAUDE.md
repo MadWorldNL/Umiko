@@ -198,7 +198,7 @@ Gated behind `observability.enabled` (default `false`). When enabled, deploys a 
 | Prometheus | StatefulSet | Metrics storage (receives via remote write) |
 | Tempo | StatefulSet | Trace storage (receives via OTLP HTTP) |
 | Loki | StatefulSet | Log storage (receives via OTLP HTTP) |
-| Grafana | Deployment | Visualization UI with auto-provisioned datasources |
+| Grafana | Deployment | Visualization UI with auto-provisioned datasources and dashboard provisioning |
 
 **Data flow**:
 - API/Bus → OTLP/gRPC:4317 → OTel Collector → Tempo (traces), Prometheus (metrics), Loki (logs)
@@ -207,6 +207,12 @@ Gated behind `observability.enabled` (default `false`). When enabled, deploys a 
 - Kubernetes → k8s_events receiver → Loki (cluster events)
 
 **RBAC**: The OTel Collector uses a ServiceAccount with ClusterRole permissions to read pods, nodes, deployments, statefulsets, events, resourcequotas, and horizontalpodautoscalers.
+
+**Grafana Dashboards**: Dashboard JSON files in `deployment/umiko/dashboards/` are automatically loaded into Grafana via ConfigMap-based provisioning. To add a dashboard: export it from Grafana UI, save the JSON file to the `dashboards/` directory, and redeploy with Helm.
+
+### Database Migrations
+
+EF Core migrations use `UmikoContext` in the `Infrastructures.Postgresql` project. Commands should be run from the `source/MadWorldNL.Umiko.Controllers.Api` directory. See `documentation/database.md` for full details.
 
 ### CI/CD
 
@@ -225,4 +231,8 @@ GitHub Actions workflows in `.github/workflows/`:
 - `CODE_OF_CONDUCT.md`: Code of conduct
 - `.github/pull_request_template.md`: PR template
 - `.github/ISSUE_TEMPLATE/`: Bug report and feature request templates
-- `documentation/`: Developer guides (e.g. Ubuntu dev environment setup)
+- `documentation/`: Developer guides:
+  - `documentation/kubernetes.md`: Local (Docker Desktop) and production (MicroK8s) Kubernetes setup, Traefik, TLS, Helm deploy
+  - `documentation/database.md`: EF Core migration commands using `UmikoContext` and `Infrastructures.Postgresql`
+  - `documentation/dns.md`: DNS A record configuration for production domains
+  - `documentation/setup-server.md`: Server setup guide (prerequisite for production deployment)
