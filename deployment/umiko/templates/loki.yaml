@@ -8,6 +8,7 @@ metadata:
     app: {{ .Values.observability.loki.name }}
 data:
   loki.yaml: |
+    target: all
     auth_enabled: false
     server:
       http_listen_port: 3100
@@ -19,6 +20,7 @@ data:
           rules_directory: /loki/rules
       replication_factor: 1
       ring:
+        instance_addr: 127.0.0.1
         kvstore:
           store: inmemory
     limits_config:

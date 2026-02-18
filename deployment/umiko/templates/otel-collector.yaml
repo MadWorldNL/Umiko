@@ -1,5 +1,48 @@
 {{- if .Values.observability.enabled }}
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.observability.otelCollector.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.otelCollector.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.namespace }}-{{ .Values.observability.otelCollector.name }}
+  labels:
+    app: {{ .Values.observability.otelCollector.name }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "nodes", "nodes/proxy", "namespaces", "endpoints", "services", "events", "replicationcontrollers", "resourcequotas"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.namespace }}-{{ .Values.observability.otelCollector.name }}
+  labels:
+    app: {{ .Values.observability.otelCollector.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.namespace }}-{{ .Values.observability.otelCollector.name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.observability.otelCollector.name }}
+    namespace: {{ .Values.namespace }}
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.observability.otelCollector.name }}-config
@@ -15,10 +58,42 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+      k8s_cluster:
+        collection_interval: 30s
+        node_conditions_to_report:
+          - Ready
+          - MemoryPressure
+          - DiskPressure
+        allocatable_types_to_report:
+          - cpu
+          - memory
+      k8s_events:
+        namespaces:
+          - {{ .Values.namespace }}
     processors:
       batch:
         timeout: 5s
         send_batch_size: 1024
+      k8sattributes:
+        extract:
+          metadata:
+            - k8s.pod.name
+            - k8s.pod.uid
+            - k8s.namespace.name
+            - k8s.node.name
+            - k8s.deployment.name
+            - k8s.statefulset.name
+            - k8s.container.name
+          labels:
+            - tag_name: app
+              key: app
+              from: pod
+        pod_association:
+          - sources:
+              - from: resource_attribute
+                name: k8s.pod.ip
+          - sources:
+              - from: connection
     exporters:
       otlphttp/tempo:
         endpoint: http://{{ .Values.observability.tempo.name }}:{{ .Values.observability.tempo.containerPort }}
@@ -37,20 +112,25 @@ data:
           receivers:
             - otlp
           processors:
+            - k8sattributes
             - batch
           exporters:
             - otlphttp/tempo
         metrics:
           receivers:
             - otlp
+            - k8s_cluster
           processors:
+            - k8sattributes
             - batch
           exporters:
             - prometheusremotewrite
         logs:
           receivers:
             - otlp
+            - k8s_events
           processors:
+            - k8sattributes
             - batch
           exporters:
             - otlphttp/loki
@@ -72,7 +152,8 @@ spec:
       labels:
         app: {{ .Values.observability.otelCollector.name }}
     spec:
-      automountServiceAccountToken: false
+      serviceAccountName: {{ .Values.observability.otelCollector.name }}
+      automountServiceAccountToken: true
       containers:
         - name: {{ .Values.observability.otelCollector.name }}
           image: {{ .Values.observability.otelCollector.image }}:{{ .Values.observability.otelCollector.tag }}
@@ -85,6 +166,23 @@ spec:
               name: otlp-http
             - containerPort: 13133
               name: health
+          env:
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: K8S_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: K8S_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           resources:
             requests:
               cpu: {{ .Values.observability.otelCollector.resources.requests.cpu }}
@@ -133,4 +231,190 @@ spec:
       targetPort: 4318
       protocol: TCP
       name: otlp-http
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.observability.otelCollectorLogs.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.otelCollectorLogs.name }}
+data:
+  otel-collector-logs-config.yaml: |
+    receivers:
+      filelog:
+        include:
+          - /var/log/pods/{{ .Values.namespace }}_*/*/*.log
+        exclude:
+          - /var/log/pods/{{ .Values.namespace }}_{{ .Values.observability.otelCollectorLogs.name }}*/*/*.log
+        start_at: end
+        include_file_path: true
+        include_file_name: false
+        operators:
+          - type: router
+            id: container_parser_router
+            routes:
+              - output: cri_parser
+                expr: 'body matches "^[^ Z]+ "'
+            default: docker_parser
+          - type: regex_parser
+            id: cri_parser
+            regex: "^(?P<time>[^ Z]+) (?P<stream>stdout|stderr) (?P<logtag>[^ ]*) ?(?P<log>.*)$"
+            timestamp:
+              parse_from: attributes.time
+              layout_type: gotime
+              layout: "2006-01-02T15:04:05.000000000Z07:00"
+            output: extract_metadata
+          - type: json_parser
+            id: docker_parser
+            timestamp:
+              parse_from: attributes.time
+              layout: "%Y-%m-%dT%H:%M:%S.%LZ"
+            output: extract_metadata
+          - type: regex_parser
+            id: extract_metadata
+            regex: "^.*\\/(?P<k8s_namespace>[^_]+)_(?P<k8s_pod>[^_]+)_[^\\/]+\\/(?P<k8s_container>[^\\/]+)\\/.*$"
+            parse_from: attributes["log.file.path"]
+            preserve_to: attributes
+          - type: move
+            from: attributes.log
+            to: body
+          - type: move
+            from: attributes.k8s_namespace
+            to: resource["k8s.namespace.name"]
+          - type: move
+            from: attributes.k8s_pod
+            to: resource["k8s.pod.name"]
+          - type: move
+            from: attributes.k8s_container
+            to: resource["k8s.container.name"]
+    processors:
+      batch:
+        timeout: 5s
+        send_batch_size: 1024
+      k8sattributes:
+        extract:
+          metadata:
+            - k8s.pod.name
+            - k8s.pod.uid
+            - k8s.namespace.name
+            - k8s.node.name
+            - k8s.deployment.name
+            - k8s.statefulset.name
+            - k8s.container.name
+          labels:
+            - tag_name: app
+              key: app
+              from: pod
+        pod_association:
+          - sources:
+              - from: resource_attribute
+                name: k8s.pod.name
+    exporters:
+      otlphttp/loki:
+        endpoint: http://{{ .Values.observability.loki.name }}:{{ .Values.observability.loki.containerPort }}/otlp
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+    service:
+      extensions:
+        - health_check
+      pipelines:
+        logs:
+          receivers:
+            - filelog
+          processors:
+            - k8sattributes
+            - batch
+          exporters:
+            - otlphttp/loki
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.observability.otelCollectorLogs.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.observability.otelCollectorLogs.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.observability.otelCollectorLogs.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.observability.otelCollectorLogs.name }}
+    spec:
+      serviceAccountName: {{ .Values.observability.otelCollector.name }}
+      automountServiceAccountToken: true
+      containers:
+        - name: {{ .Values.observability.otelCollectorLogs.name }}
+          image: {{ .Values.observability.otelCollectorLogs.image }}:{{ .Values.observability.otelCollectorLogs.tag }}
+          args:
+            - --config=/etc/otelcol/otel-collector-logs-config.yaml
+          ports:
+            - containerPort: 13133
+              name: health
+          env:
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: K8S_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            requests:
+              cpu: {{ .Values.observability.otelCollectorLogs.resources.requests.cpu }}
+              memory: {{ .Values.observability.otelCollectorLogs.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.observability.otelCollectorLogs.resources.requests "ephemeral-storage" }}
+            limits:
+              cpu: {{ .Values.observability.otelCollectorLogs.resources.limits.cpu }}
+              memory: {{ .Values.observability.otelCollectorLogs.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.observability.otelCollectorLogs.resources.limits "ephemeral-storage" }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 13133
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/otelcol
+            - name: varlogpods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: varlogcontainers
+              mountPath: /var/log/containers
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.observability.otelCollectorLogs.name }}-config
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+            type: Directory
+        - name: varlogcontainers
+          hostPath:
+            path: /var/log/containers
+            type: DirectoryOrCreate
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+            type: DirectoryOrCreate
 {{- end }}

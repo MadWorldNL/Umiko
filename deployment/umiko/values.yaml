@@ -142,6 +142,19 @@ observability:
         cpu: 500m
         memory: 512Mi
         ephemeral-storage: 512Mi
+  otelCollectorLogs:
+    name: otel-collector-logs
+    image: otel/opentelemetry-collector-contrib
+    tag: "0.145.0"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+        ephemeral-storage: 512Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+        ephemeral-storage: 512Mi
   tempo:
     name: tempo
     image: grafana/tempo
