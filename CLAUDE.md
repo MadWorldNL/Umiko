@@ -154,6 +154,7 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 **Templates** (`deployment/umiko/templates/`):
 - `namespace.yaml`: Creates the target namespace
 - `postgres.yaml`: PostgreSQL StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
+- `pgadmin.yaml`: pgAdmin Deployment and ClusterIP Service for database management
 - `rabbitmq.yaml`: RabbitMQ StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
 - `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
 - `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
@@ -165,7 +166,8 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `prometheus.yaml`: Prometheus StatefulSet with remote write receiver (gated by `observability.enabled`)
 - `tempo.yaml`: Grafana Tempo StatefulSet for trace storage (gated by `observability.enabled`)
 - `loki.yaml`: Grafana Loki StatefulSet for log storage with OTLP ingestion (gated by `observability.enabled`)
-- `grafana.yaml`: Grafana Deployment with auto-provisioned datasources for Prometheus, Tempo, and Loki (gated by `observability.enabled`)
+- `grafana.yaml`: Grafana Deployment with auto-provisioned datasources and ConfigMap-based dashboard provisioning from `dashboards/` directory (gated by `observability.enabled`)
+- `NOTES.txt`: Helm post-install notes with application URLs, health checks, backing services, and observability endpoints
 
 **Ingress routing** (subdomain-based via Traefik):
 - `<domain>` → web-users
@@ -198,7 +200,7 @@ Gated behind `observability.enabled` (default `false`). When enabled, deploys a 
 | Prometheus | StatefulSet | Metrics storage (receives via remote write) |
 | Tempo | StatefulSet | Trace storage (receives via OTLP HTTP) |
 | Loki | StatefulSet | Log storage (receives via OTLP HTTP) |
-| Grafana | Deployment | Visualization UI with auto-provisioned datasources |
+| Grafana | Deployment | Visualization UI with auto-provisioned datasources and dashboard provisioning |
 
 **Data flow**:
 - API/Bus → OTLP/gRPC:4317 → OTel Collector → Tempo (traces), Prometheus (metrics), Loki (logs)
@@ -207,6 +209,12 @@ Gated behind `observability.enabled` (default `false`). When enabled, deploys a 
 - Kubernetes → k8s_events receiver → Loki (cluster events)
 
 **RBAC**: The OTel Collector uses a ServiceAccount with ClusterRole permissions to read pods, nodes, deployments, statefulsets, events, resourcequotas, and horizontalpodautoscalers.
+
+**Grafana Dashboards**: Dashboard JSON files in `deployment/umiko/dashboards/` are automatically loaded into Grafana via ConfigMap-based provisioning. To add a dashboard: export it from Grafana UI, save the JSON file to the `dashboards/` directory, and redeploy with Helm.
+
+### Database Migrations
+
+EF Core migrations use `UmikoContext` in the `Infrastructures.Postgresql` project. Commands should be run from the `source/MadWorldNL.Umiko.Controllers.Api` directory. See `documentation/database.md` for full details.
 
 ### CI/CD
 
@@ -225,4 +233,10 @@ GitHub Actions workflows in `.github/workflows/`:
 - `CODE_OF_CONDUCT.md`: Code of conduct
 - `.github/pull_request_template.md`: PR template
 - `.github/ISSUE_TEMPLATE/`: Bug report and feature request templates
-- `documentation/`: Developer guides (e.g. Ubuntu dev environment setup)
+- `documentation/`: Developer guides:
+  - `documentation/kubernetes.md`: Local (Docker Desktop) and production (MicroK8s) Kubernetes setup, Traefik, TLS, Helm deploy
+  - `documentation/database.md`: EF Core migration commands using `UmikoContext` and `Infrastructures.Postgresql`
+  - `documentation/dns.md`: DNS A record configuration for production domains
+  - `documentation/setup-server.md`: Server setup guide (prerequisite for production deployment)
+  - `documentation/ubuntu-dev-environment.md`: Ubuntu development environment setup
+  - `documentation/versions.md`: Version tracking

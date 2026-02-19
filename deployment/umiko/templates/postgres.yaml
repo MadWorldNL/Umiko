@@ -53,6 +53,8 @@ spec:
                 - pg_isready
                 - -U
                 - {{ .Values.postgres.username }}
+                - -d
+                - {{ .Values.postgres.database }}
             initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
@@ -61,6 +63,8 @@ spec:
                 - pg_isready
                 - -U
                 - {{ .Values.postgres.username }}
+                - -d
+                - {{ .Values.postgres.database }}
             initialDelaySeconds: 5
             periodSeconds: 10
           volumeMounts:
