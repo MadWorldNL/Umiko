@@ -154,6 +154,7 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 **Templates** (`deployment/umiko/templates/`):
 - `namespace.yaml`: Creates the target namespace
 - `postgres.yaml`: PostgreSQL StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
+- `pgadmin.yaml`: pgAdmin Deployment and ClusterIP Service for database management
 - `rabbitmq.yaml`: RabbitMQ StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
 - `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
 - `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
@@ -165,7 +166,8 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `prometheus.yaml`: Prometheus StatefulSet with remote write receiver (gated by `observability.enabled`)
 - `tempo.yaml`: Grafana Tempo StatefulSet for trace storage (gated by `observability.enabled`)
 - `loki.yaml`: Grafana Loki StatefulSet for log storage with OTLP ingestion (gated by `observability.enabled`)
-- `grafana.yaml`: Grafana Deployment with auto-provisioned datasources for Prometheus, Tempo, and Loki (gated by `observability.enabled`)
+- `grafana.yaml`: Grafana Deployment with auto-provisioned datasources and ConfigMap-based dashboard provisioning from `dashboards/` directory (gated by `observability.enabled`)
+- `NOTES.txt`: Helm post-install notes with application URLs, health checks, backing services, and observability endpoints
 
 **Ingress routing** (subdomain-based via Traefik):
 - `<domain>` → web-users
@@ -236,3 +238,5 @@ GitHub Actions workflows in `.github/workflows/`:
   - `documentation/database.md`: EF Core migration commands using `UmikoContext` and `Infrastructures.Postgresql`
   - `documentation/dns.md`: DNS A record configuration for production domains
   - `documentation/setup-server.md`: Server setup guide (prerequisite for production deployment)
+  - `documentation/ubuntu-dev-environment.md`: Ubuntu development environment setup
+  - `documentation/versions.md`: Version tracking
