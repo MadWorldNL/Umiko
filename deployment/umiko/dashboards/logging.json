@@ -83,7 +83,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Error"
+              "options": "error"
             },
             "properties": [
               {
@@ -98,7 +98,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Warning"
+              "options": "warn"
             },
             "properties": [
               {
@@ -113,7 +113,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Information"
+              "options": "info"
             },
             "properties": [
               {
@@ -128,7 +128,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Debug"
+              "options": "debug"
             },
             "properties": [
               {
@@ -143,7 +143,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Trace"
+              "options": "trace"
             },
             "properties": [
               {
@@ -158,7 +158,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Critical"
+              "options": "critical"
             },
             "properties": [
               {
@@ -195,7 +195,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto])) + sum by (detected_level) (count_over_time({k8s_statefulset_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
+          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto])) or sum by (detected_level) (count_over_time({k8s_statefulset_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
           "legendFormat": "{{ detected_level }}",
           "queryType": "range",
           "refId": "A"
@@ -374,36 +374,36 @@
         "options": [
           {
             "selected": false,
-            "text": "Trace",
-            "value": "Trace"
+            "text": "trace",
+            "value": "trace"
           },
           {
             "selected": false,
-            "text": "Debug",
-            "value": "Debug"
+            "text": "debug",
+            "value": "debug"
           },
           {
             "selected": false,
-            "text": "Information",
-            "value": "Information"
+            "text": "info",
+            "value": "info"
           },
           {
             "selected": false,
-            "text": "Warning",
-            "value": "Warning"
+            "text": "warn",
+            "value": "warn"
           },
           {
             "selected": false,
-            "text": "Error",
-            "value": "Error"
+            "text": "error",
+            "value": "error"
           },
           {
             "selected": false,
-            "text": "Critical",
-            "value": "Critical"
+            "text": "critical",
+            "value": "critical"
           }
         ],
-        "query": "Trace,Debug,Information,Warning,Error,Critical",
+        "query": "trace,debug,info,warn,error,critical",
         "type": "custom"
       }
     ]
