@@ -169,6 +169,21 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unknown"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
@@ -358,7 +373,7 @@
         "type": "custom"
       },
       {
-        "allValue": ".+",
+        "allValue": ".+|^$",
         "current": {
           "text": [
             "$__all"
@@ -401,9 +416,14 @@
             "selected": false,
             "text": "critical",
             "value": "critical"
+          },
+          {
+            "selected": false,
+            "text": "unknown",
+            "value": "unknown"
           }
         ],
-        "query": "trace,debug,info,warn,error,critical",
+        "query": "trace,debug,info,warn,error,critical,unknown",
         "type": "custom"
       }
     ]
