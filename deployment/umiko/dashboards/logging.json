@@ -195,8 +195,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (level) (count_over_time({k8s_deployment_name=\"$application\"} |= `` | level=~\"$level\" [$__auto]))",
-          "legendFormat": "{{ level }}",
+          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
+          "legendFormat": "{{ detected_level }}",
           "queryType": "range",
           "refId": "A"
         }
