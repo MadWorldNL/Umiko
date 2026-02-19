@@ -195,7 +195,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
+          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto])) + sum by (detected_level) (count_over_time({k8s_statefulset_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
           "legendFormat": "{{ detected_level }}",
           "queryType": "range",
           "refId": "A"
@@ -237,6 +237,12 @@
           "expr": "{k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\"",
           "queryType": "range",
           "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "{k8s_statefulset_name=~\"$application\"} |= `` | detected_level=~\"$level\"",
+          "queryType": "range",
+          "refId": "B"
         }
       ],
       "title": "Application Logs",
@@ -263,13 +269,13 @@
         "type": "datasource"
       },
       {
-        "allValue": "api|bus|web-users|web-administrators",
+        "allValue": "api|bus|web-users|web-administrators|postgres|rabbitmq|pgadmin|otel-collector|otel-collector-logs|prometheus|tempo|loki|grafana",
         "current": {
           "text": [
-            "api"
+            "All"
           ],
           "value": [
-            "api"
+            "$__all"
           ]
         },
         "includeAll": true,
@@ -279,6 +285,11 @@
         "options": [
           {
             "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
             "text": "api",
             "value": "api"
           },
@@ -296,9 +307,54 @@
             "selected": false,
             "text": "web-administrators",
             "value": "web-administrators"
+          },
+          {
+            "selected": false,
+            "text": "postgres",
+            "value": "postgres"
+          },
+          {
+            "selected": false,
+            "text": "rabbitmq",
+            "value": "rabbitmq"
+          },
+          {
+            "selected": false,
+            "text": "pgadmin",
+            "value": "pgadmin"
+          },
+          {
+            "selected": false,
+            "text": "otel-collector",
+            "value": "otel-collector"
+          },
+          {
+            "selected": false,
+            "text": "otel-collector-logs",
+            "value": "otel-collector-logs"
+          },
+          {
+            "selected": false,
+            "text": "prometheus",
+            "value": "prometheus"
+          },
+          {
+            "selected": false,
+            "text": "tempo",
+            "value": "tempo"
+          },
+          {
+            "selected": false,
+            "text": "loki",
+            "value": "loki"
+          },
+          {
+            "selected": false,
+            "text": "grafana",
+            "value": "grafana"
           }
         ],
-        "query": "api,bus,web-users,web-administrators",
+        "query": "api,bus,web-users,web-administrators,postgres,rabbitmq,pgadmin,otel-collector,otel-collector-logs,prometheus,tempo,loki,grafana",
         "type": "custom"
       },
       {
