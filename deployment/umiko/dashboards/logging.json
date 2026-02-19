@@ -195,7 +195,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
+          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
           "legendFormat": "{{ detected_level }}",
           "queryType": "range",
           "refId": "A"
@@ -234,7 +234,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "{k8s_deployment_name=\"$application\"} |= `` | detected_level=~\"$level\"",
+          "expr": "{k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\"",
           "queryType": "range",
           "refId": "A"
         }
