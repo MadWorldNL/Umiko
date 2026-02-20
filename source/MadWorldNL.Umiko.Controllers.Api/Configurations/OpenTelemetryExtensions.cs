@@ -1,5 +1,6 @@
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace MadWorldNL.Umiko.Configurations;
@@ -16,6 +17,11 @@ public static class OpenTelemetryExtensions
         });
 
         var otel = builder.Services.AddOpenTelemetry();
+
+        otel.ConfigureResource(resource =>
+        {
+            resource.AddAttributes([new KeyValuePair<string, object>("log_source", "application")]);
+        });
 
         // Add Metrics for ASP.NET Core and our custom metrics and export via OTLP
         otel.WithMetrics(metrics =>

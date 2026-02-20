@@ -310,6 +310,11 @@ data:
           - sources:
               - from: resource_attribute
                 name: k8s.pod.name
+      resource:
+        attributes:
+          - action: insert
+            key: log_source
+            value: k8s_pods
     exporters:
       otlphttp/loki:
         endpoint: http://{{ .Values.observability.loki.name }}:{{ .Values.observability.loki.containerPort }}/otlp
@@ -325,6 +330,7 @@ data:
             - filelog
           processors:
             - k8sattributes
+            - resource
             - batch
           exporters:
             - otlphttp/loki
