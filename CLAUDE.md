@@ -118,7 +118,7 @@ The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used 
 
 The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosting.Testing to run integration tests against the full distributed application. Key patterns:
 
-- **Reqnroll + xUnit**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes
+- **Reqnroll + xUnit + Shouldly**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes. Assertions use [Shouldly](https://docs.shouldly.org/) (e.g. `x.ShouldBe(expected)`, `x.ShouldNotBeNull()`)
 - **Feature files**: Located in `Features/` (e.g. `Features/Api/StatusEndpoints/Ping.feature`)
 - **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/Api/StatusEndpoints/PingSteps.cs`)
 - **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run. Provides `CreateHttpClient(serviceName, ipAddress)` (with resilience handler) and `CreateRawHttpClient(serviceName, ipAddress)` (plain HttpClient, used by rate limiter tests to avoid retry on 429). Also provides `GenerateRandomIp()` to create unique IPs for test isolation via `X-Forwarded-For`
@@ -129,7 +129,7 @@ The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosti
 
 The `Controllers.EndToEndTests` project uses Playwright with Reqnroll (BDD) and Aspire.Hosting.Testing for browser-based E2E tests. Key patterns:
 
-- **Reqnroll + Playwright**: Tests are Gherkin feature files with step definitions that drive Playwright browser interactions
+- **Reqnroll + Playwright + Shouldly**: Tests are Gherkin feature files with step definitions that drive Playwright browser interactions. Assertions use [Shouldly](https://docs.shouldly.org/)
 - **Feature files**: Located in `Features/` (e.g. `Features/WebAdministrators/Health.feature`, `Features/WebUsers/Health.feature`)
 - **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/WebAdministrators/HealthSteps.cs`)
 - **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start the Aspire app and Playwright browser once per test run. Creates browser contexts with `IgnoreHTTPSErrors = true` (required because Chromium doesn't trust the ASP.NET Core dev certificate)
