@@ -33,9 +33,9 @@ public class DatabaseSteps
     [Then("the response should contain {string} with value {string}")]
     public void ThenTheResponseShouldContainWithValue(string propertyName, string expectedValue)
     {
-        Assert.NotNull(_responseContent);
+        _responseContent.ShouldNotBeNull();
         using var document = JsonDocument.Parse(_responseContent!);
         var property = document.RootElement.GetProperty(propertyName);
-        Assert.Equal(expectedValue, property.ToString().ToLowerInvariant());
+        property.ToString().ToLowerInvariant().ShouldBe(expectedValue);
     }
 }

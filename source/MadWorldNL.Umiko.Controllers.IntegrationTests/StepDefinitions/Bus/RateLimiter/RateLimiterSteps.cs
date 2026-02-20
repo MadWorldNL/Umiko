@@ -32,21 +32,21 @@ public class RateLimiterSteps
     [Then("all response status codes should be OK")]
     public void ThenAllResponseStatusCodesShouldBeOk()
     {
-        Assert.NotEmpty(_responses);
-        Assert.All(_responses, response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
+        _responses.ShouldNotBeEmpty();
+        _responses.ShouldAllBe(response => response.StatusCode == HttpStatusCode.OK);
     }
 
     [Then("the first {int} response status codes should be OK")]
     public void ThenTheFirstResponseStatusCodesShouldBeOk(int count)
     {
-        Assert.True(_responses.Count >= count);
-        Assert.All(_responses.Take(count), response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
+        _responses.Count.ShouldBeGreaterThanOrEqualTo(count);
+        _responses.Take(count).ShouldAllBe(response => response.StatusCode == HttpStatusCode.OK);
     }
 
     [Then("the last response status code should be TooManyRequests")]
     public void ThenTheLastResponseStatusCodeShouldBeTooManyRequests()
     {
-        Assert.NotEmpty(_responses);
-        Assert.Equal(HttpStatusCode.TooManyRequests, _responses[^1].StatusCode);
+        _responses.ShouldNotBeEmpty();
+        _responses[^1].StatusCode.ShouldBe(HttpStatusCode.TooManyRequests);
     }
 }
