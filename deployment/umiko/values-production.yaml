@@ -1,6 +1,6 @@
 namespace: umiko-production
 
-appTag: "0.3.0"
+appTag: "0.5.0"
 
 ingress:
   domain: umiko.example.com

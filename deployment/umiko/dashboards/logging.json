@@ -210,7 +210,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto])) or sum by (detected_level) (count_over_time({k8s_statefulset_name=~\"$application\"} |= `` | detected_level=~\"$level\" [$__auto]))",
+          "expr": "sum by (detected_level) (count_over_time({k8s_deployment_name=~\"$application\", log_source=~\"$log_source\"} |= `` | detected_level=~\"$level\" [$__auto])) or sum by (detected_level) (count_over_time({k8s_statefulset_name=~\"$application\", log_source=~\"$log_source\"} |= `` | detected_level=~\"$level\" [$__auto]))",
           "legendFormat": "{{ detected_level }}",
           "queryType": "range",
           "refId": "A"
@@ -249,13 +249,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "{k8s_deployment_name=~\"$application\"} |= `` | detected_level=~\"$level\"",
+          "expr": "{k8s_deployment_name=~\"$application\", log_source=~\"$log_source\"} |= `` | detected_level=~\"$level\"",
           "queryType": "range",
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "{k8s_statefulset_name=~\"$application\"} |= `` | detected_level=~\"$level\"",
+          "expr": "{k8s_statefulset_name=~\"$application\", log_source=~\"$log_source\"} |= `` | detected_level=~\"$level\"",
           "queryType": "range",
           "refId": "B"
         }
@@ -425,6 +425,40 @@
         ],
         "query": "trace,debug,info,warn,error,critical,unknown",
         "type": "custom"
+      },
+      {
+        "allValue": "application|k8s_pods",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "includeAll": true,
+        "label": "Log Source",
+        "multi": true,
+        "name": "log_source",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "application",
+            "value": "application"
+          },
+          {
+            "selected": false,
+            "text": "k8s_pods",
+            "value": "k8s_pods"
+          }
+        ],
+        "query": "application,k8s_pods",
+        "type": "custom"
       }
     ]
   },
@@ -436,6 +470,6 @@
   "timezone": "browser",
   "title": "Application Logging",
   "uid": "umiko-app-logging",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }

@@ -70,20 +70,20 @@ public class HealthSteps
     [Then("the page should return status code {int}")]
     public void ThenThePageShouldReturnStatusCode(int statusCode)
     {
-        Assert.NotNull(_response);
-        Assert.Equal(statusCode, _response!.Status);
+        _response.ShouldNotBeNull();
+        _response!.Status.ShouldBe(statusCode);
     }
 
     [Then("there should be no console errors")]
     public void ThenThereShouldBeNoConsoleErrors()
     {
-        Assert.Empty(_consoleErrors);
+        _consoleErrors.ShouldBeEmpty();
     }
 
     [Then("the heading should be {string}")]
     public async Task ThenTheHeadingShouldBe(string expectedHeading)
     {
         var heading = await _page!.Locator("h1").TextContentAsync(new LocatorTextContentOptions() { Timeout = AspireHooks.DefaultTimeoutMilliseconds});
-        Assert.Equal(expectedHeading, heading);
+        heading.ShouldBe(expectedHeading);
     }
 }

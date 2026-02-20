@@ -4,4 +4,4 @@ global using Aspire.Hosting.ApplicationModel;
 global using Aspire.Hosting.Testing;
 global using MadWorldNL.Umiko.Hooks;
 global using Reqnroll;
-global using Xunit;
+global using Shouldly;

@@ -29,7 +29,7 @@ public class PingSteps
     [Then("the response status code should be OK")]
     public void ThenTheResponseStatusCodeShouldBeOk()
     {
-        Assert.NotNull(_response);
-        Assert.Equal(HttpStatusCode.OK, _response!.StatusCode);
+        _response.ShouldNotBeNull();
+        _response!.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }

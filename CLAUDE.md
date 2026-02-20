@@ -88,6 +88,7 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 - ASP.NET Core and Kestrel metrics
 - ASP.NET Core and HTTP client tracing
 - OTLP export when `OTEL_EXPORTER_OTLP_ENDPOINT` is configured
+- Resource attribute `log_source = "application"` on all telemetry, used to distinguish app OTLP logs from Kubernetes pod stdout logs in Loki/Grafana
 
 ### Health Checks
 
@@ -118,7 +119,7 @@ The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used 
 
 The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosting.Testing to run integration tests against the full distributed application. Key patterns:
 
-- **Reqnroll + xUnit**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes
+- **Reqnroll + xUnit + Shouldly**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes. Assertions use [Shouldly](https://docs.shouldly.org/) (e.g. `x.ShouldBe(expected)`, `x.ShouldNotBeNull()`)
 - **Feature files**: Located in `Features/` (e.g. `Features/Api/StatusEndpoints/Ping.feature`)
 - **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/Api/StatusEndpoints/PingSteps.cs`)
 - **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run. Provides `CreateHttpClient(serviceName, ipAddress)` (with resilience handler) and `CreateRawHttpClient(serviceName, ipAddress)` (plain HttpClient, used by rate limiter tests to avoid retry on 429). Also provides `GenerateRandomIp()` to create unique IPs for test isolation via `X-Forwarded-For`
@@ -129,7 +130,7 @@ The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosti
 
 The `Controllers.EndToEndTests` project uses Playwright with Reqnroll (BDD) and Aspire.Hosting.Testing for browser-based E2E tests. Key patterns:
 
-- **Reqnroll + Playwright**: Tests are Gherkin feature files with step definitions that drive Playwright browser interactions
+- **Reqnroll + Playwright + Shouldly**: Tests are Gherkin feature files with step definitions that drive Playwright browser interactions. Assertions use [Shouldly](https://docs.shouldly.org/)
 - **Feature files**: Located in `Features/` (e.g. `Features/WebAdministrators/Health.feature`, `Features/WebUsers/Health.feature`)
 - **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/WebAdministrators/HealthSteps.cs`)
 - **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start the Aspire app and Playwright browser once per test run. Creates browser contexts with `IgnoreHTTPSErrors = true` (required because Chromium doesn't trust the ASP.NET Core dev certificate)
@@ -162,7 +163,7 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `web-users.yaml`: User portal Deployment and ClusterIP Service
 - `ingress.yaml`: Traefik Ingress with subdomain-based routing and TLS, conditional Grafana route
 - `cluster-issuer.yaml`: Optional Let's Encrypt ClusterIssuer for cert-manager (enabled via `clusterIssuer.enabled`)
-- `otel-collector.yaml`: OpenTelemetry Collector Deployment (OTLP receiver, k8s_cluster metrics, k8s_events), DaemonSet for pod log collection via filelog receiver, ServiceAccount + RBAC (gated by `observability.enabled`)
+- `otel-collector.yaml`: OpenTelemetry Collector Deployment (OTLP receiver, k8s_cluster metrics, k8s_events), DaemonSet for pod log collection via filelog receiver with `log_source = "k8s_pods"` resource attribute, ServiceAccount + RBAC (gated by `observability.enabled`)
 - `prometheus.yaml`: Prometheus StatefulSet with remote write receiver (gated by `observability.enabled`)
 - `tempo.yaml`: Grafana Tempo StatefulSet for trace storage (gated by `observability.enabled`)
 - `loki.yaml`: Grafana Loki StatefulSet for log storage with OTLP ingestion (gated by `observability.enabled`)
@@ -208,9 +209,14 @@ Gated behind `observability.enabled` (default `false`). When enabled, deploys a 
 - Kubernetes → k8s_cluster receiver → Prometheus (pod/node metrics)
 - Kubernetes → k8s_events receiver → Loki (cluster events)
 
+**Log source labelling**: Logs can be distinguished by the `log_source` Loki label:
+- `log_source = "application"` — structured logs sent directly from the .NET apps via OTLP
+- `log_source = "k8s_pods"` — raw stdout/stderr captured from all pods by the DaemonSet
+- Loki is configured to index `log_source` as a stream label via `limits_config.otlp_config.resource_attributes.attributes_config`
+
 **RBAC**: The OTel Collector uses a ServiceAccount with ClusterRole permissions to read pods, nodes, deployments, statefulsets, events, resourcequotas, and horizontalpodautoscalers.
 
-**Grafana Dashboards**: Dashboard JSON files in `deployment/umiko/dashboards/` are automatically loaded into Grafana via ConfigMap-based provisioning. To add a dashboard: export it from Grafana UI, save the JSON file to the `dashboards/` directory, and redeploy with Helm.
+**Grafana Dashboards**: Dashboard JSON files in `deployment/umiko/dashboards/` are automatically loaded into Grafana via ConfigMap-based provisioning. To add a dashboard: export it from Grafana UI, save the JSON file to the `dashboards/` directory, and redeploy with Helm. The logging dashboard (`logging.json`) includes `Application`, `Log Level`, and `Log Source` filter variables.
 
 ### Database Migrations
 
