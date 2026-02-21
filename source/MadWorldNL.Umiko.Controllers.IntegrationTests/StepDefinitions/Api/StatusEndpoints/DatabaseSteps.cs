@@ -14,7 +14,7 @@ public class DatabaseSteps
     private string? _responseContent;
 
     [Given("the {word} service is healthy")]
-    public async Task GivenTheServiceIsHealthy(string serviceName)
+    public static async Task GivenTheServiceIsHealthy(string serviceName)
     {
         var cancellationToken = CancellationToken.None;
         await AspireHooks.App.ResourceNotifications

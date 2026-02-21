@@ -29,7 +29,7 @@ public class DomainDependencySteps : BaseArchitectureTests
     }
 
     [Given("the architecture is loaded")]
-    public void GivenTheArchitectureIsLoaded()
+    public static void GivenTheArchitectureIsLoaded()
     {
         // Architecture is loaded statically in BaseArchitectureTests
     }
