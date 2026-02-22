@@ -25,6 +25,9 @@
     <Project Path="MadWorldNL.Umiko.ArchitectureTests\ArchitectureTests.csproj" />
     <Project Path="MadWorldNL.Umiko.Aspire.Tests\Aspire.Tests.csproj" />
   </Folder>
+  <Folder Name="/Tests/Application/">
+    <Project Path="MadWorldNL.Umiko.Application.Frameworks.UnitTests\Frameworks.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/Tests/Controllers/">
     <Project Path="MadWorldNL.Umiko.Controllers.EndToEndTests\EndToEndTests.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.IntegrationTests\IntegrationTests.csproj" />
