@@ -59,7 +59,7 @@ Aspire Host (Orchestrator)
 - **Controllers.Bus**: Background message processing service with OpenTelemetry instrumentation, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
 - **Application.Functions**: Business logic layer, shared by API and Bus
-- **Application.Frameworks**: DDD building blocks (Entity, AggregateRoot, ValueObject, IDomainEvent) — no dependencies, foundational layer
+- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent) and functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\> and Match) — no dependencies, foundational layer
 - **Application.Domain**: Domain entities and business rules, depends on Frameworks
 - **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain
 - **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain
@@ -114,6 +114,16 @@ Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/sca
 ### Test AppHost (Aspire.Tests)
 
 The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. It overrides `RateLimiter__PermitLimit` to `5` (instead of production default 100) for faster rate limiter integration tests. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
+
+### Unit Tests
+
+The `Application.Frameworks.UnitTests` project uses Reqnroll (BDD) with xUnit and Shouldly for unit-level tests of the Frameworks layer. Key patterns:
+
+- **Reqnroll + xUnit + Shouldly**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes. Assertions use [Shouldly](https://docs.shouldly.org/)
+- **Feature files**: Located in `Features/` mirroring the source structure (e.g. `Features/DDD/Entity.feature`, `Features/Functional/Option.feature`)
+- **Step definitions**: Located in `StepDefinitions/` with matching subfolder structure (e.g. `StepDefinitions/DDD/EntitySteps.cs`)
+- **Test helpers**: Concrete test double classes in `Helpers/` used to instantiate abstract types (e.g. `TestEntity`, `TestAggregateRoot`, `TestValueObject`, `TestDomainEvent`)
+- **Global usings**: Defined in `GlobalUsings.cs`
 
 ### Integration Tests
 
