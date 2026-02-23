@@ -19,7 +19,7 @@ public sealed class EventConsumer<TEvent> : BackgroundService
     private readonly ILogger<EventConsumer<TEvent>> _logger;
 
     private static readonly string ExchangeName = typeof(TEvent).Name;
-    private static readonly string QueueName = typeof(TEvent).Name;
+    private static readonly string QueueName = $"{typeof(TEvent).Name}_{Guid.NewGuid():N}";
 
     public EventConsumer(IConnection connection, IServiceScopeFactory scopeFactory, ILogger<EventConsumer<TEvent>> logger)
     {
@@ -33,7 +33,7 @@ public sealed class EventConsumer<TEvent> : BackgroundService
         await using var channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
         await channel.ExchangeDeclareAsync(ExchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
-        await channel.QueueDeclareAsync(QueueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
+        await channel.QueueDeclareAsync(QueueName, durable: false, exclusive: true, autoDelete: true, cancellationToken: stoppingToken);
         await channel.QueueBindAsync(QueueName, ExchangeName, routingKey: string.Empty, cancellationToken: stoppingToken);
         await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
 
