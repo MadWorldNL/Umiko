@@ -10,8 +10,10 @@ public static class FunctionsServiceCollectionExtensions
     {
         services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>, GetDatabaseStatusFunction>();
         
+        services.Decorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandler<>));
+        services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>));
         services.Decorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandler<,>));
-        
+
         return services;
     }
 }
