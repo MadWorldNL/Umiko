@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text;
 using System.Text.Json;
 using MadWorldNL.Umiko.ServiceBus;
 using MadWorldNL.Umiko.Statistics;
@@ -40,7 +39,7 @@ public sealed class EventConsumer<TEvent> : BackgroundService
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.ReceivedAsync += async (_, ea) =>
         {
-            var parentContext = ExtractActivityContext(ea.BasicProperties.Headers);
+            var parentContext = ea.BasicProperties.Headers.ToActivityContext();
             using var activity = TracesOverview.ActivitySource.StartActivity(
                 $"process {ExchangeName}",
                 ActivityKind.Consumer,
@@ -86,26 +85,5 @@ public sealed class EventConsumer<TEvent> : BackgroundService
         {
             // Normal shutdown
         }
-    }
-
-    private static ActivityContext ExtractActivityContext(IDictionary<string, object?>? headers)
-    {
-        if (headers is null) return default;
-
-        if (!headers.TryGetValue("traceparent", out var traceparentObj)) return default;
-
-        var traceparent = traceparentObj is byte[] bytes
-            ? Encoding.UTF8.GetString(bytes)
-            : traceparentObj?.ToString();
-
-        string? tracestate = null;
-        if (headers.TryGetValue("tracestate", out var tracestateObj))
-            tracestate = tracestateObj is byte[] tsBytes
-                ? Encoding.UTF8.GetString(tsBytes)
-                : tracestateObj?.ToString();
-
-        return ActivityContext.TryParse(traceparent, tracestate, isRemote: true, out var context)
-            ? context
-            : default;
     }
 }
