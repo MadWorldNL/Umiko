@@ -59,7 +59,7 @@ Aspire Host (Orchestrator)
 - **Controllers.Bus**: Background message processing service with OpenTelemetry instrumentation, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
 - **Application.Functions**: Business logic layer, shared by API and Bus
-- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent), functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\>, Result\<T\> with Success\<T\>/Failure\<T\>, both with Match), and service bus abstractions (`ServiceBus/`: IQuery\<TResponse\>, IQueryHandler\<TQuery, TResponse\>) — no dependencies, foundational layer
+- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent), functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\>; Result\<T\> with Success\<T\>/Failure\<T\>, both with Match, plus `IsSuccess` and `Error` properties), and service bus abstractions (`ServiceBus/`: IQuery\<TResponse\>, IQueryHandler\<TQuery, TResponse\>, ICommand, ICommand\<TResponse\>, ICommandHandler\<TCommand\>, ICommandHandler\<TCommand, TResponse\>, LoggingQueryHandler, LoggingCommandHandler) — no dependencies, foundational layer
 - **Application.Domain**: Domain entities and business rules, depends on Frameworks
 - **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain
 - **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain
@@ -111,15 +111,16 @@ Both `Controllers.Api` and `Controllers.Bus` use ASP.NET Core rate limiting midd
 
 Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
 
-### Query Handler Pattern
+### Query and Command Handler Pattern
 
-`Application.Functions` uses the `IQueryHandler<TQuery, TResponse>` interface from `Application.Frameworks/ServiceBus/` for all business logic handlers. Key conventions:
+`Application.Functions` uses `IQueryHandler` and `ICommandHandler` interfaces from `Application.Frameworks/ServiceBus/` for all business logic. Key conventions:
 
 - **Query**: A record implementing `IQuery<TResponse>`, located in `Application.Domain` alongside its result type (e.g. `Status/GetDatabaseStatusQuery.cs`, `Status/GetDatabaseStatusResult.cs`)
+- **Command**: A record implementing `ICommand` (no response) or `ICommand<TResponse>` (with response), located in `Application.Domain`
 - **Result**: A record holding the handler's output, defined in `Application.Domain` (e.g. `GetDatabaseStatusResult(bool IsConnected)`)
-- **Handler**: A class in `Application.Functions` implementing `IQueryHandler<TQuery, TResponse>`, returns `Task<Result<TResponse>>` — success is wrapped in `Result<TResponse>.Success(value)`, failures in `Result<TResponse>.Failure(exception)`
-- **Registration**: Handlers are registered against the interface in `FunctionsServiceCollectionExtensions` (e.g. `services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>, GetDatabaseStatusFunction>()`)
-- **Controllers**: Inject `IQueryHandler<TQuery, TResponse>` directly and use `Match` to map success/failure to HTTP responses
+- **Handler**: A class in `Application.Functions` implementing `IQueryHandler<TQuery, TResponse>` or `ICommandHandler<TCommand>`/`ICommandHandler<TCommand, TResponse>`, returns `Task<Result<TResponse>>` — success wrapped in `Result<TResponse>.Success(value)`, failures in `Result<TResponse>.Failure(exception)`
+- **Registration**: Concrete handlers registered by type, then all handlers automatically decorated with logging via open-generic `Decorate` in `FunctionsServiceCollectionExtensions`: `services.Decorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandler<,>))`, same for both `ICommandHandler` variants
+- **Controllers**: Inject the handler interface directly and use `Match` to map success/failure to HTTP responses
 
 ### Test AppHost (Aspire.Tests)
 
