@@ -1,6 +1,6 @@
 namespace MadWorldNL.Umiko.Status;
 
-public class StatusRepository(UmikoContext context) : IStatusRepository
+public class DatabaseStatusRepository(UmikoContext context) : IDatabaseStatusRepository
 {
     public async Task<bool> CanConnect(CancellationToken cancellationToken = default)
     {

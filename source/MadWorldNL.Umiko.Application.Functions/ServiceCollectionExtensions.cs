@@ -10,6 +10,7 @@ public static class FunctionsServiceCollectionExtensions
     public static IServiceCollection AddFunctionsServices(this IServiceCollection services)
     {
         services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>, GetDatabaseStatusFunction>();
+        services.AddScoped<IQueryHandler<GetMessagingStatusQuery, GetMessagingStatusResult>, GetMessagingStatusFunction>();
         
         // TODO: Add when implemented a first command handler
         //services.Decorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandler<>));

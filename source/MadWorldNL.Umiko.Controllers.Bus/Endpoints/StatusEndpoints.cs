@@ -19,5 +19,13 @@ internal static class StatusEndpoints
                 success: status => new GetDatabaseStatusResponse { IsConnected = status.IsConnected },
                 failure: _ => new GetDatabaseStatusResponse { IsConnected = false });
         }).WithName("Database");
+        
+        statusEndpoint.MapGet("/MessageBus", async (IQueryHandler<GetMessagingStatusQuery, GetMessagingStatusResult> handler, CancellationToken cancellationToken) =>
+        {
+            var result = await handler.Handle(new GetMessagingStatusQuery(), cancellationToken);
+            return result.Match(
+                success: status => new GetMessagingStatusResponse { IsConnected = status.IsConnected },
+                failure: _ => new GetMessagingStatusResponse { IsConnected = false });
+        }).WithName("MessageBus");
     }
 }
