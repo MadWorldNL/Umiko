@@ -4,7 +4,7 @@ using MadWorldNL.Umiko.Statistics;
 
 namespace MadWorldNL.Umiko.ServiceBus;
 
-public class LoggingEventHandler<TEvent>(
+public sealed class LoggingEventHandler<TEvent>(
     IEventHandler<TEvent> innerHandler,
     ILogger<IEventHandler<TEvent>> logger
     ) : IEventHandler<TEvent> where TEvent : IEvent
