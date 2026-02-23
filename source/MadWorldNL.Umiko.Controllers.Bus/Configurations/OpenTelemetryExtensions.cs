@@ -39,6 +39,7 @@ public static class OpenTelemetryExtensions
         {
             tracing.AddAspNetCoreInstrumentation();
             tracing.AddHttpClientInstrumentation();
+            tracing.AddSource("MadWorldNL.Umiko");
         });
 
         // Export OpenTelemetry data via OTLP, using env vars for the configuration
