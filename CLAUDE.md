@@ -115,9 +115,10 @@ Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/sca
 
 `Application.Functions` uses the `IQueryHandler<TQuery, TResponse>` interface from `Application.Frameworks/ServiceBus/` for all business logic handlers. Key conventions:
 
-- **Query**: A record implementing `IQuery<TResponse>`, located alongside its handler (e.g. `Status/GetDatabaseStatusQuery.cs`)
-- **Handler**: A class implementing `IQueryHandler<TQuery, TResponse>`, returns `Task<Result<TResponse>>` — success is wrapped in `Result<TResponse>.Success(value)`, failures in `Result<TResponse>.Failure(exception)`
-- **Registration**: Handlers are registered against the interface in `FunctionsServiceCollectionExtensions` (e.g. `services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, bool>, GetDatabaseStatusFunction>()`)
+- **Query**: A record implementing `IQuery<TResponse>`, located in `Application.Domain` alongside its result type (e.g. `Status/GetDatabaseStatusQuery.cs`, `Status/GetDatabaseStatusResult.cs`)
+- **Result**: A record holding the handler's output, defined in `Application.Domain` (e.g. `GetDatabaseStatusResult(bool IsConnected)`)
+- **Handler**: A class in `Application.Functions` implementing `IQueryHandler<TQuery, TResponse>`, returns `Task<Result<TResponse>>` — success is wrapped in `Result<TResponse>.Success(value)`, failures in `Result<TResponse>.Failure(exception)`
+- **Registration**: Handlers are registered against the interface in `FunctionsServiceCollectionExtensions` (e.g. `services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>, GetDatabaseStatusFunction>()`)
 - **Controllers**: Inject `IQueryHandler<TQuery, TResponse>` directly and use `Match` to map success/failure to HTTP responses
 
 ### Test AppHost (Aspire.Tests)
