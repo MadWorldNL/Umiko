@@ -32,6 +32,7 @@ public static class OpenTelemetryExtensions
             // Metrics provides by ASP.NET Core in .NET 8
             metrics.AddMeter("Microsoft.AspNetCore.Hosting");
             metrics.AddMeter("Microsoft.AspNetCore.Server.Kestrel");
+            metrics.AddMeter("MadWorldNL.Umiko");
         });
 
         // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP

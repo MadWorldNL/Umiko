@@ -1,3 +1,4 @@
+using System.Xml.Schema;
 using MadWorldNL.Umiko.ServiceBus;
 using MadWorldNL.Umiko.Status;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +11,9 @@ public static class FunctionsServiceCollectionExtensions
     {
         services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>, GetDatabaseStatusFunction>();
         
-        services.Decorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandler<>));
-        services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>));
+        // TODO: Add when implemented a first command handler
+        //services.Decorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandler<>));
+        //services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>));
         services.Decorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandler<,>));
 
         return services;

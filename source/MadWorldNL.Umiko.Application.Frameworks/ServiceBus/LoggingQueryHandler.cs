@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using MadWorldNL.Umiko.Functional;
+using MadWorldNL.Umiko.Statistics;
 
 namespace MadWorldNL.Umiko.ServiceBus;
 
@@ -20,6 +21,8 @@ public class LoggingQueryHandler<TQuery, TResponse>(
 
             var result = await innerHandler.Handle(query, cancellationToken);
 
+            MetricsOverview.QueryCounter.Add(1);
+            
             if (result.IsSuccess)
             {
                 logger.LogInformation("Completed command {Query}", queryName);

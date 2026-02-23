@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using MadWorldNL.Umiko.Functional;
+using MadWorldNL.Umiko.Statistics;
 
 namespace MadWorldNL.Umiko.ServiceBus;
 
@@ -20,6 +21,8 @@ public class LoggingCommandHandler<TCommand>(
 
             var result = await innerHandler.Handle(command, cancellationToken);
 
+            MetricsOverview.CommandCounter.Add(1);
+            
             if (result.IsSuccess)
             {
                 logger.LogInformation("Completed command {Command}", commandName);
@@ -51,6 +54,8 @@ public class LoggingCommandHandler<TCommand, TResponse>(
 
             var result = await innerHandler.Handle(command, cancellationToken);
 
+            MetricsOverview.CommandCounter.Add(1);
+            
             if (result.IsSuccess)
             {
                 logger.LogInformation("Completed command {Command}", commandName);
