@@ -59,7 +59,7 @@ Aspire Host (Orchestrator)
 - **Controllers.Bus**: Background message processing service with OpenTelemetry instrumentation, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
 - **Application.Functions**: Business logic layer, shared by API and Bus
-- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent) and functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\> and Match) — no dependencies, foundational layer
+- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent), functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\>, Result\<T\> with Success\<T\>/Failure\<T\>, both with Match), and service bus abstractions (`ServiceBus/`: IQuery\<TResponse\>, IQueryHandler\<TQuery, TResponse\>) — no dependencies, foundational layer
 - **Application.Domain**: Domain entities and business rules, depends on Frameworks
 - **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain
 - **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain
@@ -111,6 +111,15 @@ Both `Controllers.Api` and `Controllers.Bus` use ASP.NET Core rate limiting midd
 
 Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
 
+### Query Handler Pattern
+
+`Application.Functions` uses the `IQueryHandler<TQuery, TResponse>` interface from `Application.Frameworks/ServiceBus/` for all business logic handlers. Key conventions:
+
+- **Query**: A record implementing `IQuery<TResponse>`, located alongside its handler (e.g. `Status/GetDatabaseStatusQuery.cs`)
+- **Handler**: A class implementing `IQueryHandler<TQuery, TResponse>`, returns `Task<Result<TResponse>>` — success is wrapped in `Result<TResponse>.Success(value)`, failures in `Result<TResponse>.Failure(exception)`
+- **Registration**: Handlers are registered against the interface in `FunctionsServiceCollectionExtensions` (e.g. `services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, bool>, GetDatabaseStatusFunction>()`)
+- **Controllers**: Inject `IQueryHandler<TQuery, TResponse>` directly and use `Match` to map success/failure to HTTP responses
+
 ### Test AppHost (Aspire.Tests)
 
 The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. It overrides `RateLimiter__PermitLimit` to `5` (instead of production default 100) for faster rate limiter integration tests. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
@@ -120,7 +129,7 @@ The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used 
 The `Application.Frameworks.UnitTests` project uses Reqnroll (BDD) with xUnit and Shouldly for unit-level tests of the Frameworks layer. Key patterns:
 
 - **Reqnroll + xUnit + Shouldly**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes. Assertions use [Shouldly](https://docs.shouldly.org/)
-- **Feature files**: Located in `Features/` mirroring the source structure (e.g. `Features/DDD/Entity.feature`, `Features/Functional/Option.feature`)
+- **Feature files**: Located in `Features/` mirroring the source structure (e.g. `Features/DDD/Entity.feature`, `Features/Functional/Option.feature`, `Features/Functional/Result.feature`)
 - **Step definitions**: Located in `StepDefinitions/` with matching subfolder structure (e.g. `StepDefinitions/DDD/EntitySteps.cs`)
 - **Test helpers**: Concrete test double classes in `Helpers/` used to instantiate abstract types (e.g. `TestEntity`, `TestAggregateRoot`, `TestValueObject`, `TestDomainEvent`)
 - **Global usings**: Defined in `GlobalUsings.cs`

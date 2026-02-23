@@ -1,3 +1,4 @@
+using MadWorldNL.Umiko.ServiceBus;
 using MadWorldNL.Umiko.Status;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,7 +8,7 @@ public static class FunctionsServiceCollectionExtensions
 {
     public static IServiceCollection AddFunctionsServices(this IServiceCollection services)
     {
-        services.AddScoped<GetDatabaseStatusFunction>();
+        services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, bool>, GetDatabaseStatusFunction>();
         return services;
     }
 }
