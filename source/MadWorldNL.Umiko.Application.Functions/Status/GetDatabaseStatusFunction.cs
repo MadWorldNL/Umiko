@@ -4,11 +4,11 @@ using MadWorldNL.Umiko.ServiceBus;
 namespace MadWorldNL.Umiko.Status;
 
 public class GetDatabaseStatusFunction(IStatusRepository statusRepository)
-    : IQueryHandler<GetDatabaseStatusQuery, bool>
+    : IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>
 {
-    public async Task<Result<bool>> Handle(GetDatabaseStatusQuery query, CancellationToken cancellationToken)
+    public async Task<Result<GetDatabaseStatusResult>> Handle(GetDatabaseStatusQuery query, CancellationToken cancellationToken)
     {
         var isConnected = await statusRepository.CanConnect(cancellationToken);
-        return Result<bool>.Success(isConnected);
+        return Result<GetDatabaseStatusResult>.Success(new GetDatabaseStatusResult(isConnected));
     }
 }

@@ -12,11 +12,11 @@ internal static class StatusEndpoints
         statusEndpoint.MapGet("/Ping", () => "Pong")
             .WithName("Ping");
 
-        statusEndpoint.MapGet("/Database", async (IQueryHandler<GetDatabaseStatusQuery, bool> handler, CancellationToken cancellationToken) =>
+        statusEndpoint.MapGet("/Database", async (IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult> handler, CancellationToken cancellationToken) =>
         {
             var result = await handler.Handle(new GetDatabaseStatusQuery(), cancellationToken);
             return result.Match(
-                success: isConnected => new GetDatabaseStatusResponse { IsConnected = isConnected },
+                success: status => new GetDatabaseStatusResponse { IsConnected = status.IsConnected },
                 failure: _ => new GetDatabaseStatusResponse { IsConnected = false });
         }).WithName("Database");
     }

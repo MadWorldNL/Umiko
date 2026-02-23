@@ -8,7 +8,7 @@ public static class FunctionsServiceCollectionExtensions
 {
     public static IServiceCollection AddFunctionsServices(this IServiceCollection services)
     {
-        services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, bool>, GetDatabaseStatusFunction>();
+        services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>, GetDatabaseStatusFunction>();
         return services;
     }
 }
