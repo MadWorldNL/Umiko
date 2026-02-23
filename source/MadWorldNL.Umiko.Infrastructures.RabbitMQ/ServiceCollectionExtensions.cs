@@ -1,3 +1,4 @@
+using MadWorldNL.Umiko.Consumers;
 using MadWorldNL.Umiko.ServiceBus;
 using MadWorldNL.Umiko.Status;
 using Microsoft.Extensions.DependencyInjection;

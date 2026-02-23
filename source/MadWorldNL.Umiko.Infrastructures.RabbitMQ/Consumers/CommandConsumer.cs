@@ -1,12 +1,15 @@
+using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using MadWorldNL.Umiko.ServiceBus;
+using MadWorldNL.Umiko.Statistics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace MadWorldNL.Umiko;
+namespace MadWorldNL.Umiko.Consumers;
 
 public sealed class CommandConsumer<TCommand> : BackgroundService
     where TCommand : ICommand
@@ -37,6 +40,12 @@ public sealed class CommandConsumer<TCommand> : BackgroundService
         var consumer = new AsyncEventingBasicConsumer(channel);
         consumer.ReceivedAsync += async (_, ea) =>
         {
+            var parentContext = ExtractActivityContext(ea.BasicProperties.Headers);
+            using var activity = TracesOverview.ActivitySource.StartActivity(
+                $"process {ExchangeName}",
+                ActivityKind.Consumer,
+                parentContext);
+
             try
             {
                 var command = JsonSerializer.Deserialize<TCommand>(ea.Body.Span);
@@ -77,5 +86,26 @@ public sealed class CommandConsumer<TCommand> : BackgroundService
         {
             // Normal shutdown
         }
+    }
+
+    private static ActivityContext ExtractActivityContext(IDictionary<string, object?>? headers)
+    {
+        if (headers is null) return default;
+
+        if (!headers.TryGetValue("traceparent", out var traceparentObj)) return default;
+
+        var traceparent = traceparentObj is byte[] bytes
+            ? Encoding.UTF8.GetString(bytes)
+            : traceparentObj?.ToString();
+
+        string? tracestate = null;
+        if (headers.TryGetValue("tracestate", out var tracestateObj))
+            tracestate = tracestateObj is byte[] tsBytes
+                ? Encoding.UTF8.GetString(tsBytes)
+                : tracestateObj?.ToString();
+
+        return ActivityContext.TryParse(traceparent, tracestate, isRemote: true, out var context)
+            ? context
+            : default;
     }
 }
