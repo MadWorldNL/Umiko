@@ -2,7 +2,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.WebUsers;
 
 [Binding]
 [Scope(Feature = "Web Users Health")]
-public class HealthSteps
+public sealed class HealthSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 

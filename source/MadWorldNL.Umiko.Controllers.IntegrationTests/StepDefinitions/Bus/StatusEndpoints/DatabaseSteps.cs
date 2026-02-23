@@ -4,7 +4,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.Bus.StatusEndpoints;
 
 [Binding]
 [Scope(Feature = "Bus Database Endpoint")]
-public class DatabaseSteps
+public sealed class DatabaseSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 

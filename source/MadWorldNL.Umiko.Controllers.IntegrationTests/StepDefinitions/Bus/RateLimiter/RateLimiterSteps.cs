@@ -2,7 +2,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.Bus.RateLimiter;
 
 [Binding]
 [Scope(Feature = "Bus Rate Limiter")]
-public class RateLimiterSteps
+public sealed class RateLimiterSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 

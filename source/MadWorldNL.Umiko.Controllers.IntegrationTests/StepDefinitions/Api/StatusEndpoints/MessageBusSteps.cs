@@ -4,7 +4,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.Api.StatusEndpoints;
 
 [Binding]
 [Scope(Feature = "Api MessageBus Endpoint")]
-public class MessageBusSteps
+public sealed class MessageBusSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 

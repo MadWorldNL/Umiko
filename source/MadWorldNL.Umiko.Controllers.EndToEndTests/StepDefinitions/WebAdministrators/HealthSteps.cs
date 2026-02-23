@@ -2,7 +2,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.WebAdministrators;
 
 [Binding]
 [Scope(Feature = "Web Administrators Health")]
-public class HealthSteps
+public sealed class HealthSteps
 {
     private IBrowserContext? _context;
     private IPage? _page;
