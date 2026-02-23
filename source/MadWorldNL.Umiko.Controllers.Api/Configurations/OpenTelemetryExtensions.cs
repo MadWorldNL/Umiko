@@ -1,3 +1,4 @@
+using MadWorldNL.Umiko.Statistics;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -32,7 +33,7 @@ public static class OpenTelemetryExtensions
             // Metrics provides by ASP.NET Core in .NET 8
             metrics.AddMeter("Microsoft.AspNetCore.Hosting");
             metrics.AddMeter("Microsoft.AspNetCore.Server.Kestrel");
-            metrics.AddMeter("MadWorldNL.Umiko");
+            metrics.AddMeter(TelemetryConstants.Namespace);
         });
 
         // Add Tracing for ASP.NET Core and our custom ActivitySource and export via OTLP
@@ -40,7 +41,7 @@ public static class OpenTelemetryExtensions
         {
             tracing.AddAspNetCoreInstrumentation();
             tracing.AddHttpClientInstrumentation();
-            tracing.AddSource("MadWorldNL.Umiko");
+            tracing.AddSource(TelemetryConstants.Namespace);
         });
 
         // Export OpenTelemetry data via OTLP, using env vars for the configuration

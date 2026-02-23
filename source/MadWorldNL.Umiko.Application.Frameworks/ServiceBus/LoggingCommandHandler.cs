@@ -9,13 +9,11 @@ public class LoggingCommandHandler<TCommand>(
     ILogger<ICommandHandler<TCommand>> logger
     ) : ICommandHandler<TCommand> where TCommand : ICommand
 {
-    private static readonly ActivitySource _commandActivitySource = new("MadWorldNL.Umiko");
-
     public async Task<Result<bool>> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var commandName = typeof(TCommand).Name;
 
-        using (_ = _commandActivitySource.StartActivity(commandName))
+        using (_ = TracesOverview.ActivitySource.StartActivity(commandName))
         {
             logger.LogInformation("Processing command {Command}", commandName);
 
@@ -42,13 +40,11 @@ public class LoggingCommandHandler<TCommand, TResponse>(
     ILogger<ICommandHandler<TCommand, TResponse>> logger
     ) : ICommandHandler<TCommand, TResponse> where TCommand : ICommand<TResponse>
 {
-    private static readonly ActivitySource _commandActivitySource = new("MadWorldNL.Umiko");
-
     public async Task<Result<TResponse>> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var commandName = typeof(TCommand).Name;
 
-        using (_ = _commandActivitySource.StartActivity(commandName))
+        using (_ = TracesOverview.ActivitySource.StartActivity(commandName))
         {
             logger.LogInformation("Processing command {Command}", commandName);
 

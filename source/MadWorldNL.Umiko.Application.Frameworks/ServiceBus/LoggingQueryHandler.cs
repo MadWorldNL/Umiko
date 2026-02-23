@@ -9,13 +9,11 @@ public class LoggingQueryHandler<TQuery, TResponse>(
     ILogger<IQueryHandler<TQuery, TResponse>> logger
     ) : IQueryHandler<TQuery, TResponse> where TQuery : IQuery<TResponse>
 {
-    private static readonly ActivitySource _queryActivitySource = new("MadWorldNL.Umiko");
-    
     public async Task<Result<TResponse>> Handle(TQuery query, CancellationToken cancellationToken)
     {
         var queryName = typeof(TQuery).Name;
 
-        using (_ = _queryActivitySource.StartActivity(queryName))
+        using (_ = TracesOverview.ActivitySource.StartActivity(queryName))
         {
             logger.LogInformation("Processing command {Command}", queryName);
 
