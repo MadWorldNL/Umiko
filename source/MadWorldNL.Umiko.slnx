@@ -25,6 +25,9 @@
     <Project Path="MadWorldNL.Umiko.ArchitectureTests\ArchitectureTests.csproj" />
     <Project Path="MadWorldNL.Umiko.Aspire.Tests\Aspire.Tests.csproj" />
   </Folder>
+  <Folder Name="/Tests/Application/">
+    <Project Path="MadWorldNL.Umiko.Application.Frameworks.UnitTests\Frameworks.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/Tests/Controllers/">
     <Project Path="MadWorldNL.Umiko.Controllers.EndToEndTests\EndToEndTests.csproj" />
     <Project Path="MadWorldNL.Umiko.Controllers.IntegrationTests\IntegrationTests.csproj" />
@@ -56,7 +59,6 @@
     <File Path="..\.github\workflows\claude-code-review.yml" />
     <File Path="..\.github\workflows\claude.yml" />
     <File Path="..\.github\workflows\publish-containers.yml" />
-    <File Path="..\.github\workflows\sonarqube.yml" />
   </Folder>
   <Folder Name="/_Solution/">
     <File Path="Directory.Build.props" />

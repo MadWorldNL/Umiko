@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddOpenTelemetry();
 builder.AddNpgsqlDbContext<UmikoContext>("UmikoDb");
+builder.AddRabbitMQClient("UmikoBus");
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -15,6 +16,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
 builder.Services.AddPostgresqlServices();
+builder.Services.AddRabbitMqServices();
 builder.Services.AddFunctionsServices();
 
 var app = builder.Build();
@@ -37,5 +39,6 @@ app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
     Predicate = _ => false
 }).DisableRateLimiting();
 app.AddStatusEndpoints();
+app.AddDeveloperEndpoints();
 
 await app.RunAsync();

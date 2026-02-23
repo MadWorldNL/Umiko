@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPostgresqlServices(this IServiceCollection services)
     {
-        services.AddScoped<IStatusRepository, StatusRepository>();
+        services.AddScoped<IDatabaseStatusRepository, DatabaseStatusRepository>();
         return services;
     }
 }

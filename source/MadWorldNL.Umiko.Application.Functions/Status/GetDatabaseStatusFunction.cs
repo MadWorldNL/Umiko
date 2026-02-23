@@ -1,9 +1,14 @@
+using MadWorldNL.Umiko.Functional;
+using MadWorldNL.Umiko.ServiceBus;
+
 namespace MadWorldNL.Umiko.Status;
 
-public class GetDatabaseStatusFunction(IStatusRepository statusRepository)
+public class GetDatabaseStatusFunction(IDatabaseStatusRepository databaseStatusRepository)
+    : IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>
 {
-    public async Task<bool> ExecuteAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<GetDatabaseStatusResult>> Handle(GetDatabaseStatusQuery query, CancellationToken cancellationToken)
     {
-        return await statusRepository.CanConnect(cancellationToken);
+        var isConnected = await databaseStatusRepository.CanConnect(cancellationToken);
+        return Result<GetDatabaseStatusResult>.Success(new GetDatabaseStatusResult(isConnected));
     }
 }

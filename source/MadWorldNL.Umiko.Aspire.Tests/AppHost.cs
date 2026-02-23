@@ -6,7 +6,7 @@ var postgresDb = builder
     .AddPostgres("Postgres")
     .AddDatabase("UmikoDb");
 
-var rabbitmq = builder.AddRabbitMQ("Messaging");
+var rabbitmq = builder.AddRabbitMQ("UmikoBus");
 
 var api = builder.AddProject<Api>("Api")
     .WaitFor(postgresDb)
