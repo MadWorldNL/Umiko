@@ -59,10 +59,10 @@ Aspire Host (Orchestrator)
 - **Controllers.Bus**: Background message processing service with OpenTelemetry instrumentation, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
 - **Application.Functions**: Business logic layer, shared by API and Bus
-- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent), functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\>; Result\<T\> with Success\<T\>/Failure\<T\>, both with Match, plus `IsSuccess` and `Error` properties), and service bus abstractions (`ServiceBus/`: IQuery\<TResponse\>, IQueryHandler\<TQuery, TResponse\>, ICommand, ICommand\<TResponse\>, ICommandHandler\<TCommand\>, ICommandHandler\<TCommand, TResponse\>, LoggingQueryHandler, LoggingCommandHandler) — no dependencies, foundational layer
-- **Application.Domain**: Domain entities and business rules, depends on Frameworks
-- **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain
-- **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain
+- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent), functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\>; Result\<T\> with Success\<T\>/Failure\<T\>, both with Match, plus `IsSuccess` and `Error` properties), and service bus abstractions (`ServiceBus/`: IQuery\<TResponse\>, IQueryHandler\<TQuery, TResponse\>, ICommand, ICommand\<TResponse\>, ICommandHandler\<TCommand\>, ICommandHandler\<TCommand, TResponse\>, LoggingQueryHandler, LoggingCommandHandler, IEvent, IMessageBus) — no dependencies, foundational layer
+- **Application.Domain**: Domain entities and business rules, depends on Frameworks. Status folder contains `IDatabaseStatusRepository`, `IMessageBusStatusRepository`, queries and results for both database and messaging connectivity checks
+- **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain. Implements `IDatabaseStatusRepository` via `DatabaseStatusRepository` using EF Core `CanConnectAsync`
+- **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain. Implements `IMessageBus` via `RabbitMqMessageBus` (uses `IConnection` from `Aspire.RabbitMQ.Client`; `Send<TCommand>` uses Direct exchange, `Publish<TEvent>` uses Fanout exchange, both serialized as JSON with `Persistent = true`). Also implements `IMessageBusStatusRepository` via `MessageBusStatusRepository` (checks `connection.IsOpen`). Registered via `AddRabbitMqServices()` extension. Connection string key: `ConnectionStrings:UmikoBus`
 
 ### Key Configuration
 
@@ -92,7 +92,7 @@ Both `Controllers.Api` and `Controllers.Bus` include OpenTelemetry instrumentati
 
 ### Health Checks
 
-- **API & Bus**: Use the built-in ASP.NET Core health checks middleware (`builder.Services.AddHealthChecks()` + `app.MapHealthChecks("/health")`), exposed at `/health`. All registered health checks (including the Aspire PostgreSQL check) are excluded via `Predicate = _ => false` to avoid database queries on every health probe — the endpoint returns `Healthy` without executing any checks. Database connectivity is available separately via the `/Status/Database` endpoint.
+- **API & Bus**: Use the built-in ASP.NET Core health checks middleware (`builder.Services.AddHealthChecks()` + `app.MapHealthChecks("/health")`), exposed at `/health`. All registered health checks (including the Aspire PostgreSQL check) are excluded via `Predicate = _ => false` to avoid database queries on every health probe — the endpoint returns `Healthy` without executing any checks. Database connectivity is available separately via the `/Status/Database` endpoint; RabbitMQ connectivity via `/Status/MessageBus`.
 - **Web projects**: Serve a static `wwwroot/health.txt` file at `/health.txt`, plus a `/health` Blazor page using `EmptyLayout`
 - **Aspire**: All four services have `.WithHttpHealthCheck()` configured in `AppHost.cs` — API and Bus use `/health`, web apps use `/health.txt`
 - Backing services (PostgreSQL, RabbitMQ, Keycloak) have automatic health checks provided by their Aspire hosting packages
@@ -125,7 +125,6 @@ Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/sca
 ### Test AppHost (Aspire.Tests)
 
 The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. It overrides `RateLimiter__PermitLimit` to `5` (instead of production default 100) for faster rate limiter integration tests. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
-
 ### Unit Tests
 
 The `Application.Frameworks.UnitTests` project uses Reqnroll (BDD) with xUnit and Shouldly for unit-level tests of the Frameworks layer. Key patterns:
