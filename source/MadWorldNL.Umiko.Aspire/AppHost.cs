@@ -70,7 +70,7 @@ IResourceBuilder<RabbitMQServerResource> CreateMessagingResource()
     var username = builder.AddParameter("Messaging-Username", secret: true);
     var password = builder.AddParameter("Messaging-Password", secret: true);
 
-    return builder.AddRabbitMQ("Messaging", username, password)
+    return builder.AddRabbitMQ("UmikoBus", username, password)
         .WithDataVolume(isReadOnly: false)
         .WithManagementPlugin();
 }
