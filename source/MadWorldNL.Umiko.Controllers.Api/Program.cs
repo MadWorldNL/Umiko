@@ -26,7 +26,6 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    app.AddDeveloperEndpoints();
 }
 
 app.UseRateLimiter();
@@ -40,5 +39,6 @@ app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
     Predicate = _ => false
 }).DisableRateLimiting();
 app.AddStatusEndpoints();
+app.AddDeveloperEndpoints();
 
 await app.RunAsync();
