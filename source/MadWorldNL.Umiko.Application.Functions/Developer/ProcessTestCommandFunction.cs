@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MadWorldNL.Umiko.Developer;
 
-public class ProcessTestCommandFunction(IMessageBus messageBus, ILogger<ProcessTestCommandFunction> logger) : ICommandHandler<ProcessTestCommand>
+public sealed class ProcessTestCommandFunction(IMessageBus messageBus, ILogger<ProcessTestCommandFunction> logger) : ICommandHandler<ProcessTestCommand>
 {
     public async Task<Result<bool>> Handle(ProcessTestCommand command, CancellationToken cancellationToken)
     {

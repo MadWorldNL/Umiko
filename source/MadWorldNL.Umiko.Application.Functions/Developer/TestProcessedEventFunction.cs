@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MadWorldNL.Umiko.Developer;
 
-public class TestProcessedEventFunction(ILogger<TestProcessedEventFunction> logger) : IEventHandler<TestProcessedEvent>
+public sealed class TestProcessedEventFunction(ILogger<TestProcessedEventFunction> logger) : IEventHandler<TestProcessedEvent>
 {
     public Task<Result<bool>> Handle(TestProcessedEvent @event, CancellationToken cancellationToken)
     {

@@ -1,4 +1,3 @@
-using System.Xml.Schema;
 using MadWorldNL.Umiko.Developer;
 using MadWorldNL.Umiko.ServiceBus;
 using MadWorldNL.Umiko.Status;
