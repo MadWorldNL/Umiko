@@ -26,6 +26,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.AddDeveloperEndpoints();
 }
 
 app.UseRateLimiter();

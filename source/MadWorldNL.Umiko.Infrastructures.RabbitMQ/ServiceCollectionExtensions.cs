@@ -12,4 +12,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMessageBusStatusRepository, MessageBusStatusRepository>();
         return services;
     }
+
+    public static IServiceCollection AddCommandConsumer<TCommand>(this IServiceCollection services)
+        where TCommand : ICommand
+    {
+        services.AddHostedService<CommandConsumer<TCommand>>();
+        return services;
+    }
 }
