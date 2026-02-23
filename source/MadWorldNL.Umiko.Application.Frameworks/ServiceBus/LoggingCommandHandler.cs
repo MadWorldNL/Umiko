@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MadWorldNL.Umiko.Functional;
 
 namespace MadWorldNL.Umiko.ServiceBus;
@@ -7,24 +8,29 @@ public class LoggingCommandHandler<TCommand>(
     ILogger<ICommandHandler<TCommand>> logger
     ) : ICommandHandler<TCommand> where TCommand : ICommand
 {
+    private static readonly ActivitySource _commandActivitySource = new("MadWorldNL.Umiko");
+
     public async Task<Result<bool>> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var commandName = typeof(TCommand).Name;
 
-        logger.LogInformation("Processing command {Command}", commandName);
-
-        var result = await innerHandler.Handle(command, cancellationToken);
-
-        if (result.IsSuccess)
+        using (_ = _commandActivitySource.StartActivity(commandName))
         {
-            logger.LogInformation("Completed command {Command}", commandName);
-        }
-        else
-        {
-            logger.LogError(result.Error, "Completed command {Command} with error", commandName);
-        }
+            logger.LogInformation("Processing command {Command}", commandName);
 
-        return result;
+            var result = await innerHandler.Handle(command, cancellationToken);
+
+            if (result.IsSuccess)
+            {
+                logger.LogInformation("Completed command {Command}", commandName);
+            }
+            else
+            {
+                logger.LogError(result.Error, "Completed command {Command} with error", commandName);
+            }
+
+            return result;
+        }
     }
 }
 
@@ -33,23 +39,28 @@ public class LoggingCommandHandler<TCommand, TResponse>(
     ILogger<ICommandHandler<TCommand, TResponse>> logger
     ) : ICommandHandler<TCommand, TResponse> where TCommand : ICommand<TResponse>
 {
+    private static readonly ActivitySource _commandActivitySource = new("MadWorldNL.Umiko");
+
     public async Task<Result<TResponse>> Handle(TCommand command, CancellationToken cancellationToken)
     {
         var commandName = typeof(TCommand).Name;
 
-        logger.LogInformation("Processing command {Command}", commandName);
-
-        var result = await innerHandler.Handle(command, cancellationToken);
-
-        if (result.IsSuccess)
+        using (_ = _commandActivitySource.StartActivity(commandName))
         {
-            logger.LogInformation("Completed command {Command}", commandName);
-        }
-        else
-        {
-            logger.LogError(result.Error, "Completed command {Command} with error", commandName);
-        }
+            logger.LogInformation("Processing command {Command}", commandName);
 
-        return result;
+            var result = await innerHandler.Handle(command, cancellationToken);
+
+            if (result.IsSuccess)
+            {
+                logger.LogInformation("Completed command {Command}", commandName);
+            }
+            else
+            {
+                logger.LogError(result.Error, "Completed command {Command} with error", commandName);
+            }
+
+            return result;
+        }
     }
 }
