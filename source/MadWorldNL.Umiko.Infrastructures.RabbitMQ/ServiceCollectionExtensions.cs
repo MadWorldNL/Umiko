@@ -20,4 +20,11 @@ public static class ServiceCollectionExtensions
         services.AddHostedService<CommandConsumer<TCommand>>();
         return services;
     }
+    
+    public static IServiceCollection AddEventConsumer<TEvent>(this IServiceCollection services)
+        where TEvent : IEvent
+    {
+        services.AddHostedService<EventConsumer<TEvent>>();
+        return services;
+    }
 }

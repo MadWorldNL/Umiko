@@ -18,8 +18,9 @@ builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
-builder.Services.AddCommandConsumer<ProcessTestCommand>();
 builder.Services.AddFunctionsServices();
+
+builder.Services.AddCommandConsumer<ProcessTestCommand>();
 
 var app = builder.Build();
 
