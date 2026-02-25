@@ -7,7 +7,7 @@ namespace MadWorldNL.Umiko.StepDefinitions;
 
 [Binding]
 [Scope(Feature = "Domain Dependency Rules")]
-public class DomainDependencySteps : BaseArchitectureTests
+public sealed class DomainDependencySteps : BaseArchitectureTests
 {
     private readonly Dictionary<string, IObjectProvider<IType>> _layers;
 

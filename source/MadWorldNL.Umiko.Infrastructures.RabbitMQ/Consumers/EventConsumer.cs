@@ -10,17 +10,17 @@ using RabbitMQ.Client.Events;
 
 namespace MadWorldNL.Umiko.Consumers;
 
-public sealed class CommandConsumer<TCommand> : BackgroundService
-    where TCommand : ICommand
+public sealed class EventConsumer<TEvent> : BackgroundService
+    where TEvent : IEvent
 {
     private readonly IConnection _connection;
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<CommandConsumer<TCommand>> _logger;
+    private readonly ILogger<EventConsumer<TEvent>> _logger;
 
-    private static readonly string ExchangeName = typeof(TCommand).Name;
-    private static readonly string QueueName = typeof(TCommand).Name;
+    private static readonly string ExchangeName = typeof(TEvent).Name;
+    private static readonly string QueueName = $"{typeof(TEvent).Name}_{Guid.NewGuid():N}";
 
-    public CommandConsumer(IConnection connection, IServiceScopeFactory scopeFactory, ILogger<CommandConsumer<TCommand>> logger)
+    public EventConsumer(IConnection connection, IServiceScopeFactory scopeFactory, ILogger<EventConsumer<TEvent>> logger)
     {
         _connection = connection;
         _scopeFactory = scopeFactory;
@@ -31,8 +31,8 @@ public sealed class CommandConsumer<TCommand> : BackgroundService
     {
         await using var channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        await channel.ExchangeDeclareAsync(ExchangeName, ExchangeType.Direct, durable: true, cancellationToken: stoppingToken);
-        await channel.QueueDeclareAsync(QueueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
+        await channel.ExchangeDeclareAsync(ExchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
+        await channel.QueueDeclareAsync(QueueName, durable: false, exclusive: true, autoDelete: true, cancellationToken: stoppingToken);
         await channel.QueueBindAsync(QueueName, ExchangeName, routingKey: string.Empty, cancellationToken: stoppingToken);
         await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
 
@@ -47,16 +47,16 @@ public sealed class CommandConsumer<TCommand> : BackgroundService
 
             try
             {
-                var command = JsonSerializer.Deserialize<TCommand>(ea.Body.Span);
-                if (command is null)
+                var @event = JsonSerializer.Deserialize<TEvent>(ea.Body.Span);
+                if (@event is null)
                 {
                     await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
                     return;
                 }
 
                 await using var scope = _scopeFactory.CreateAsyncScope();
-                var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
-                var result = await handler.Handle(command, stoppingToken);
+                var handler = scope.ServiceProvider.GetRequiredService<IEventHandler<TEvent>>();
+                var result = await handler.Handle(@event, stoppingToken);
 
                 if (result.IsSuccess)
                 {
@@ -64,13 +64,13 @@ public sealed class CommandConsumer<TCommand> : BackgroundService
                 }
                 else
                 {
-                    _logger.LogError(result.Error, "Failed to handle command {Command}", typeof(TCommand).Name);
+                    _logger.LogError(result.Error, "Failed to handle event {Event}", typeof(TEvent).Name);
                     await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing command {Command}", typeof(TCommand).Name);
+                _logger.LogError(ex, "Error processing event {Event}", typeof(TEvent).Name);
                 await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
             }
         };

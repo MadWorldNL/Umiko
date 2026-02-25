@@ -4,7 +4,7 @@ using MadWorldNL.Umiko.Statistics;
 
 namespace MadWorldNL.Umiko.ServiceBus;
 
-public class LoggingQueryHandler<TQuery, TResponse>(
+public sealed class LoggingQueryHandler<TQuery, TResponse>(
     IQueryHandler<TQuery, TResponse> innerHandler,
     ILogger<IQueryHandler<TQuery, TResponse>> logger
     ) : IQueryHandler<TQuery, TResponse> where TQuery : IQuery<TResponse>

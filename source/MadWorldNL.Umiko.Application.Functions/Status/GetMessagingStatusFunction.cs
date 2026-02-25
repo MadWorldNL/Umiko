@@ -3,7 +3,7 @@ using MadWorldNL.Umiko.ServiceBus;
 
 namespace MadWorldNL.Umiko.Status;
 
-public class GetMessagingStatusFunction(IMessageBusStatusRepository messageBusStatusRepository)
+public sealed class GetMessagingStatusFunction(IMessageBusStatusRepository messageBusStatusRepository)
     : IQueryHandler<GetMessagingStatusQuery, GetMessagingStatusResult>
 {
     public async Task<Result<GetMessagingStatusResult>> Handle(GetMessagingStatusQuery query, CancellationToken cancellationToken)

@@ -2,7 +2,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.Bus.StatusEndpoints;
 
 [Binding]
 [Scope(Feature = "Bus Ping Endpoint")]
-public class PingSteps
+public sealed class PingSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 

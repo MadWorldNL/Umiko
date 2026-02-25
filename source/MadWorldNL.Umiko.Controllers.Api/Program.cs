@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using MadWorldNL.Umiko;
 using MadWorldNL.Umiko.Configurations;
+using MadWorldNL.Umiko.Developer;
 using MadWorldNL.Umiko.Endpoints;
 using Scalar.AspNetCore;
 
@@ -18,6 +19,8 @@ builder.Services.AddRateLimiterPolicy();
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
 builder.Services.AddFunctionsServices();
+
+builder.Services.AddEventConsumer<TestProcessedEvent>();
 
 var app = builder.Build();
 

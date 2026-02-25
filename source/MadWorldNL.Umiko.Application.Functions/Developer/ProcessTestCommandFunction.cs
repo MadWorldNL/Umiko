@@ -4,12 +4,14 @@ using Microsoft.Extensions.Logging;
 
 namespace MadWorldNL.Umiko.Developer;
 
-public class ProcessTestCommandFunction(ILogger<ProcessTestCommandFunction> logger) : ICommandHandler<ProcessTestCommand>
+public sealed class ProcessTestCommandFunction(IMessageBus messageBus, ILogger<ProcessTestCommandFunction> logger) : ICommandHandler<ProcessTestCommand>
 {
-    public Task<Result<bool>> Handle(ProcessTestCommand command, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(ProcessTestCommand command, CancellationToken cancellationToken)
     {
         logger.LogInformation("New command '{Command}' received: {Message}", nameof(ProcessTestCommand), command.Message);
+
+        await messageBus.Publish([ new TestProcessedEvent(command.Message) ]);
         
-        return Task.FromResult(Result<bool>.Success(true));
+        return Result<bool>.Success(true);
     }
 }

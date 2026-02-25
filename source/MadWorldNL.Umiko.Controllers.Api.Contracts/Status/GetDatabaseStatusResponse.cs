@@ -1,6 +1,6 @@
 namespace MadWorldNL.Umiko.Status;
 
-public class GetDatabaseStatusResponse
+public sealed class GetDatabaseStatusResponse
 {
     public bool IsConnected { get; set; }
 }

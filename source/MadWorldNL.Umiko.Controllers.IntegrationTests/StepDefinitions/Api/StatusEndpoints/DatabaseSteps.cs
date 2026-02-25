@@ -4,7 +4,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.Api.StatusEndpoints;
 
 [Binding]
 [Scope(Feature = "Api Database Endpoint")]
-public class DatabaseSteps
+public sealed class DatabaseSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 

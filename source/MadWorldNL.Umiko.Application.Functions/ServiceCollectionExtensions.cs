@@ -1,4 +1,3 @@
-using System.Xml.Schema;
 using MadWorldNL.Umiko.Developer;
 using MadWorldNL.Umiko.ServiceBus;
 using MadWorldNL.Umiko.Status;
@@ -11,6 +10,8 @@ public static class FunctionsServiceCollectionExtensions
     public static IServiceCollection AddFunctionsServices(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<ProcessTestCommand>, ProcessTestCommandFunction>();
+
+        services.AddScoped<IEventHandler<TestProcessedEvent>, TestProcessedEventFunction>();
         
         services.AddScoped<IQueryHandler<GetDatabaseStatusQuery, GetDatabaseStatusResult>, GetDatabaseStatusFunction>();
         services.AddScoped<IQueryHandler<GetMessagingStatusQuery, GetMessagingStatusResult>, GetMessagingStatusFunction>();
@@ -19,6 +20,7 @@ public static class FunctionsServiceCollectionExtensions
         //services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingCommandHandler<,>));
         
         services.Decorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandler<>));
+        services.Decorate(typeof(IEventHandler<>), typeof(LoggingEventHandler<>));
         services.Decorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandler<,>));
 
         return services;

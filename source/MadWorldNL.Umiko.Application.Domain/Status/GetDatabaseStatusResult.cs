@@ -1,3 +1,3 @@
 namespace MadWorldNL.Umiko.Status;
 
-public record GetDatabaseStatusResult(bool IsConnected);
+public sealed record GetDatabaseStatusResult(bool IsConnected);

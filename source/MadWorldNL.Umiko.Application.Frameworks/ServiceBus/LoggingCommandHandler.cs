@@ -4,7 +4,7 @@ using MadWorldNL.Umiko.Statistics;
 
 namespace MadWorldNL.Umiko.ServiceBus;
 
-public class LoggingCommandHandler<TCommand>(
+public sealed class LoggingCommandHandler<TCommand>(
     ICommandHandler<TCommand> innerHandler,
     ILogger<ICommandHandler<TCommand>> logger
     ) : ICommandHandler<TCommand> where TCommand : ICommand
@@ -35,7 +35,7 @@ public class LoggingCommandHandler<TCommand>(
     }
 }
 
-public class LoggingCommandHandler<TCommand, TResponse>(
+public sealed class LoggingCommandHandler<TCommand, TResponse>(
     ICommandHandler<TCommand, TResponse> innerHandler,
     ILogger<ICommandHandler<TCommand, TResponse>> logger
     ) : ICommandHandler<TCommand, TResponse> where TCommand : ICommand<TResponse>

@@ -2,7 +2,7 @@ namespace MadWorldNL.Umiko.StepDefinitions.Api.RateLimiter;
 
 [Binding]
 [Scope(Feature = "Api Rate Limiter")]
-public class RateLimiterSteps
+public sealed class RateLimiterSteps
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(60);
 
