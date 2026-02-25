@@ -1,4 +1,4 @@
-namespace MadWorldNL.Umiko.Tests.Helpers.DDD;
+namespace MadWorldNL.Umiko.Helpers.DDD;
 
 public class TestAggregateRoot : AggregateRoot<int>
 {
@@ -7,5 +7,12 @@ public class TestAggregateRoot : AggregateRoot<int>
         Id = id;
     }
 
-    public void RaiseEvent(IDomainEvent domainEvent) => AddDomainEvent(domainEvent);
+    public void RaiseEvent(IDomainEvent domainEvent) => Apply(domainEvent);
+
+    public DateTime? LastAppliedOn { get; private set; }
+
+    private void Apply(TestDomainEvent @event)
+    {
+        LastAppliedOn = @event.OccurredOn;
+    }
 }

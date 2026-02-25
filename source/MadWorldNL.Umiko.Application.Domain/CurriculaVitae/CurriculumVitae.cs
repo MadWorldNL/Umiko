@@ -12,12 +12,9 @@ public sealed class CurriculumVitae : AggregateRoot<Guid>
 
     private CurriculumVitae(FullName fullName)
     {
-        Id = Guid.NewGuid();
-        FullName = fullName;
-        
-        AddDomainEvent(new CurriculumVitaeCreated()
+        Apply(new CurriculumVitaeCreated
         {
-            Id = Id,
+            Id = Guid.NewGuid(),
             FullName = fullName,
             OccurredOn = DateTime.UtcNow
         });
@@ -26,5 +23,11 @@ public sealed class CurriculumVitae : AggregateRoot<Guid>
     public static CurriculumVitae Create(FullName fullName)
     {
         return new CurriculumVitae(fullName);
+    }
+
+    private void Apply(CurriculumVitaeCreated @event)
+    {
+        Id = @event.Id;
+        FullName = @event.FullName;
     }
 }

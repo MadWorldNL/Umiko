@@ -1,3 +1,3 @@
-namespace MadWorldNL.Umiko.Tests.Helpers.DDD;
+namespace MadWorldNL.Umiko.Helpers.DDD;
 
 public record TestDomainEvent(DateTime OccurredOn) : IDomainEvent;

@@ -1,4 +1,4 @@
-namespace MadWorldNL.Umiko.Tests.Helpers.DDD;
+namespace MadWorldNL.Umiko.Helpers.DDD;
 
 public class TestValueObject(string value) : ValueObject
 {

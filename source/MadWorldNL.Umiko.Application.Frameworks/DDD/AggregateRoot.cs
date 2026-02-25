@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace MadWorldNL.Umiko.DDD;
 
 public abstract class AggregateRoot<TId> : Entity<TId>
@@ -9,5 +11,25 @@ public abstract class AggregateRoot<TId> : Entity<TId>
 
     public void ClearDomainEvents() => _domainEvents.Clear();
 
-    protected void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+    public void Reconstitute(IEnumerable<IDomainEvent> history)
+    {
+        foreach (var @event in history)
+            ApplyEvent(@event);
+    }
+
+    protected void Apply(IDomainEvent domainEvent)
+    {
+        ApplyEvent(domainEvent);
+        _domainEvents.Add(domainEvent);
+    }
+
+    private void ApplyEvent(IDomainEvent domainEvent)
+    {
+        var method = GetType().GetMethod(
+            "Apply",
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            [domainEvent.GetType()]);
+
+        method?.Invoke(this, [domainEvent]);
+    }
 }
