@@ -4,4 +4,8 @@
         <ProjectReference Include="..\MadWorldNL.Umiko.Application.Frameworks\Frameworks.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="JetBrains.Annotations" />
+    </ItemGroup>
+
 </Project>

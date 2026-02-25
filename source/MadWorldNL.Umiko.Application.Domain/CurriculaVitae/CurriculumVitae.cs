@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using MadWorldNL.Umiko.DDD;
 
 namespace MadWorldNL.Umiko.CurriculaVitae;
@@ -25,7 +26,8 @@ public sealed class CurriculumVitae : AggregateRoot<Guid>
         return new CurriculumVitae(fullName);
     }
 
-    private void Apply(CurriculumVitaeCreated @event)
+    [UsedImplicitly]
+    private void When(CurriculumVitaeCreated @event)
     {
         Id = @event.Id;
         FullName = @event.FullName;

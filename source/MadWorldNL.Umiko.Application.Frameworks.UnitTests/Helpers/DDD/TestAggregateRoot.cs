@@ -11,7 +11,7 @@ public class TestAggregateRoot : AggregateRoot<int>
 
     public DateTime? LastAppliedOn { get; private set; }
 
-    private void Apply(TestDomainEvent @event)
+    private void When(TestDomainEvent @event)
     {
         LastAppliedOn = @event.OccurredOn;
     }

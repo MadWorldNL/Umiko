@@ -26,7 +26,7 @@ public abstract class AggregateRoot<TId> : Entity<TId>
     private void ApplyEvent(IDomainEvent domainEvent)
     {
         var method = GetType().GetMethod(
-            "Apply",
+            "When",
             BindingFlags.NonPublic | BindingFlags.Instance,
             [domainEvent.GetType()]);
 
