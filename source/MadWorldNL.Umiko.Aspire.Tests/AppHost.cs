@@ -14,6 +14,7 @@ var api = builder.AddProject<Api>("Api")
     .WithReference(postgresDb)
     .WithReference(rabbitmq)
     .WithEnvironment("RateLimiter__PermitLimit", "5")
+    .WithEnvironment("Authentication__ValidateUser", "false")
     .WithHttpHealthCheck("/health");
 
 var bus = builder.AddProject<Bus>("Bus")
