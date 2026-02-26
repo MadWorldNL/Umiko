@@ -422,3 +422,6 @@ FodyWeavers.xsd
 
 # Helm Chart
 values-secret.yaml
+
+# Reqnroll auto-generated code-behind files
+*.feature.cs
