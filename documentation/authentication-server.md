@@ -1,9 +1,9 @@
 # Authentication Server
 This folder sets up a local authentication server using **Keycloak** for development and testing purposes.
 
-## KeyCloak (Dev Environment)
+## Keycloak (Dev Environment)
 ### Getting Started
-Start the development environment using Aspire Dashboard:
+Start the development environment using the Aspire Dashboard:
 
 Once running, access Keycloak Admin UI using the dashboard.
 Login with:
@@ -32,9 +32,9 @@ To include the correct `aud` (audience) claim in your tokens:
 > 💡 This ensures the `aud` field in the JWT token includes the specified client audience (e.g., `api-client`), which is commonly required for API-side JWT validation.
 
 ### Test Login with Keycloak Using the Official Test App
-You can verify that your Keycloak server is correctly issuing tokens (including checking the aud claim) by using Keycloak's official test app:
+You can verify that your Keycloak server is correctly issuing tokens (including the `aud` claim) by using Keycloak's official test app:
 
 https://www.keycloak.org/app/
 
-## KeyCloak (Production Environment)
+## Keycloak (Production Environment)
 *TODO*
