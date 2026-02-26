@@ -50,5 +50,6 @@ app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
 }).DisableRateLimiting();
 app.AddStatusEndpoints();
 app.AddDeveloperEndpoints();
+app.AddCurriculaVitaeEndpoints();
 
 await app.RunAsync();
