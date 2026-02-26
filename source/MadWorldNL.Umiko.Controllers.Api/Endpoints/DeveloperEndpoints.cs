@@ -8,7 +8,8 @@ internal static class DeveloperEndpoints
     internal static void AddDeveloperEndpoints(this WebApplication app)
     {
         var developerEndpoint = app.MapGroup("Developer")
-            .WithGroupName("Developer");
+            .WithGroupName("Developer")
+            .RequireAuthorization();
 
         developerEndpoint.MapPost("/Command", async (SendTestCommandRequest request, IMessageBus messageBus, CancellationToken cancellationToken) =>
         {
