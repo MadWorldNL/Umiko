@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using MadWorldNL.Umiko;
 using MadWorldNL.Umiko.Configurations;
+using MadWorldNL.Umiko.CurriculaVitae;
 using MadWorldNL.Umiko.Developer;
 using MadWorldNL.Umiko.Endpoints;
 using Marten;
@@ -28,6 +29,7 @@ builder.Services.AddRabbitMqServices();
 builder.Services.AddFunctionsServices();
 
 builder.Services.AddCommandConsumer<ProcessTestCommand>();
+builder.Services.AddCommandConsumer<CreateCurriculumVitaeCommand>();
 
 var app = builder.Build();
 

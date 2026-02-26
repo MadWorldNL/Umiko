@@ -11,6 +11,7 @@ public static class FunctionsServiceCollectionExtensions
     public static IServiceCollection AddFunctionsServices(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<ProcessTestCommand>, ProcessTestCommandFunction>();
+        services.AddScoped<ICommandHandler<CreateCurriculumVitaeCommand>, CreateCurriculumVitaeFunction>();
 
         services.AddScoped<IEventHandler<TestProcessedEvent>, TestProcessedEventFunction>();
         
