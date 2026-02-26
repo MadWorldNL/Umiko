@@ -20,6 +20,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MadWorldNL.Umiko.Aspire.Tests\Aspire.Tests.csproj" />
+      <ProjectReference Include="..\MadWorldNL.Umiko.Controllers.Api.Contracts\Api.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="JetBrains.ReSharper.TestRunner.Merged">
+        <HintPath>..\..\..\..\..\..\..\Applications\Rider.app\Contents\lib\ReSharperHost\TestRunner\netcoreapp3.0\JetBrains.ReSharper.TestRunner.Merged.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

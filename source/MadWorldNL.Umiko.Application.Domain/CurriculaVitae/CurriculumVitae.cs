@@ -11,19 +11,19 @@ public sealed class CurriculumVitae : AggregateRoot<Guid>
     {
     }
 
-    private CurriculumVitae(FullName fullName)
+    private CurriculumVitae(Guid id, FullName fullName)
     {
         Apply(new CurriculumVitaeCreated
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             FullName = fullName,
             OccurredOn = DateTime.UtcNow
         });
     }
 
-    public static CurriculumVitae Create(FullName fullName)
+    public static CurriculumVitae Create(Guid id, FullName fullName)
     {
-        return new CurriculumVitae(fullName);
+        return new CurriculumVitae(id, fullName);
     }
 
     [UsedImplicitly]

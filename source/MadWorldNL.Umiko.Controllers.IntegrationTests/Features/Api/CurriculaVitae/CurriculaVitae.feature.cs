@@ -17,21 +17,21 @@ namespace MadWorldNL.Umiko.Features.Api.CurriculaVitae
     
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class ApiGetCurriculumVitaeEndpointFeature : object, global::Xunit.IClassFixture<ApiGetCurriculumVitaeEndpointFeature.FixtureData>, global::Xunit.IAsyncLifetime
+    public partial class ApiCurriculaVitaeEndpointsFeature : object, global::Xunit.IClassFixture<ApiCurriculaVitaeEndpointsFeature.FixtureData>, global::Xunit.IAsyncLifetime
     {
         
         private global::Reqnroll.ITestRunner testRunner;
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features/Api/CurriculaVitae", "Api GetCurriculumVitae Endpoint", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features/Api/CurriculaVitae", "Api CurriculaVitae Endpoints", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
         private global::Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "GetCurriculumVitae.feature"
+#line 1 "CurriculaVitae.feature"
 #line hidden
         
-        public ApiGetCurriculumVitaeEndpointFeature(ApiGetCurriculumVitaeEndpointFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public ApiCurriculaVitaeEndpointsFeature(ApiCurriculaVitaeEndpointsFeature.FixtureData fixtureData, global::Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
         }
@@ -105,7 +105,7 @@ namespace MadWorldNL.Umiko.Features.Api.CurriculaVitae
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Api/CurriculaVitae/GetCurriculumVitae.feature.ndjson", 3);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Api/CurriculaVitae/CurriculaVitae.feature.ndjson", 4);
         }
         
         async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
@@ -133,15 +133,15 @@ namespace MadWorldNL.Umiko.Features.Api.CurriculaVitae
             await this.TestTearDownAsync();
         }
         
-        [global::Xunit.SkippableFactAttribute(DisplayName="Returns NotFound for unknown id")]
-        [global::Xunit.TraitAttribute("FeatureTitle", "Api GetCurriculumVitae Endpoint")]
-        [global::Xunit.TraitAttribute("Description", "Returns NotFound for unknown id")]
-        public async global::System.Threading.Tasks.Task ReturnsNotFoundForUnknownId()
+        [global::Xunit.SkippableFactAttribute(DisplayName="Returns Accepted with an id when creating a valid curriculum vitae")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Api CurriculaVitae Endpoints")]
+        [global::Xunit.TraitAttribute("Description", "Returns Accepted with an id when creating a valid curriculum vitae")]
+        public async global::System.Threading.Tasks.Task ReturnsAcceptedWithAnIdWhenCreatingAValidCurriculumVitae()
         {
             string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Returns NotFound for unknown id", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Returns Accepted with an id when creating a valid curriculum vitae", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 3
@@ -158,9 +158,47 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
     await testRunner.GivenAsync("the Api service is healthy", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 5
-    await testRunner.WhenAsync("I get a curriculum vitae with an unknown id on the Api service", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("I create a curriculum vitae with first name \"John\" and last name \"Doe\" on the Api" +
+                        " service", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 6
+    await testRunner.ThenAsync("the response status code should be Accepted", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 7
+    await testRunner.AndAsync("the curriculum vitae should eventually be retrievable on the Api service", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::Xunit.SkippableFactAttribute(DisplayName="Returns NotFound for unknown id")]
+        [global::Xunit.TraitAttribute("FeatureTitle", "Api CurriculaVitae Endpoints")]
+        [global::Xunit.TraitAttribute("Description", "Returns NotFound for unknown id")]
+        public async global::System.Threading.Tasks.Task ReturnsNotFoundForUnknownId()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "1";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Returns NotFound for unknown id", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 9
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 10
+    await testRunner.GivenAsync("the Api service is healthy", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 11
+    await testRunner.WhenAsync("I get a curriculum vitae with an unknown id on the Api service", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 12
     await testRunner.ThenAsync("the response status code should be NotFound", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -174,12 +212,12 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.InitializeAsync()
             {
-                await ApiGetCurriculumVitaeEndpointFeature.FeatureSetupAsync();
+                await ApiCurriculaVitaeEndpointsFeature.FeatureSetupAsync();
             }
             
             async global::System.Threading.Tasks.Task global::Xunit.IAsyncLifetime.DisposeAsync()
             {
-                await ApiGetCurriculumVitaeEndpointFeature.FeatureTearDownAsync();
+                await ApiCurriculaVitaeEndpointsFeature.FeatureTearDownAsync();
             }
         }
     }

@@ -10,7 +10,7 @@ public sealed class CreateCurriculumVitaeFunction(
 {
     public async Task<Result<bool>> Handle(CreateCurriculumVitaeCommand command, CancellationToken cancellationToken)
     {
-        var cv = CurriculumVitae.Create(new FullName(command.FirstName, command.LastName));
+        var cv = CurriculumVitae.Create(command.Id, new FullName(command.FirstName, command.LastName));
 
         await repository.SaveAsync(cv, cancellationToken);
 

@@ -11,8 +11,9 @@ internal static class CurriculaVitaeEndpoints
 
         curriculaVitaeEndpoint.MapPost("/", async (CreateCurriculumVitaeRequest request, IMessageBus messageBus, CancellationToken cancellationToken) =>
         {
-            await messageBus.Send(new CreateCurriculumVitaeCommand(request.FirstName, request.LastName));
-            return Results.Accepted();
+            var id = Guid.NewGuid();
+            await messageBus.Send(new CreateCurriculumVitaeCommand(id, request.FirstName, request.LastName));
+            return Results.Accepted($"/CurriculaVitae/{id}", new CreateCurriculumVitaeResponse { Id = id });
         }).WithName("CreateCurriculumVitae");
 
         curriculaVitaeEndpoint.MapGet("/{id:guid}", async (Guid id, IQueryHandler<GetCurriculumVitaeQuery, GetCurriculumVitaeResult> handler, CancellationToken cancellationToken) =>
