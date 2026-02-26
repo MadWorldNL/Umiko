@@ -277,6 +277,7 @@ GitHub Actions workflows in `.github/workflows/`:
 - `.github/pull_request_template.md`: PR template
 - `.github/ISSUE_TEMPLATE/`: Bug report and feature request templates
 - `documentation/`: Developer guides:
+  - `documentation/authentication-server.md`: Keycloak setup for local development, including audience attribute configuration for JWT validation
   - `documentation/kubernetes.md`: Local (Docker Desktop) and production (MicroK8s) Kubernetes setup, Traefik, TLS, Helm deploy
   - `documentation/database.md`: EF Core migration commands using `UmikoContext` and `Infrastructures.Postgresql`
   - `documentation/dns.md`: DNS A record configuration for production domains
