@@ -7,7 +7,9 @@ internal static class CurriculaVitaeEndpoints
 {
     internal static void AddCurriculaVitaeEndpoints(this WebApplication app)
     {
-        var curriculaVitaeEndpoint = app.MapGroup("CurriculaVitae");
+        var curriculaVitaeEndpoint = app.MapGroup("CurriculaVitae")
+            .WithGroupName("CurriculaVitae")
+            .RequireAuthorization();
 
         curriculaVitaeEndpoint.MapPost("/", async (CreateCurriculumVitaeRequest request, IMessageBus messageBus, CancellationToken cancellationToken) =>
         {

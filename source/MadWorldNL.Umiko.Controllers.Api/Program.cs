@@ -23,6 +23,7 @@ builder.Services.AddMarten(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
+builder.AddDefaultAuthentication();
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
 builder.Services.AddFunctionsServices();
@@ -39,6 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
