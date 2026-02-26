@@ -42,6 +42,7 @@
     <File Path="..\SECURITY.md" />
   </Folder>
   <Folder Name="/_Repository/documentation/">
+    <File Path="..\documentation\authentication-server.md" />
     <File Path="..\documentation\database.md" />
     <File Path="..\documentation\dns.md" />
     <File Path="..\documentation\kubernetes.md" />

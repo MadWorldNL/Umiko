@@ -16,6 +16,8 @@ var api = builder.AddProject<Api>("Api")
     .WithReference(keycloak)
     .WithReference(postgresDb)
     .WithReference(rabbitmq)
+    .WithEnvironment("Authentication__Authority",
+        ReferenceExpression.Create($"{keycloak.GetEndpoint("https")}/realms/Umiko"))
     .WithHttpHealthCheck("/health");
 
 var bus = builder.AddProject<Bus>("Bus")

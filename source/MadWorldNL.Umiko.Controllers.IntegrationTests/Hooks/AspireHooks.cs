@@ -1,3 +1,4 @@
+using System.Text;
 using Aspire.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,7 @@ public class AspireHooks
     {
         var client = App.CreateHttpClient(serviceName);
         client.DefaultRequestHeaders.Add("X-Forwarded-For", ipAddress);
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {CreateFakeJwtToken()}");
         return client;
     }
 
@@ -36,7 +38,23 @@ public class AspireHooks
             BaseAddress = endpoint
         };
         client.DefaultRequestHeaders.Add("X-Forwarded-For", ipAddress);
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {CreateFakeJwtToken()}");
         return client;
+    }
+
+    private static string CreateFakeJwtToken()
+    {
+        var header = Base64UrlEncode("""{"alg":"none","typ":"JWT"}""");
+        var payload = Base64UrlEncode("""{"sub":"test-user","preferred_username":"test-user","aud":"UmikoApi"}""");
+        return $"{header}.{payload}.";
+    }
+
+    private static string Base64UrlEncode(string input)
+    {
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(input))
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
     }
     
     [BeforeTestRun]

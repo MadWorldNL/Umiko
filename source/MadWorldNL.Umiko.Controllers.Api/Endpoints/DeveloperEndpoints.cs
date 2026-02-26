@@ -7,8 +7,12 @@ internal static class DeveloperEndpoints
 {
     internal static void AddDeveloperEndpoints(this WebApplication app)
     {
-        var developerEndpoint = app.MapGroup("Developer");
+        var developerEndpoint = app.MapGroup("Developer")
+            .WithTags("Developer")
+            .RequireAuthorization();
 
+        developerEndpoint.MapGet("/Authentication", () => Results.Ok("Authentication is working!"));
+        
         developerEndpoint.MapPost("/Command", async (SendTestCommandRequest request, IMessageBus messageBus, CancellationToken cancellationToken) =>
         {
             if (string.IsNullOrWhiteSpace(request.Message))

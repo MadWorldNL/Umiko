@@ -34,6 +34,7 @@ public sealed class CurriculaVitaeSteps
             LastName = lastName
         }, CancellationToken.None);
 
+        _response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var body = await _response.Content.ReadFromJsonAsync<CreateCurriculumVitaeResponse>(CancellationToken.None);
         _createdId = body!.Id;
     }

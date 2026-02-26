@@ -18,11 +18,16 @@ builder.Services.AddMarten(options =>
     options.DatabaseSchemaName = "marten";
 }).UseLightweightSessions();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
+builder.AddDefaultAuthentication();
+
+// Add services to the container.
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
 builder.Services.AddFunctionsServices();
@@ -31,6 +36,15 @@ builder.Services.AddEventConsumer<TestProcessedEvent>();
 
 var app = builder.Build();
 
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = _ => false
+}).DisableRateLimiting();
+
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -38,16 +52,11 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseRateLimiter();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
-app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
-{
-    Predicate = _ => false
-}).DisableRateLimiting();
 app.AddStatusEndpoints();
 app.AddDeveloperEndpoints();
 app.AddCurriculaVitaeEndpoints();

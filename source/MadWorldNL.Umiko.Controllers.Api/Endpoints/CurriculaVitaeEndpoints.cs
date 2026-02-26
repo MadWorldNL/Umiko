@@ -7,14 +7,17 @@ internal static class CurriculaVitaeEndpoints
 {
     internal static void AddCurriculaVitaeEndpoints(this WebApplication app)
     {
-        var curriculaVitaeEndpoint = app.MapGroup("CurriculaVitae");
+        var curriculaVitaeEndpoint = app.MapGroup("CurriculaVitae")
+            .WithTags("CurriculaVitae");
 
         curriculaVitaeEndpoint.MapPost("/", async (CreateCurriculumVitaeRequest request, IMessageBus messageBus, CancellationToken cancellationToken) =>
         {
             var id = Guid.NewGuid();
             await messageBus.Send(new CreateCurriculumVitaeCommand(id, request.FirstName, request.LastName));
             return Results.Accepted($"/CurriculaVitae/{id}", new CreateCurriculumVitaeResponse { Id = id });
-        }).WithName("CreateCurriculumVitae");
+        })
+            .WithName("CreateCurriculumVitae")
+            .RequireAuthorization();
 
         curriculaVitaeEndpoint.MapGet("/{id:guid}", async (Guid id, IQueryHandler<GetCurriculumVitaeQuery, GetCurriculumVitaeResult> handler, CancellationToken cancellationToken) =>
         {
