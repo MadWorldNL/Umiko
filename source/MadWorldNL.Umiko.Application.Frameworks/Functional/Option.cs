@@ -6,6 +6,8 @@ public abstract record Option<T>
 
     public static Option<T> Some(T value) => new Some<T>(value);
     public static Option<T> None() => new None<T>();
+    
+    public static implicit operator Option<T>(T value) => new Some<T>(value);
 }
 
 public sealed record Some<T>(T Value) : Option<T>

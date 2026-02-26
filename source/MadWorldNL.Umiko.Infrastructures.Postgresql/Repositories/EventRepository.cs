@@ -1,4 +1,5 @@
 using MadWorldNL.Umiko.DDD;
+using MadWorldNL.Umiko.Functional;
 using Marten;
 
 namespace MadWorldNL.Umiko.Repositories;
@@ -20,12 +21,12 @@ public sealed class EventRepository<TAggregate, TId>(IDocumentSession session)
         aggregate.ClearDomainEvents();
     }
 
-    public async Task<TAggregate?> LoadAsync(TId id, CancellationToken cancellationToken = default)
+    public async Task<Option<TAggregate>> LoadAsync(TId id, CancellationToken cancellationToken = default)
     {
         var streamId = ToStreamId(id);
         var events = await session.Events.FetchStreamAsync(streamId, token: cancellationToken);
 
-        if (events.Count == 0) return null;
+        if (events.Count == 0) return Option<TAggregate>.None();
 
         var aggregate = (TAggregate)Activator.CreateInstance(typeof(TAggregate), nonPublic: true)!;
         aggregate.Reconstitute(events.Select(e => e.Data).OfType<IDomainEvent>());
