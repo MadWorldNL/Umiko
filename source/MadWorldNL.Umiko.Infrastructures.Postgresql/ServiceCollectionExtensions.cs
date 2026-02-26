@@ -1,3 +1,4 @@
+using MadWorldNL.Umiko.Repositories;
 using MadWorldNL.Umiko.Status;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,6 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPostgresqlServices(this IServiceCollection services)
     {
         services.AddScoped<IDatabaseStatusRepository, DatabaseStatusRepository>();
+        services.AddScoped(typeof(IEventRepository<,>), typeof(EventRepository<,>));
         return services;
     }
 }

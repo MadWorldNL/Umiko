@@ -1,3 +1,5 @@
+using MadWorldNL.Umiko.Helpers.DDD;
+
 namespace MadWorldNL.Umiko.StepDefinitions.DDD;
 
 [Binding]
@@ -48,5 +50,22 @@ public class AggregateRootSteps
     {
         _aggregateRoot.ShouldNotBeNull();
         _aggregateRoot!.GetDomainEvents().Count.ShouldBe(count);
+    }
+
+    [When("I reconstitute from {int} domain event")]
+    public void WhenIReconstituteFromDomainEvent(int count)
+    {
+        _aggregateRoot.ShouldNotBeNull();
+        var events = Enumerable.Range(0, count)
+            .Select(_ => new TestDomainEvent(DateTime.UtcNow))
+            .ToList<IDomainEvent>();
+        _aggregateRoot!.Reconstitute(events);
+    }
+
+    [Then("the last applied date should be set")]
+    public void ThenTheLastAppliedDateShouldBeSet()
+    {
+        _aggregateRoot.ShouldNotBeNull();
+        _aggregateRoot!.LastAppliedOn.ShouldNotBeNull();
     }
 }

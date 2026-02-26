@@ -19,3 +19,24 @@ Scenario: Clearing domain events removes all events
     When I add a domain event
     And I clear the domain events
     Then it should have no domain events
+
+Scenario: Applying an event mutates state
+    Given I have a new aggregate root with ID 1
+    When I add a domain event
+    Then the last applied date should be set
+
+Scenario: Applying an event adds it to domain events
+    Given I have a new aggregate root with ID 1
+    When I add a domain event
+    Then the domain event count should be 1
+    And the last applied date should be set
+
+Scenario: Reconstituting from history mutates state
+    Given I have a new aggregate root with ID 1
+    When I reconstitute from 1 domain event
+    Then the last applied date should be set
+
+Scenario: Reconstituting from history does not add domain events
+    Given I have a new aggregate root with ID 1
+    When I reconstitute from 1 domain event
+    Then it should have no domain events

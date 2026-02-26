@@ -50,6 +50,7 @@ Aspire Host (Orchestrator)
 - **PostgreSQL**: Relational database with pgAdmin, credentials managed via Aspire secret parameters
 - **RabbitMQ**: Message broker with management plugin, credentials managed via Aspire secret parameters
 - **Keycloak**: Identity and access management server with data volume persistence
+- **MartenDB**: Event store running on the same PostgreSQL instance as EF Core, isolated in the `marten` schema. Registered in both API and Bus via `builder.AddNpgsqlDbContext<UmikoContext>("UmikoDb")` + `services.AddMarten(...).UseLightweightSessions()`. Used by `EventRepository<TAggregate, TId>` in `Infrastructures.Postgresql`.
 
 ### Layer Responsibilities
 
@@ -59,9 +60,9 @@ Aspire Host (Orchestrator)
 - **Controllers.Bus**: Background message processing service with OpenTelemetry instrumentation, consumes messages from RabbitMQ
 - **Controllers.Web.Administrators/Users**: Two separate Blazor WebAssembly client apps (client-side rendering)
 - **Application.Functions**: Business logic layer, shared by API and Bus
-- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent), functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\>; Result\<T\> with Success\<T\>/Failure\<T\>, both with Match, plus `IsSuccess` and `Error` properties), and service bus abstractions (`ServiceBus/`: IQuery\<TResponse\>, IQueryHandler\<TQuery, TResponse\>, ICommand, ICommand\<TResponse\>, ICommandHandler\<TCommand\>, ICommandHandler\<TCommand, TResponse\>, LoggingQueryHandler, LoggingCommandHandler, IEvent, IEventHandler\<TEvent\>, LoggingEventHandler, IMessageBus) — no dependencies, foundational layer
-- **Application.Domain**: Domain entities and business rules, depends on Frameworks. Status folder contains `IDatabaseStatusRepository`, `IMessageBusStatusRepository`, queries and results for both database and messaging connectivity checks
-- **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain. Implements `IDatabaseStatusRepository` via `DatabaseStatusRepository` using EF Core `CanConnectAsync`
+- **Application.Frameworks**: DDD building blocks (`DDD/`: Entity, AggregateRoot, ValueObject, IDomainEvent), functional types (`Functional/`: Option\<T\> with Some\<T\>/None\<T\>; Result\<T\> with Success\<T\>/Failure\<T\>, both with Match, plus `IsSuccess` and `Error` properties), and service bus abstractions (`ServiceBus/`: IQuery\<TResponse\>, IQueryHandler\<TQuery, TResponse\>, ICommand, ICommand\<TResponse\>, ICommandHandler\<TCommand\>, ICommandHandler\<TCommand, TResponse\>, LoggingQueryHandler, LoggingCommandHandler, IEvent, IEventHandler\<TEvent\>, LoggingEventHandler, IMessageBus) — no dependencies, foundational layer. `AggregateRoot<TId>` implements the apply pattern: `Apply(IDomainEvent)` raises a new event (mutates state via reflection + queues for dispatch), `Reconstitute(IEnumerable<IDomainEvent>)` replays history (mutates state only, nothing queued). Concrete aggregates implement `private void When(TEvent)` methods for state mutation; reflection looks up `When` by event type. `[UsedImplicitly]` suppresses the unused-method warning on `When` handlers.
+- **Application.Domain**: Domain entities and business rules, depends on Frameworks. Status folder contains `IDatabaseStatusRepository`, `IMessageBusStatusRepository`, queries and results for both database and messaging connectivity checks. `Repositories/IEventRepository<TAggregate, TId>` defines `SaveAsync` and `LoadAsync` (returns `Option<TAggregate>`) for event-sourced aggregates.
+- **Infrastructures.Postgresql**: PostgreSQL data access, depends on Domain. Implements `IDatabaseStatusRepository` via `DatabaseStatusRepository` using EF Core `CanConnectAsync`. Implements `IEventRepository<TAggregate, TId>` via `EventRepository<TAggregate, TId>` using Marten `IDocumentSession`: `SaveAsync` appends domain events to the stream and clears them; `LoadAsync` fetches the stream, creates the aggregate via `Activator.CreateInstance(nonPublic: true)`, then calls `Reconstitute`.
 - **Infrastructures.RabbitMQ**: RabbitMQ messaging integration, depends on Domain. Implements `IMessageBus` via `RabbitMqMessageBus` (uses `IConnection` from `Aspire.RabbitMQ.Client`; `Send<TCommand>` uses Direct exchange, `Publish<TEvent>` uses Fanout exchange, both serialized as JSON with `Persistent = true`). Also implements `IMessageBusStatusRepository` via `MessageBusStatusRepository` (checks `connection.IsOpen`). Provides `CommandConsumer<TCommand>` (Direct exchange, binds named queue, resolves `ICommandHandler<TCommand>`) and `EventConsumer<TEvent>` (Fanout exchange, binds named queue, resolves `IEventHandler<TEvent>`) — both are `BackgroundService` implementations with activity tracing and ack/nack handling. Registered via `AddRabbitMqServices()` extension. Connection string key: `ConnectionStrings:UmikoBus`
 
 ### Key Configuration
@@ -111,6 +112,18 @@ Both `Controllers.Api` and `Controllers.Bus` use ASP.NET Core rate limiting midd
 
 Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
 
+### Aggregate Pattern
+
+Aggregates in `Application.Domain` follow these conventions:
+
+- **Factory method**: Use a `public static Create(...)` factory instead of a public constructor. The constructor is `private`.
+- **Private parameterless constructor**: Required for EF Core reconstitution (e.g. `private CurriculumVitae()`).
+- **Apply pattern**: The constructor calls `Apply(new SomeEvent { ... })` to raise a domain event. State is never set directly — it is always set inside a `private void When(TEvent)` handler.
+- **`When` handlers**: Each event type gets a `[UsedImplicitly] private void When(TEvent)` method that mutates aggregate state. Called via reflection by `AggregateRoot.ApplyEvent`.
+- **Value objects**: Properties that group related primitives (e.g. `FullName`) extend `ValueObject`, are `sealed`, immutable (`get`-only), and validate in the constructor.
+- **Domain events**: Named in past tense (e.g. `CurriculumVitaeCreated`), implemented as `record` with `required init` properties including `Id`, `OccurredOn`, and any relevant state.
+- **ID generation**: The API endpoint generates the aggregate `Id` server-side (`Guid.NewGuid()`) before sending the command, and returns it in the `202 Accepted` response body (`CreateCurriculumVitaeResponse`). The command carries the ID so the Bus uses the same value when creating the aggregate.
+
 ### Query, Command and Event Handler Pattern
 
 `Application.Functions` uses `IQueryHandler`, `ICommandHandler`, and `IEventHandler` interfaces from `Application.Frameworks/ServiceBus/` for all business logic. Key conventions:
@@ -145,6 +158,9 @@ The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosti
 - **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/Api/StatusEndpoints/PingSteps.cs`)
 - **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run. Provides `CreateHttpClient(serviceName, ipAddress)` (with resilience handler) and `CreateRawHttpClient(serviceName, ipAddress)` (plain HttpClient, used by rate limiter tests to avoid retry on 429). Also provides `GenerateRandomIp()` to create unique IPs for test isolation via `X-Forwarded-For`
 - **Rate limiter test isolation**: Each scenario gets a unique random IP via `AspireHooks.GenerateRandomIp()`, sent as `X-Forwarded-For` header. This ensures each scenario has its own rate limiter partition, isolated from health checks and other tests. Rate limiter tests use `CreateRawHttpClient` (HTTPS endpoint) to avoid both the resilience handler retrying 429s and the HTTP→HTTPS redirect consuming double permits
+- **Async polling pattern**: For command-driven flows where the API returns `202 Accepted` and the Bus processes asynchronously, step definitions poll the GET endpoint in a loop with a short delay (`PollInterval = 500ms`) until it returns `200 OK`. A fresh `AspireHooks.GenerateRandomIp()` is generated **per request** inside the loop to avoid exhausting the per-IP rate limiter (5 req/min in tests). A `CancellationTokenSource(DefaultTimeout)` bounds the total wait.
+- **Project references**: `IntegrationTests.csproj` references `Api.Contracts` to use request/response types (e.g. `CreateCurriculumVitaeRequest`, `CreateCurriculumVitaeResponse`) directly in step definitions
+- **`*.feature.cs` gitignored**: Reqnroll auto-generates code-behind files alongside `.feature` files on build. These are excluded from source control via `.gitignore`. They are regenerated automatically on build.
 - **Global usings**: Defined in `GlobalUsings.cs` (not in csproj)
 
 ### End-to-End Tests
