@@ -110,7 +110,17 @@ Both `Controllers.Api` and `Controllers.Bus` use ASP.NET Core rate limiting midd
 
 ### API Documentation
 
-Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`.
+Both `Controllers.Api` and `Controllers.Bus` use [Scalar](https://github.com/scalar/scalar) (`Scalar.AspNetCore`) to render interactive API reference documentation from OpenAPI specs. Available in development mode at `/scalar/v1`. The API registers a JWT Bearer security scheme via `BearerSecuritySchemeTransformer` (`IOpenApiDocumentTransformer`), which makes Scalar display an authentication input for entering a Bearer token.
+
+### Authentication
+
+`Controllers.Api` uses JWT Bearer authentication configured via `Configurations/AuthenticationExtensions.cs` and `Configurations/AuthenticationSettings.cs`:
+
+- **Config section**: `Authentication` with keys `Authority` (Keycloak realm URL), `Audience` (client ID, e.g. `UmikoApi`), and `ValidateUser` (bool)
+- **Aspire injection**: The main `AppHost.cs` injects `Authentication__Authority` dynamically using `ReferenceExpression.Create($"{keycloak.GetEndpoint("http")}/realms/Umiko")` so the API always points to the correct Keycloak instance
+- **`ValidateUser = false`**: Disables all token validation (issuer, audience, lifetime, signature) — used in development without a running Keycloak. When false, a custom `SignatureValidator` is set that bypasses signature checks via `JsonWebTokenHandler.ReadJsonWebToken`
+- **`BearerSecuritySchemeTransformer`**: An `IOpenApiDocumentTransformer` that adds the `Bearer` HTTP security scheme to `document.Components.SecuritySchemes` and appends a global `OpenApiSecurityRequirement` using `OpenApiSecuritySchemeReference`. Registered via `AddOpenApi(options => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>())`
+- **Secured endpoints**: Use `.RequireAuthorization()` on the route builder. Status and health endpoints are unauthenticated
 
 ### Aggregate Pattern
 
@@ -138,7 +148,7 @@ Aggregates in `Application.Domain` follow these conventions:
 
 ### Test AppHost (Aspire.Tests)
 
-The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. It overrides `RateLimiter__PermitLimit` to `5` (instead of production default 100) for faster rate limiter integration tests. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
+The `MadWorldNL.Umiko.Aspire.Tests` project is a simplified Aspire AppHost used by both Integration and E2E tests. Unlike the main AppHost, it excludes Keycloak and uses default credentials (no secret parameters) for PostgreSQL and RabbitMQ. It overrides `RateLimiter__PermitLimit` to `5` (instead of production default 100) for faster rate limiter integration tests. It also sets `Authentication__ValidateUser` to `false` so tests run without a live Keycloak instance — no token signature, issuer, or audience validation is performed. Tests reference it via `DistributedApplicationTestingBuilder.CreateAsync<Projects.Aspire_Tests>()`.
 ### Unit Tests
 
 The `Application.Frameworks.UnitTests` project uses Reqnroll (BDD) with xUnit and Shouldly for unit-level tests of the Frameworks layer. Key patterns:
@@ -156,7 +166,7 @@ The `Controllers.IntegrationTests` project uses Reqnroll (BDD) with Aspire.Hosti
 - **Reqnroll + xUnit + Shouldly**: Tests are written as Gherkin feature files (`.feature`) with C# step definitions using `[Binding]` and `[Scope(Feature = "...")]` attributes. Assertions use [Shouldly](https://docs.shouldly.org/) (e.g. `x.ShouldBe(expected)`, `x.ShouldNotBeNull()`)
 - **Feature files**: Located in `Features/` (e.g. `Features/Api/StatusEndpoints/Ping.feature`)
 - **Step definitions**: Located in `StepDefinitions/` (e.g. `StepDefinitions/Api/StatusEndpoints/PingSteps.cs`)
-- **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run. Provides `CreateHttpClient(serviceName, ipAddress)` (with resilience handler) and `CreateRawHttpClient(serviceName, ipAddress)` (plain HttpClient, used by rate limiter tests to avoid retry on 429). Also provides `GenerateRandomIp()` to create unique IPs for test isolation via `X-Forwarded-For`
+- **AspireHooks**: A `[Binding]` class using `[BeforeTestRun]`/`[AfterTestRun]` hooks to start and stop the Aspire app once per test run. Provides `CreateHttpClient(serviceName, ipAddress)` (with resilience handler) and `CreateRawHttpClient(serviceName, ipAddress)` (plain HttpClient, used by rate limiter tests to avoid retry on 429). Also provides `GenerateRandomIp()` to create unique IPs for test isolation via `X-Forwarded-For`. Both HTTP client methods automatically attach a fake JWT Bearer token (`Authorization: Bearer <token>`) generated from a minimal base64url-encoded header and payload — valid JWT format, no real signature, accepted because `ValidateUser=false` in the test AppHost
 - **Rate limiter test isolation**: Each scenario gets a unique random IP via `AspireHooks.GenerateRandomIp()`, sent as `X-Forwarded-For` header. This ensures each scenario has its own rate limiter partition, isolated from health checks and other tests. Rate limiter tests use `CreateRawHttpClient` (HTTPS endpoint) to avoid both the resilience handler retrying 429s and the HTTP→HTTPS redirect consuming double permits
 - **Async polling pattern**: For command-driven flows where the API returns `202 Accepted` and the Bus processes asynchronously, step definitions poll the GET endpoint in a loop with a short delay (`PollInterval = 500ms`) until it returns `200 OK`. A fresh `AspireHooks.GenerateRandomIp()` is generated **per request** inside the loop to avoid exhausting the per-IP rate limiter (5 req/min in tests). A `CancellationTokenSource(DefaultTimeout)` bounds the total wait.
 - **Project references**: `IntegrationTests.csproj` references `Api.Contracts` to use request/response types (e.g. `CreateCurriculumVitaeRequest`, `CreateCurriculumVitaeResponse`) directly in step definitions
