@@ -31,8 +31,16 @@ spec:
               memory: {{ .Values.api.resources.limits.memory }}
               ephemeral-storage: {{ index .Values.api.resources.limits "ephemeral-storage" }}
           env:
+            - name: Authentication__Authority
+              value: "http://{{ .Values.keycloak.name }}:{{ .Values.keycloak.servicePort }}/realms/{{ .Values.keycloak.realm }}"
+            - name: Authentication__Audience
+              value: {{ .Values.keycloak.audience }}
+            - name: Authentication__ValidateUser
+              value: "true"
             - name: ConnectionStrings__UmikoDb
               value: "Host={{ .Values.postgres.name }};Port={{ .Values.postgres.containerPort }};Database={{ .Values.postgres.database }};Username={{ .Values.postgres.username }};Password={{ .Values.postgres.password }}"
+            - name: ConnectionStrings__UmikoBus
+              value: "amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.name }}:{{ .Values.rabbitmq.servicePort }}"
             {{- if .Values.observability.enabled }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://{{ .Values.observability.otelCollector.name }}:4317"

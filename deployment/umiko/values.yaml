@@ -114,6 +114,8 @@ keycloak:
   servicePort: 8080
   adminUsername: admin
   adminPassword: changeme
+  realm: Umiko
+  audience: UmikoApi
   ports:
     http: 8080
     health: 9000
