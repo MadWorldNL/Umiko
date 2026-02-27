@@ -7,8 +7,8 @@ metadata:
     app: {{ .Values.keycloak.name }}
 type: Opaque
 stringData:
-  username: {{ .Values.keycloak.username }}
-  password: {{ .Values.keycloak.password }}
+  username: {{ .Values.keycloak.postgres.username }}
+  password: {{ .Values.keycloak.postgres.password }}
 ---
 apiVersion: v1
 kind: Service
@@ -106,11 +106,11 @@ spec:
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL_HOST
-              value: {{ .Values.postgres.name }}
+              value: {{ .Values.keycloak.postgres.name }}
             - name: KC_DB_URL_PORT
-              value: {{ .Values.postgres.servicePort | quote }}
+              value: {{ .Values.keycloak.postgres.servicePort | quote }}
             - name: KC_DB_URL_DATABASE
-              value: {{ .Values.keycloak.database }}
+              value: {{ .Values.keycloak.postgres.database }}
             # In a production environment, use a secret to store username and password to the database
             - name: KC_DB_PASSWORD
               valueFrom:

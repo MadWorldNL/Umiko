@@ -114,9 +114,6 @@ keycloak:
   servicePort: 8080
   adminUsername: admin
   adminPassword: changeme
-  database: KeycloakDb
-  username: keycloak
-  password: changeme
   ports:
     http: 8080
     health: 9000
@@ -129,6 +126,25 @@ keycloak:
       cpu: 2000m
       memory: 2000Mi
       ephemeral-storage: 1Gi
+  postgres:
+    name: postgres-authentication
+    image: postgres
+    tag: 17
+    containerPort: 5432
+    servicePort: 5432
+    database: KeycloakDb
+    username: keycloak
+    password: changeme
+    storageSize: 1Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+        ephemeral-storage: 1Gi
+      limits:
+        cpu: "1"
+        memory: 512Mi
+        ephemeral-storage: 1Gi
 
 rabbitmq:
   name: rabbitmq

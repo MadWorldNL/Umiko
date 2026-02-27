@@ -15,7 +15,8 @@ pgadmin:
 
 keycloak:
   adminPassword: changeme
-  password: changeme
+  postgres:
+    password: changeme
 
 postgres:
   password: changeme

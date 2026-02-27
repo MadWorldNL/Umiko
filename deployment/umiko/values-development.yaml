@@ -15,7 +15,8 @@ pgadmin:
 
 keycloak:
   adminPassword: development-password
-  password: development-password
+  postgres:
+    password: development-password
 
 postgres:
   password: development-password
