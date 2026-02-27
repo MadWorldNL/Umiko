@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.keycloak.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.keycloak.name }}
+type: Opaque
+stringData:
+  username: {{ .Values.keycloak.username }}
+  password: {{ .Values.keycloak.password }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.keycloak.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.keycloak.name }}
+spec:
+  ports:
+    - protocol: TCP
+      port: {{ .Values.keycloak.servicePort }}
+      targetPort: http
+      name: http
+  selector:
+    app: {{ .Values.keycloak.name }}
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.keycloak.name }}
+  # Used to enable pod-to-pod communication for cluster formation
+  name: keycloak-discovery
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Values.keycloak.name }}
+  # Allow not-yet-ready Pods to be visible to ensure the forming of a cluster if Pods come up concurrently
+  publishNotReadyAddresses: true
+  clusterIP: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+# Use a stateful setup to ensure that for a rolling update Pods are restarted with a rolling strategy one-by-one.
+# This prevents losing in-memory information stored redundantly in two Pods.
+kind: StatefulSet
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ .Values.keycloak.name }}
+  labels:
+    app: {{ .Values.keycloak.name }}
+spec:
+  serviceName: keycloak-discovery
+  # Run with one replica to save resources, or with two replicas to allow for rolling updates for configuration changes
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.keycloak.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.keycloak.name }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.keycloak.name }}
+          image: {{ .Values.keycloak.image }}:{{ .Values.keycloak.tag }}
+          args: ["start"]
+          env:
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: {{ .Values.keycloak.adminUsername | quote }}
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              value: {{ .Values.keycloak.adminPassword | quote }}
+            # In a production environment, add a TLS certificate to Keycloak to either end-to-end encrypt the traffic between
+            # the client or Keycloak, or to encrypt the traffic between your proxy and Keycloak.
+            # Respect the proxy headers forwarded by the reverse proxy
+            # In a production environment, verify which proxy type you are using, and restrict access to Keycloak
+            # from other sources than your proxy if you continue to use proxy headers.
+            - name: KC_PROXY_HEADERS
+              value: "xforwarded"
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            # In this explorative setup, no strict hostname is set.
+            # For production environments, set a hostname for a secure setup.
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_CACHE
+              value: ispn
+            # Use the Kubernetes configuration for distributed caches which is based on DNS
+            - name: KC_CACHE_STACK
+              value: kubernetes
+            # Passing the Pod's IP primary address to the JGroups clustering as this is required in IPv6 only setups
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            # Instruct JGroups which DNS hostname to use to discover other Keycloak nodes
+            # Needs to be unique for each Keycloak cluster
+            - name: JAVA_OPTS_APPEND
+              value: '-Djgroups.dns.query="keycloak-discovery" -Djgroups.bind.address=$(POD_IP)'
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL_HOST
+              value: {{ .Values.postgres.name }}
+            - name: KC_DB_URL_PORT
+              value: {{ .Values.postgres.servicePort | quote }}
+            - name: KC_DB_URL_DATABASE
+              value: {{ .Values.keycloak.database }}
+            # In a production environment, use a secret to store username and password to the database
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.name }}
+                  key: password
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.name }}
+                  key: username
+          ports:
+            - name: http
+              containerPort: {{ .Values.keycloak.ports.http }}
+          startupProbe:
+            httpGet:
+              path: /health/started
+              port: {{ .Values.keycloak.ports.health }}
+            periodSeconds: 1
+            failureThreshold: 600
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.keycloak.ports.health }}
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.keycloak.ports.health }}
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            limits:
+              cpu: {{ .Values.keycloak.resources.limits.cpu }}
+              memory: {{ .Values.keycloak.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.keycloak.resources.limits "ephemeral-storage" }}
+            requests:
+              cpu: {{ .Values.keycloak.resources.requests.cpu }}
+              memory: {{ .Values.keycloak.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.keycloak.resources.requests "ephemeral-storage" }}

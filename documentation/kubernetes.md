@@ -82,6 +82,7 @@ Add the following entries to your hosts file so the local domains resolve to you
 127.0.0.1       bus.umiko.dev
 127.0.0.1       database.umiko.dev
 127.0.0.1       bus-management.umiko.dev
+127.0.0.1       authentication.umiko.dev
 127.0.0.1       grafana.umiko.dev
 ```
 

@@ -13,6 +13,10 @@ pgadmin:
   email: admin@umiko.dev
   password: development-password
 
+keycloak:
+  adminPassword: development-password
+  password: development-password
+
 postgres:
   password: development-password
 

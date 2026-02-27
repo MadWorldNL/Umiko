@@ -20,6 +20,7 @@ spec:
         - admin.{{ .Values.ingress.domain }}
         - bus-management.{{ .Values.ingress.domain }}
         - database.{{ .Values.ingress.domain }}
+        - authentication.{{ .Values.ingress.domain }}
         {{- if .Values.observability.enabled }}
         - grafana.{{ .Values.ingress.domain }}
         {{- end }}
@@ -76,6 +77,16 @@ spec:
                 port:
                   number: {{ .Values.observability.grafana.servicePort }}
     {{- end }}
+    - host: authentication.{{ .Values.ingress.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.keycloak.name }}
+                port:
+                  number: {{ .Values.keycloak.servicePort }}
     - host: admin.{{ .Values.ingress.domain }}
       http:
         paths:

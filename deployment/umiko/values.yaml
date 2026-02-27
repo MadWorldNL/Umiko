@@ -106,6 +106,30 @@ postgres:
       memory: 512Mi
       ephemeral-storage: 1Gi
 
+keycloak:
+  name: keycloak
+  image: quay.io/keycloak/keycloak
+  tag: "26.3.2"
+  containerPort: 8080
+  servicePort: 8080
+  adminUsername: admin
+  adminPassword: changeme
+  database: KeycloakDb
+  username: keycloak
+  password: changeme
+  ports:
+    http: 8080
+    health: 9000
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1700Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2000Mi
+      ephemeral-storage: 1Gi
+
 rabbitmq:
   name: rabbitmq
   image: rabbitmq

@@ -13,6 +13,10 @@ pgadmin:
   email: admin@umiko.example.com
   password: changeme
 
+keycloak:
+  adminPassword: changeme
+  password: changeme
+
 postgres:
   password: changeme
 
