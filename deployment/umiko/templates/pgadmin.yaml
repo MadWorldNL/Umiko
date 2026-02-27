@@ -29,6 +29,15 @@ data:
           "MaintenanceDB": "{{ .Values.postgres.database }}",
           "Username": "{{ .Values.postgres.username }}",
           "SSLMode": "prefer"
+        },
+        "2": {
+          "Name": "Authentication PostgreSQL",
+          "Group": "Servers",
+          "Host": "{{ .Values.keycloak.postgres.name }}",
+          "Port": {{ .Values.keycloak.postgres.containerPort }},
+          "MaintenanceDB": "{{ .Values.keycloak.postgres.database }}",
+          "Username": "{{ .Values.keycloak.postgres.username }}",
+          "SSLMode": "prefer"
         }
       }
     }

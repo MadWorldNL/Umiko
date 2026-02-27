@@ -201,8 +201,10 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 
 **Templates** (`deployment/umiko/templates/`):
 - `namespace.yaml`: Creates the target namespace
-- `postgres.yaml`: PostgreSQL StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
-- `pgadmin.yaml`: pgAdmin Deployment and ClusterIP Service for database management
+- `application-database.yaml`: PostgreSQL StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service (used by API and Bus)
+- `authentication-database.yaml`: Dedicated PostgreSQL StatefulSet for Keycloak with persistent storage, Secret for credentials, and ClusterIP Service (uses `keycloak.postgres.*` values)
+- `authenticatie-server.yml`: Keycloak StatefulSet (LoadBalancer Service + headless discovery Service), Secret for DB credentials, JGroups clustering via `keycloak-discovery` DNS
+- `pgadmin.yaml`: pgAdmin Deployment and ClusterIP Service for database management, pre-configured with both the application database and authentication database as server entries
 - `rabbitmq.yaml`: RabbitMQ StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
 - `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
 - `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
@@ -222,6 +224,7 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `admin.<domain>` → web-administrators
 - `api.<domain>` → api
 - `bus.<domain>` → bus
+- `authentication.<domain>` → keycloak
 - `grafana.<domain>` → grafana (when `observability.enabled`)
 
 **Values files**:

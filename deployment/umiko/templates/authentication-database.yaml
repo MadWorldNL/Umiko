@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.keycloak.postgres.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.keycloak.postgres.name }}
+type: Opaque
+stringData:
+  POSTGRES_USER: {{ .Values.keycloak.postgres.username }}
+  POSTGRES_PASSWORD: {{ .Values.keycloak.postgres.password }}
+  POSTGRES_DB: {{ .Values.keycloak.postgres.database }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.keycloak.postgres.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.keycloak.postgres.name }}
+spec:
+  serviceName: {{ .Values.keycloak.postgres.name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.keycloak.postgres.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.keycloak.postgres.name }}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: {{ .Values.keycloak.postgres.name }}
+          image: {{ .Values.keycloak.postgres.image }}:{{ .Values.keycloak.postgres.tag }}
+          ports:
+            - containerPort: {{ .Values.keycloak.postgres.containerPort }}
+          resources:
+            requests:
+              cpu: {{ .Values.keycloak.postgres.resources.requests.cpu }}
+              memory: {{ .Values.keycloak.postgres.resources.requests.memory }}
+              ephemeral-storage: {{ index .Values.keycloak.postgres.resources.requests "ephemeral-storage" }}
+            limits:
+              cpu: {{ .Values.keycloak.postgres.resources.limits.cpu }}
+              memory: {{ .Values.keycloak.postgres.resources.limits.memory }}
+              ephemeral-storage: {{ index .Values.keycloak.postgres.resources.limits "ephemeral-storage" }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.keycloak.postgres.name }}
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.keycloak.postgres.username }}
+                - -d
+                - {{ .Values.keycloak.postgres.database }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.keycloak.postgres.username }}
+                - -d
+                - {{ .Values.keycloak.postgres.database }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: postgres-authentication-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-authentication-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.keycloak.postgres.storageSize }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.keycloak.postgres.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.keycloak.postgres.name }}
+spec:
+  selector:
+    app: {{ .Values.keycloak.postgres.name }}
+  ports:
+    - port: {{ .Values.keycloak.postgres.servicePort }}
+      targetPort: {{ .Values.keycloak.postgres.containerPort }}
+      protocol: TCP

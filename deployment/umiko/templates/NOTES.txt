@@ -8,6 +8,7 @@ Umiko has been deployed to namespace: {{ .Values.namespace }}
   Bus:              https://bus.{{ .Values.ingress.domain }}
   Database:         https://database.{{ .Values.ingress.domain }}
   RabbitMQ Mgmt:    https://bus-management.{{ .Values.ingress.domain }}
+  Keycloak:         https://authentication.{{ .Values.ingress.domain }}
 {{- if .Values.observability.enabled }}
   Grafana:          https://grafana.{{ .Values.ingress.domain }}
 {{- end }}
