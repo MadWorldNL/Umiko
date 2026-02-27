@@ -206,8 +206,8 @@ The Helm chart is located at `deployment/umiko/` and deploys all application ser
 - `authenticatie-server.yml`: Keycloak StatefulSet (LoadBalancer Service + headless discovery Service), Secret for DB credentials, JGroups clustering via `keycloak-discovery` DNS
 - `pgadmin.yaml`: pgAdmin Deployment and ClusterIP Service for database management, pre-configured with both the application database and authentication database as server entries
 - `rabbitmq.yaml`: RabbitMQ StatefulSet with persistent storage, Secret for credentials, and ClusterIP Service
-- `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
-- `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb` and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
+- `api.yaml`: REST API Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb`, `ConnectionStrings__UmikoBus`, `Authentication__Authority` (`https://authentication.<domain>/realms/<realm>`), `Authentication__Audience`, `Authentication__ValidateUser`, and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
+- `bus.yaml`: Message consumer Deployment and ClusterIP Service, with `ConnectionStrings__UmikoDb`, `ConnectionStrings__UmikoBus`, and conditional `OTEL_EXPORTER_OTLP_ENDPOINT` env vars
 - `web-administrators.yaml`: Admin portal Deployment and ClusterIP Service
 - `web-users.yaml`: User portal Deployment and ClusterIP Service
 - `ingress.yaml`: Traefik Ingress with subdomain-based routing and TLS, conditional Grafana route

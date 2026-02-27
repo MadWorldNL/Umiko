@@ -32,7 +32,7 @@ spec:
               ephemeral-storage: {{ index .Values.api.resources.limits "ephemeral-storage" }}
           env:
             - name: Authentication__Authority
-              value: "http://{{ .Values.keycloak.name }}:{{ .Values.keycloak.servicePort }}/realms/{{ .Values.keycloak.realm }}"
+              value: "https://authentication.{{ .Values.ingress.domain }}/realms/{{ .Values.keycloak.realm }}"
             - name: Authentication__Audience
               value: {{ .Values.keycloak.audience }}
             - name: Authentication__ValidateUser
