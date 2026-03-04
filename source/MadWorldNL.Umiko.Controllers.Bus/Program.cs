@@ -27,8 +27,14 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new HeaderApiVersionReader("x-api-version")
+    );
 });
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddOperationTransformer<ApiVersionHeaderTransformer>();
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
 builder.Services.AddValidation();

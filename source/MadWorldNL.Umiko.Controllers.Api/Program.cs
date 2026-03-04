@@ -24,6 +24,9 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new HeaderApiVersionReader("x-api-version")
+    );
 });
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
@@ -35,6 +38,7 @@ builder.AddDefaultAuthentication();
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddOperationTransformer<ApiVersionHeaderTransformer>();
 });
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
