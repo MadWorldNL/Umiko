@@ -24,6 +24,7 @@ builder.Services.AddMarten(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
+builder.Services.AddValidation();
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
 builder.Services.AddFunctionsServices();

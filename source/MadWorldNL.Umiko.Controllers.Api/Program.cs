@@ -20,6 +20,7 @@ builder.Services.AddMarten(options =>
 
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
+builder.Services.AddValidation();
 builder.AddDefaultAuthentication();
 
 // Add services to the container.
