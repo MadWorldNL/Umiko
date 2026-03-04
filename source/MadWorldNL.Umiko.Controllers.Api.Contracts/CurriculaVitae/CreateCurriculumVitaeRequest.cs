@@ -8,6 +8,7 @@ public sealed class CreateCurriculumVitaeRequest
     [MinLength(1)]
     [RegularExpression(@".*\S.*", ErrorMessage = "The field cannot be empty or consist only of whitespace.")]
     public string FirstName { get; set; } = string.Empty;
+    
     [Required]
     [MinLength(1)]
     [RegularExpression(@".*\S.*", ErrorMessage = "The field cannot be empty or consist only of whitespace.")]
