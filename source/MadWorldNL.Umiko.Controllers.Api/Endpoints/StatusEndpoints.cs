@@ -1,3 +1,4 @@
+using MadWorldNL.Umiko.Configurations;
 using MadWorldNL.Umiko.ServiceBus;
 using MadWorldNL.Umiko.Status;
 
@@ -7,7 +8,10 @@ internal static class StatusEndpoints
 {
     internal static void AddStatusEndpoints(this WebApplication app)
     {
+        var versionSet = app.GetDefaultApiVersionSet();
+
         var statusEndpoint = app.MapGroup("Status")
+            .WithApiVersionSet(versionSet)
             .WithTags("Status");
 
         statusEndpoint.MapGet("/Ping", () => "Pong")

@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.HttpOverrides;
 using MadWorldNL.Umiko;
 using MadWorldNL.Umiko.Configurations;
@@ -18,6 +19,12 @@ builder.Services.AddMarten(options =>
     options.DatabaseSchemaName = "marten";
 }).UseLightweightSessions();
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
 builder.Services.AddValidation();

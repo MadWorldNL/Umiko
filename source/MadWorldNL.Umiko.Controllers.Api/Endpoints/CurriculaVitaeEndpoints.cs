@@ -1,3 +1,4 @@
+using MadWorldNL.Umiko.Configurations;
 using MadWorldNL.Umiko.CurriculaVitae;
 using MadWorldNL.Umiko.ServiceBus;
 
@@ -7,7 +8,10 @@ internal static class CurriculaVitaeEndpoints
 {
     internal static void AddCurriculaVitaeEndpoints(this WebApplication app)
     {
+        var versionSet = app.GetDefaultApiVersionSet();
+
         var curriculaVitaeEndpoint = app.MapGroup("CurriculaVitae")
+            .WithApiVersionSet(versionSet)
             .WithTags("CurriculaVitae");
 
         curriculaVitaeEndpoint.MapPost("/", async (CreateCurriculumVitaeRequest request, IMessageBus messageBus, CancellationToken cancellationToken) =>
