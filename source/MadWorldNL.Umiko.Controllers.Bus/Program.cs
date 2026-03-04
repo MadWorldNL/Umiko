@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.HttpOverrides;
 using MadWorldNL.Umiko;
 using MadWorldNL.Umiko.Configurations;
@@ -21,9 +22,22 @@ builder.Services.AddMarten(options =>
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new HeaderApiVersionReader("x-api-version")
+    );
+});
+builder.Services.AddOpenApi(options =>
+{
+    options.AddOperationTransformer<ApiVersionHeaderTransformer>();
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
+builder.Services.AddValidation();
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
 builder.Services.AddFunctionsServices();

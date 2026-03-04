@@ -1,3 +1,4 @@
+using MadWorldNL.Umiko.Configurations;
 using MadWorldNL.Umiko.Developer;
 using MadWorldNL.Umiko.ServiceBus;
 
@@ -7,7 +8,10 @@ internal static class DeveloperEndpoints
 {
     internal static void AddDeveloperEndpoints(this WebApplication app)
     {
+        var versionSet = app.GetDefaultApiVersionSet();
+
         var developerEndpoint = app.MapGroup("Developer")
+            .WithApiVersionSet(versionSet)
             .WithTags("Developer")
             .RequireAuthorization();
 

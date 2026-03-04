@@ -53,11 +53,29 @@ public sealed class CurriculaVitaeSteps
         _response!.StatusCode.ShouldBe(HttpStatusCode.Accepted);
     }
 
+    [When("I try to create a curriculum vitae with first name {string} and last name {string} on the {word} service")]
+    public async Task WhenITryToCreateACurriculumVitae(string firstName, string lastName, string serviceName)
+    {
+        using var httpClient = AspireHooks.CreateHttpClient(serviceName, _forwardedIp);
+        _response = await httpClient.PostAsJsonAsync("/CurriculaVitae", new CreateCurriculumVitaeRequest
+        {
+            FirstName = firstName,
+            LastName = lastName
+        }, CancellationToken.None);
+    }
+
     [Then("the response status code should be NotFound")]
     public void ThenTheResponseStatusCodeShouldBeNotFound()
     {
         _response.ShouldNotBeNull();
         _response!.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Then("the response status code should be BadRequest")]
+    public void ThenTheResponseStatusCodeShouldBeBadRequest()
+    {
+        _response.ShouldNotBeNull();
+        _response!.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Then("the curriculum vitae should eventually be retrievable on the {word} service")]

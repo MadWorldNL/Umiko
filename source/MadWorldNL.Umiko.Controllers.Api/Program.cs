@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.HttpOverrides;
 using MadWorldNL.Umiko;
 using MadWorldNL.Umiko.Configurations;
@@ -18,8 +19,18 @@ builder.Services.AddMarten(options =>
     options.DatabaseSchemaName = "marten";
 }).UseLightweightSessions();
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new HeaderApiVersionReader("x-api-version")
+    );
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddRateLimiterPolicy();
+builder.Services.AddValidation();
 builder.AddDefaultAuthentication();
 
 // Add services to the container.
@@ -27,6 +38,7 @@ builder.AddDefaultAuthentication();
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddOperationTransformer<ApiVersionHeaderTransformer>();
 });
 builder.Services.AddPostgresqlServices();
 builder.Services.AddRabbitMqServices();
